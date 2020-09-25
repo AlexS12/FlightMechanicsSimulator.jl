@@ -14,4 +14,3 @@ so:
 
 clean:
 	rm -f bin/*
-	rm -f build/*
