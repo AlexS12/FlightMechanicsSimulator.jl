@@ -1,6 +1,8 @@
-using FlightMechanicsSimulator
-using Test
+using SafeTestsets
 
-@testset "FlightMechanicsSimulator.jl" begin
-    # Write your tests here.
-end
+@safetestset "ADC" begin include("adc.jl") end
+@safetestset "Aerodynamics" begin include("aero.jl") end
+@safetestset "Engine" begin include("engine.jl") end
+@safetestset "SixDOF" begin include("sixdof.jl") end
+@safetestset "Propagator" begin include("rk4.jl") end
+@safetestset "Trimmer" begin include("trimmer.jl") end
