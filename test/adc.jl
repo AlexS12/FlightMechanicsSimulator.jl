@@ -1,14 +1,14 @@
 using Test
+using CSV
+using DataFrames
 using FlightMechanicsSimulator
 
 
+df = DataFrame!(CSV.File("data/adc.csv"))
 @testset "adc.jl" begin
-
-    for vt = 0.0:10.0:1000.0, alt = 0.0:1000.0:50000.0
-        mach_1, qbar_1 = FlightMechanicsSimulator.Fortran.adc(vt, alt)
-        mach_2, qbar_2 = FlightMechanicsSimulator.adc(vt, alt)
-        @test isapprox(mach_1, mach_2, atol = 1.0e-16)
-        @test isapprox(qbar_1, qbar_2)
+    for case in eachrow(df)
+        mach_1, qbar_1 = FlightMechanicsSimulator.adc(case.vt, case.alt)
+        @test isapprox(mach_1, case.mach)
+        @test isapprox(qbar_1, case.qbar)
     end
-
 end

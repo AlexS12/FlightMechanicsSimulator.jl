@@ -1,4 +1,6 @@
 using Test
+using CSV
+using DataFrames
 using FlightMechanicsSimulator
 
 
@@ -11,64 +13,54 @@ using FlightMechanicsSimulator
     da_test = LinRange(-21.5, 21.5, 20)
     dr_test = LinRange(-30, 30, 20)
 
-    for α in α_test
-        rv1 = FlightMechanicsSimulator.Fortran.damp(α)
-        rv2 = FlightMechanicsSimulator.damp(α)
-        @test isapprox(rv1, rv2, atol = 1.0e-14)
+    df = DataFrame!(CSV.File("data/damp.csv"))
+    for case in eachrow(df)
+        rv1 = FlightMechanicsSimulator.damp(case.alpha)
+        @test isapprox(rv1, Array(case[2:end]), atol = 1.0e-14)
     end
 
-    for α in α_test, de in de_test
-        rv1 = FlightMechanicsSimulator.Fortran.CX(α, de)
-        rv2 = FlightMechanicsSimulator.CX(α, de)
-        @test isapprox(rv1, rv2, atol = 1.0e-15)
+    df = DataFrame!(CSV.File("data/cx.csv"))
+    for case in eachrow(df)
+        rv1 = FlightMechanicsSimulator.CX(case.alpha, case.de)
+        @test isapprox(rv1, case.cx, atol = 1.0e-15)
     end
 
-
-    for β in β_test, da in da_test, dr in dr_test
-        rv1 = FlightMechanicsSimulator.Fortran.CY(β, da, dr)
-        rv2 = FlightMechanicsSimulator.CY(β, da, dr)
-        @test isapprox(rv1, rv2, atol = 1.0e-15)
+    df = DataFrame!(CSV.File("data/cy.csv"))
+    for case in eachrow(df)
+        rv1 = FlightMechanicsSimulator.CY(case.beta, case.da, case.dr)
+        @test isapprox(rv1, case.cy, atol = 1.0e-15)
     end
 
-
-    for α in α_test, β in β_test, de in de_test
-        rv1 = FlightMechanicsSimulator.Fortran.CZ(α, β, de)
-        rv2 = FlightMechanicsSimulator.CZ(α, β, de)
-        @test isapprox(rv1, rv2, atol = 1.0e-15)
+    df = DataFrame!(CSV.File("data/cz.csv"))
+    for case in eachrow(df)
+        rv1 = FlightMechanicsSimulator.CZ(case.alpha, case.beta, case.de)
+        @test isapprox(rv1, case.cz, atol = 1.0e-15)
     end
 
-
-    for α in α_test, de in de_test
-        rv1 = FlightMechanicsSimulator.Fortran.CM(α, de)
-        rv2 = FlightMechanicsSimulator.CM(α, de)
-        @test isapprox(rv1, rv2, atol = 1.0e-15)
+    df = DataFrame!(CSV.File("data/cm.csv"))
+    for case in eachrow(df)
+        rv1 = FlightMechanicsSimulator.CM(case.alpha, case.de)
+        @test isapprox(rv1, case.cm, atol = 1.0e-15)
     end
 
+    df = DataFrame!(CSV.File("data/aero_coeffs.csv"))
+    for case in eachrow(df)
+        rv1 = FlightMechanicsSimulator.CL(case.alpha, case.beta)
+        @test isapprox(rv1, case.cl, atol = 1.0e-15)
 
-    for α in α_test, β in de_test
-        rv1 = FlightMechanicsSimulator.Fortran.CL(α, β)
-        rv2 = FlightMechanicsSimulator.CL(α, β)
-        @test isapprox(rv1, rv2, atol = 1.0e-15)
+        rv1 = FlightMechanicsSimulator.CN(case.alpha, case.beta)
+        @test isapprox(rv1, case.cn, atol = 1.0e-15)
 
-        rv1 = FlightMechanicsSimulator.Fortran.CN(α, β)
-        rv2 = FlightMechanicsSimulator.CN(α, β)
-        @test isapprox(rv1, rv2, atol = 1.0e-15)
+        rv1 = FlightMechanicsSimulator.DLDA(case.alpha, case.beta)
+        @test isapprox(rv1, case.dlda, atol = 1.0e-15)
 
-        rv1 = FlightMechanicsSimulator.Fortran.DLDA(α, β)
-        rv2 = FlightMechanicsSimulator.DLDA(α, β)
-        @test isapprox(rv1, rv2, atol = 1.0e-15)
+        rv1 = FlightMechanicsSimulator.DLDR(case.alpha, case.beta)
+        @test isapprox(rv1, case.dldr, atol = 1.0e-15)
 
-        rv1 = FlightMechanicsSimulator.Fortran.DLDR(α, β)
-        rv2 = FlightMechanicsSimulator.DLDR(α, β)
-        @test isapprox(rv1, rv2, atol = 1.0e-15)
+        rv1 = FlightMechanicsSimulator.DNDA(case.alpha, case.beta)
+        @test isapprox(rv1, case.dnda, atol = 1.0e-15)
 
-        rv1 = FlightMechanicsSimulator.Fortran.DNDA(α, β)
-        rv2 = FlightMechanicsSimulator.DNDA(α, β)
-        @test isapprox(rv1, rv2, atol = 1.0e-15)
-
-        rv1 = FlightMechanicsSimulator.Fortran.DNDR(α, β)
-        rv2 = FlightMechanicsSimulator.DNDR(α, β)
-        @test isapprox(rv1, rv2, atol = 1.0e-15)
+        rv1 = FlightMechanicsSimulator.DNDR(case.alpha, case.beta)
+        @test isapprox(rv1, case.dndr, atol = 1.0e-15)
     end
-
 end
