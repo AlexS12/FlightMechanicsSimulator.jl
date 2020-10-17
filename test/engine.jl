@@ -1,34 +1,33 @@
 using Test
+using CSV
+using DataFrames
 using FlightMechanicsSimulator
 
 
 @testset "engine.jl" begin
 
-    for thtl in LinRange(0, 1, 20)
-        rv1 = FlightMechanicsSimulator.Fortran.tgear(thtl)
-        rv2 = FlightMechanicsSimulator.tgear(thtl)
-        @test isapprox(rv1, rv2, atol = 1.0e-15)
+    df = DataFrame!(CSV.File("data/tgear.csv"))
+    for case in eachrow(df)
+        rv1 = FlightMechanicsSimulator.tgear(case.thtl)
+        @test isapprox(rv1, case.tgear, atol = 1.0e-15)
     end
 
-    for p3 in LinRange(0, 100, 50), p1 in LinRange(0, 100, 50)
-        rv1 = FlightMechanicsSimulator.Fortran.pdot(p3, p1)
-        rv2 = FlightMechanicsSimulator.pdot(p3, p1)
-        @test isapprox(rv1, rv2, atol = 1.0e-15)
+    df = DataFrame!(CSV.File("data/pdot.csv"))
+    for case in eachrow(df)
+        rv1 = FlightMechanicsSimulator.pdot(case.p3, case.p1)
+        @test isapprox(rv1, case.pdot, atol = 1.0e-15)
     end
 
-    for dp in LinRange(0, 100, 50)
-        rv1 = FlightMechanicsSimulator.Fortran.rtau(dp)
-        rv2 = FlightMechanicsSimulator.rtau(dp)
-        @test isapprox(rv1, rv2, atol = 1.0e-15)
+    df = DataFrame!(CSV.File("data/rtau.csv"))
+    for case in eachrow(df)
+        rv1 = FlightMechanicsSimulator.rtau(case.dp)
+        @test isapprox(rv1, case.rtau, atol = 1.0e-15)
     end
 
-    for pow in LinRange(0, 100, 50),
-        alt in LinRange(0, 50000, 500),
-        rmach in LinRange(0, 1, 25)
-
-        rv1 = FlightMechanicsSimulator.Fortran.thrust(pow, alt, rmach)
-        rv2 = FlightMechanicsSimulator.thrust(pow, alt, rmach)
-        @test isapprox(rv1, rv2, atol = 1.0e-10)
+    df = DataFrame!(CSV.File("data/thrust.csv"))
+    for case in eachrow(df)
+        rv1 = FlightMechanicsSimulator.thrust(case.pow, case.alt, case.rmach)
+        @test isapprox(rv1, case.thrust, atol = 1.0e-10)
     end
 
 end

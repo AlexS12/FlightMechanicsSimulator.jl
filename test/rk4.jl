@@ -1,6 +1,7 @@
 using Test
+using CSV
+using DataFrames
 using FlightMechanicsSimulator
-using Libdl
 
 # Stevens, B. L., Lewis, F. L., & Johnson, E. N. (2015). Aircraft control
 # and simulation: dynamics, controls design, and autonomous systems. John Wiley
@@ -45,22 +46,18 @@ controls_stev = [0.8349601, -1.481766, 0.09553108, -0.4118124]
 
 xcg = 0.35
 
-dll = dlopen(FlightMechanicsSimulator.Fortran.DLL)
 
-for time in [0.0, 0.1, 1000.0]
-    for dt in [0.0001, 0.001, 0.01, 0.1, 1]
-        x_new1 =
-        FlightMechanicsSimulator.Fortran.rk4(dlsym(dll, :f_), dt, x_stev, time, xcg, controls_stev)
-        x_new2 = FlightMechanicsSimulator.rk4(
-            FlightMechanicsSimulator.f,
-            dt,
-            x_stev,
-            time,
-            xcg,
-            controls_stev,
-        )
-        @test isapprox(x_new1, x_new2)
-    end
+df = DataFrame!(CSV.File("data/RK4.csv"))
+for case in eachrow(df)
+    x_new1 = FlightMechanicsSimulator.rk4(
+        FlightMechanicsSimulator.f,
+        case.dt,
+        Array(case[["x$ii" for ii in 1:13]]),
+        case.time,
+        case.xcg,
+        Array(case[["c$ii" for ii in 1:4]]),
+    )
+        @test isapprox(x_new1, Array(case[["x$(ii)_new" for ii in 1:13]]))
 end
 
 
