@@ -118,3 +118,21 @@ function thrust(pow, alt, rmach)  # Engine thrust model
 
     return thrst
 end
+
+
+function calculate_prop_forces_moments(x, controls)
+
+    # Assign state & control variables
+    vt = x[1]
+    alt = x[12]
+    pow = x[13]
+
+    thtl = controls[1]
+
+    # Air data computer and engine model
+    amach, qbar = adc(vt, alt)
+
+    thrust_ = thrust(pow, alt, amach)
+
+    return [thrust_, 0.0, 0.0, 0.0, 0.0, 0.0]
+end

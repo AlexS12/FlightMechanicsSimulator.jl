@@ -253,3 +253,57 @@ CM(α, de) = interp2d(α, de, 0.2, 1.0 / 12, -1, -1, 8, 1, Cm_data)
 CN(α, β) = interp2d2(α, β, 0.2, 0.2, -1, 1, 8, 5, Cn_data)
 DNDA(α, β) = interp2d(α, β, 0.2, 0.1, -1, -2, 8, 2, cnda_data, 3, 4)
 DNDR(α, β) = interp2d(α, β, 0.2, 0.1, -1, -2, 8, 2, cndr_data, 3, 4)
+
+
+function calculate_aero_forces_moments(x, controls, xcg)
+
+    # Unpack controls
+    THTL = controls[1]
+    EL = controls[2]
+    AIL = controls[3]
+    RDR = controls[4]
+
+    # Assign state & control variables
+    VT = x[1]
+    ALPHA = x[2] * RTOD
+    BETA = x[3] * RTOD
+    PHI = x[4]
+    THETA = x[5]
+    PSI = x[6]
+    P = x[7]
+    Q = x[8]
+    R = x[9]
+    ALT = x[12]
+    POW = x[13]
+
+    # Look-up tables and component buildup
+    CXT = CX(ALPHA, EL)
+    CYT = CY(BETA, AIL, RDR)
+    CZT = CZ(ALPHA, BETA, EL)
+
+    DAIL = AIL / DA_MAX
+    DRDR = RDR / DR_MAX
+
+    CLT = CL(ALPHA, BETA) + DLDA(ALPHA, BETA) * DAIL + DLDR(ALPHA, BETA) * DRDR
+    CMT = CM(ALPHA, EL)
+    CNT = CN(ALPHA, BETA) + DNDA(ALPHA, BETA) * DAIL + DNDR(ALPHA, BETA) * DRDR
+
+    # Add damping derivatives
+    CBTA = cos(x[3])
+    U = VT * cos(x[2]) * CBTA
+    V = VT * sin(x[3])
+    W = VT * sin(x[2]) * CBTA
+    TVT = 0.5 / VT
+    B2V = B * TVT
+    CQ = CBAR * Q * TVT
+
+    D = damp(ALPHA)
+    CXT = CXT + CQ * D[1]
+    CYT = CYT + B2V * (D[2] * R + D[3] * P)
+    CZT = CZT + CQ * D[4]
+    CLT = CLT + B2V * (D[5] * R + D[6] * P)
+    CMT = CMT + CQ * D[7] + CZT * (XCGR - xcg)
+    CNT = CNT + B2V * (D[8] * R + D[9] * P) - CYT * (XCGR - xcg) * CBAR / B
+
+    return [CXT, CYT, CZT, CLT, CMT, CNT]
+end

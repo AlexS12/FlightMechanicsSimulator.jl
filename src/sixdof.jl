@@ -19,11 +19,6 @@ function f(time, X, XCG, controls)
     xd = Array{Float64}(undef, 13)
     outputs = Array{Float64}(undef, 7)
 
-    THTL = controls[1]
-    EL = controls[2]
-    AIL = controls[3]
-    RDR = controls[4]
-
     # Assign state & control variables
     VT = X[1]
     ALPHA = X[2] * RTOD
@@ -38,39 +33,18 @@ function f(time, X, XCG, controls)
     POW = X[13]
 
     # Air data computer and engine model
+    THTL = controls[1]
     AMACH, QBAR = adc(VT, ALT)
     CPOW = tgear(THTL)
     xd[13] = pdot(POW, CPOW)
-    T = thrust(POW, ALT, AMACH)
 
-    # Look-up tables and component buildup
-    CXT = CX(ALPHA, EL)
-    CYT = CY(BETA, AIL, RDR)
-    CZT = CZ(ALPHA, BETA, EL)
+    T, TY, TZ, MTX, MTY, MTZ = calculate_prop_forces_moments(X, controls)
+    CXT, CYT, CZT, CLT, CMT, CNT = calculate_aero_forces_moments(X, controls, XCG)
 
-    DAIL = AIL / DA_MAX
-    DRDR = RDR / DR_MAX
-
-    CLT = CL(ALPHA, BETA) + DLDA(ALPHA, BETA) * DAIL + DLDR(ALPHA, BETA) * DRDR
-    CMT = CM(ALPHA, EL)
-    CNT = CN(ALPHA, BETA) + DNDA(ALPHA, BETA) * DAIL + DNDR(ALPHA, BETA) * DRDR
-
-    # Add damping derivatives
     CBTA = cos(X[3])
     U = VT * cos(X[2]) * CBTA
     V = VT * sin(X[3])
     W = VT * sin(X[2]) * CBTA
-    TVT = 0.5 / VT
-    B2V = B * TVT
-    CQ = CBAR * Q * TVT
-
-    D = damp(ALPHA)
-    CXT = CXT + CQ * D[1]
-    CYT = CYT + B2V * (D[2] * R + D[3] * P)
-    CZT = CZT + CQ * D[4]
-    CLT = CLT + B2V * (D[5] * R + D[6] * P)
-    CMT = CMT + CQ * D[7] + CZT * (XCGR - XCG)
-    CNT = CNT + B2V * (D[8] * R + D[9] * P) - CYT * (XCGR - XCG) * CBAR / B
 
     # Get ready for state equations
     STH = sin(THETA)
