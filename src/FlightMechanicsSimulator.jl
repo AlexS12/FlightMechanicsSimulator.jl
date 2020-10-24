@@ -1,9 +1,5 @@
 module FlightMechanicsSimulator
 
-module Fortran
-    include("fortran_wrapper.jl")
-end
-
 include("constants.jl")
 include("adc.jl")
 include("engine.jl")
