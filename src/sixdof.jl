@@ -16,7 +16,6 @@ function f(time, X, XCG, controls)
     # C     X(12) -> Altitude (ft)
     # C     X(13) -> Pow
 
-    xd = Array{Float64}(undef, 13)
     outputs = Array{Float64}(undef, 7)
 
     # Assign state & control variables
@@ -37,11 +36,104 @@ function f(time, X, XCG, controls)
     # Engine model
     THTL = controls[1]
     CPOW = tgear(THTL)
-    xd[13] = pdot(POW, CPOW)
+    xd_13 = pdot(POW, CPOW)
 
     # Calculate forces and moments
     T, TY, TZ, MTX, MTY, MTZ = calculate_prop_forces_moments(X, controls)
     CXT, CYT, CZT, CLT, CMT, CNT = calculate_aero_forces_moments(X, controls, XCG)
+
+    STH = sin(THETA)
+    CTH = cos(THETA)
+    SPH = sin(PHI)
+    CPH = cos(PHI)
+
+    QS = QBAR * S
+
+    # Total forces & moments
+    fx = -MASS * GD * STH + (QS * CXT + T)
+    fy = MASS * GD * CTH * SPH + QS * CYT
+    fz = MASS * GD * CTH * CPH + QS * CZT
+
+    mx = QS * B * CLT
+    my = QS * CBAR * CMT
+    mz = QS * B * CNT
+
+    inertia = [
+        AXX 0.0 AXZ;
+        0.0 AYY 0.0;
+        AXZ 0.0 AZZ
+        ]
+
+    forces = [fx, fy, fz]
+    moments = [mx, my, mz]
+    h = [HX, 0, 0]
+
+    xd = sixdof_aero_earth_euler_fixed_mass(time, X, MASS, inertia, forces, moments, h)
+
+    xd = [xd..., xd_13]
+    # Outputs
+    RMQS = QS / MASS
+
+    AX = (QS * CXT + T) / GD  # <<-- ASM: Definition missing
+    AY = RMQS * CYT
+    AZ = RMQS * CZT
+
+    AN = -AZ / GD
+    ALAT = AY / GD
+
+    outputs[1] = AN
+    outputs[2] = ALAT
+    outputs[3] = AX
+    outputs[4] = QBAR
+    outputs[5] = AMACH
+    outputs[6] = Q
+    outputs[7] = ALPHA
+
+    return xd, outputs
+
+end
+
+
+function sixdof_aero_earth_euler_fixed_mass(time, X, MASS, inertia, forces, moments, h)
+
+    # C Assign state & control variables
+    # C
+    # C     X(1)  -> vt (ft/s)
+    # C     X(2)  -> alpha (rad)
+    # C     X(3)  -> beta (rad)
+    # C     X(4)  -> phi (rad)
+    # C     X(5)  -> theta (rad)
+    # C     X(6)  -> psi (rad)
+    # C     X(7)  -> P (rad/s)
+    # C     X(8)  -> Q (rad/s)
+    # C     X(9)  -> R (rad/s)
+    # C     X(10) -> North (ft)
+    # C     X(11) -> East (ft)
+    # C     X(12) -> Altitude (ft)
+
+    xd = Array{Float64}(undef, 12)
+
+    # Assign state & control variables
+    VT = X[1]
+    ALPHA = X[2] * RTOD
+    BETA = X[3] * RTOD
+    PHI = X[4]
+    THETA = X[5]
+    PSI = X[6]
+    P = X[7]
+    Q = X[8]
+    R = X[9]
+    ALT = X[12]
+
+    # Unpack forces
+    fx, fy, fz = forces
+    # Unpack moments
+    mx, my, mz = moments
+    # Unpack angular momentum contributions
+    HX, HY, HZ = h
+    # Unpack inertia
+    AXX, AYY, AZZ = inertia[1, 1], inertia[2, 2], inertia[3, 3]
+    AXY, AXZ = inertia[1, 2], inertia[1, 3]
 
     # Get ready for state equations
     CBTA = cos(X[3])
@@ -55,17 +147,6 @@ function f(time, X, XCG, controls)
     CPH = cos(PHI)
     SPSI = sin(PSI)
     CPSI = cos(PSI)
-
-    QS = QBAR * S
-
-    # Total forces & moments
-    fx = -MASS * GD * STH + (QS * CXT + T)
-    fy = MASS * GD * CTH * SPH + QS * CYT
-    fz = MASS * GD * CTH * CPH + QS * CZT
-
-    mx = QS * B * CLT
-    my = QS * CBAR * CMT
-    mz = QS * B * CNT
 
     # Force equations
     UDOT = R * V - Q * W + fx / MASS
@@ -108,24 +189,6 @@ function f(time, X, XCG, controls)
     xd[11] = U * S2 + V * S4 + W * S7  # East speed
     xd[12] = U * STH - V * S5 - W * S8  # Vertical speed
 
-    # Outputs
-    RMQS = QS / MASS
-
-    AX = (QS * CXT + T) / GD  # <<-- ASM: Definition missing
-    AY = RMQS * CYT
-    AZ = RMQS * CZT
-
-    AN = -AZ / GD
-    ALAT = AY / GD
-
-    outputs[1] = AN
-    outputs[2] = ALAT
-    outputs[3] = AX
-    outputs[4] = QBAR
-    outputs[5] = AMACH
-    outputs[6] = Q
-    outputs[7] = ALPHA
-
-    return xd, outputs
+    return xd
 
 end
