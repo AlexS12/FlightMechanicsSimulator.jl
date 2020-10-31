@@ -171,5 +171,5 @@ xy_trajectory_data = [
 @test isapprox(x[7], x_trim[7])  # p
 @test isapprox(x[8], x_trim[8])  # q
 @test isapprox(x[9], x_trim[9])  # r
-@test isapprox(x[12], x_trim[12])  # alt
+@test isapprox(x[12], x_trim[12], atol=1e-12)  # alt
 @test isapprox(x[13], x_trim[13])  # pow

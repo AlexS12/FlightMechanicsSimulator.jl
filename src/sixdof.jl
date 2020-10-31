@@ -57,17 +57,20 @@ function f(time, X, XCG, controls)
     CPSI = cos(PSI)
 
     QS = QBAR * S
-    QSB = QS * B
-    RMQS = QS / MASS
-    GCTH = GD * CTH
-    QSPH = Q * SPH
-    AY = RMQS * CYT
-    AZ = RMQS * CZT
+
+    # Total forces & moments
+    fx = -MASS * GD * STH + (QS * CXT + T)
+    fy = MASS * GD * CTH * SPH + QS * CYT
+    fz = MASS * GD * CTH * CPH + QS * CZT
+
+    mx = QS * B * CLT
+    my = QS * CBAR * CMT
+    mz = QS * B * CNT
 
     # Force equations
-    UDOT = R * V - Q * W - GD * STH + (QS * CXT + T) / MASS
-    VDOT = P * W - R * U + GCTH * SPH + AY
-    WDOT = Q * U - P * V + GCTH * CPH + AZ
+    UDOT = R * V - Q * W + fx / MASS
+    VDOT = P * W - R * U + fy / MASS
+    WDOT = Q * U - P * V + fz / MASS
     DUM = (U * U + W * W)
 
     xd[1] = (U * UDOT + V * VDOT + W * WDOT) / VT
@@ -75,21 +78,18 @@ function f(time, X, XCG, controls)
     xd[3] = (VT * VDOT - V * xd[1]) * CBTA / DUM
 
     # Kinematics
-    xd[4] = P + (STH / CTH) * (QSPH + R * CPH)
+    xd[4] = P + (STH / CTH) * (Q * SPH + R * CPH)
     xd[5] = Q * CPH - R * SPH
-    xd[6] = (QSPH + R * CPH) / CTH
+    xd[6] = (Q * SPH + R * CPH) / CTH
 
     # Moments
-    ROLL = QSB * CLT
-    PITCH = QS * CBAR * CMT
-    YAW = QSB * CNT
     PQ = P * Q
     QR = Q * R
     QHX = Q * HX
 
-    xd[7] = (XPQ * PQ - XQR * QR + AZZ * ROLL + AXZ * (YAW + QHX)) / GAM
-    xd[8] = (YPR * P * R - AXZ * (P^2 - R^2) + PITCH - R * HX) / AYY
-    xd[9] = (ZPQ * PQ - XPQ * QR + AXZ * ROLL + AXX * (YAW + QHX)) / GAM
+    xd[7] = (XPQ * PQ - XQR * QR + AZZ * mx + AXZ * (mz + QHX)) / GAM
+    xd[8] = (YPR * P * R - AXZ * (P^2 - R^2) + my - R * HX) / AYY
+    xd[9] = (ZPQ * PQ - XPQ * QR + AXZ * mx + AXX * (mz + QHX)) / GAM
 
     # Navigation
     T1 = SPH * CPSI
@@ -109,9 +109,14 @@ function f(time, X, XCG, controls)
     xd[12] = U * STH - V * S5 - W * S8  # Vertical speed
 
     # Outputs
+    RMQS = QS / MASS
+
+    AX = (QS * CXT + T) / GD  # <<-- ASM: Definition missing
+    AY = RMQS * CYT
+    AZ = RMQS * CZT
+
     AN = -AZ / GD
     ALAT = AY / GD
-    AX = (QS * CXT + T) / GD  # <<-- ASM: Definition missing
 
     outputs[1] = AN
     outputs[2] = ALAT
