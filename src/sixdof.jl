@@ -1,7 +1,5 @@
 function f(time, X, XCG, controls)
 
-    # C Assign state & control variables
-    # C
     # C     X(1)  -> vt (ft/s)
     # C     X(2)  -> alpha (rad)
     # C     X(3)  -> beta (rad)
@@ -95,9 +93,6 @@ end
 
 
 function sixdof_aero_earth_euler_fixed_mass(time, X, MASS, inertia, forces, moments, h)
-
-    # C Assign state & control variables
-    # C
     # C     X(1)  -> vt (ft/s)
     # C     X(2)  -> alpha (rad)
     # C     X(3)  -> beta (rad)
