@@ -32,21 +32,23 @@ function f(time, X, XCG, controls)
     ALT = X[12]
     POW = X[13]
 
-    # Air data computer and engine model
-    THTL = controls[1]
+    # Air data computer
     AMACH, QBAR = adc(VT, ALT)
+    # Engine model
+    THTL = controls[1]
     CPOW = tgear(THTL)
     xd[13] = pdot(POW, CPOW)
 
+    # Calculate forces and moments
     T, TY, TZ, MTX, MTY, MTZ = calculate_prop_forces_moments(X, controls)
     CXT, CYT, CZT, CLT, CMT, CNT = calculate_aero_forces_moments(X, controls, XCG)
 
+    # Get ready for state equations
     CBTA = cos(X[3])
     U = VT * cos(X[2]) * CBTA
     V = VT * sin(X[3])
     W = VT * sin(X[2]) * CBTA
 
-    # Get ready for state equations
     STH = sin(THETA)
     CTH = cos(THETA)
     SPH = sin(PHI)
