@@ -4,7 +4,7 @@ const AYY = 55814.0  # slug·ft²
 const AZZ = 63100.0  # slug·ft²
 const AXZ = 982.0  # slug·ft²
 
-const WEIGHT= 20500.0  #
+const WEIGHT= 20500.0  # lbf
 const MASS= WEIGHT / GD  # lb
 
 const S = 300  # ft^2
