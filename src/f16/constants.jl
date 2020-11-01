@@ -4,15 +4,6 @@ const AYY = 55814.0  # slug·ft²
 const AZZ = 63100.0  # slug·ft²
 const AXZ = 982.0  # slug·ft²
 
-const AXZS = AXZ^2
-const XPQ = AXZ * (AXX - AYY + AZZ)
-const GAM = AXX * AZZ - AXZ^2
-
-const XQR = AZZ * (AZZ - AYY) + AXZS
-const ZPQ = (AXX - AYY) * AXX + AXZS
-
-const YPR= AZZ - AXX
-
 const WEIGHT= 20500.0  #
 const MASS= WEIGHT / GD  # lb
 
