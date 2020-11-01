@@ -1,5 +1,5 @@
 # TODO: doc
-function sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
+function sixdof_aero_earth_euler_fixed_mass!(time, x, mass, inertia, forces, moments, h, x_dot)
     # C     x(1)  -> tas (ft/s)
     # C     x(2)  -> α (rad)
     # C     x(3)  -> β (rad)
@@ -12,8 +12,6 @@ function sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, mome
     # C     x(10) -> North (ft)
     # C     x(11) -> East (ft)
     # C     x(12) -> Altitude (ft)
-
-    x_dot = Array{Float64}(undef, 12)
 
     # Assign state
     tas = x[1]
@@ -100,6 +98,12 @@ function sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, mome
     x_dot[11] = u * s2 + v * s4 + w * s7  # East speed
     x_dot[12] = u * sθ - v * s5 - w * s8  # Vertical speed
 
-    return x_dot
+end
 
+
+# TODO: doc
+function sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
+    x_dot = Array{Float64}(undef, 12)
+    sixdof_aero_earth_euler_fixed_mass!(time, x, mass, inertia, forces, moments, h, x_dot)
+    return x_dot
 end
