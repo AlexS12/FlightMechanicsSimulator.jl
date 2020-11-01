@@ -1,6 +1,6 @@
 # Constants
-const GD = 32.17  # ft/s^2
-const R0 = 2.377e-3  # Sea level density  (slug/ft²)
+const GD = 32.17  # Gravity acceleration (ft/s²)
+const R0 = 2.377e-3  # Sea level density  (slug/ft³)
 
 # Unit conversions
 const RAD2DEG = 57.29578
