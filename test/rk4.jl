@@ -49,8 +49,8 @@ xcg = 0.35
 
 df = DataFrame!(CSV.File("data/RK4.csv"))
 for case in eachrow(df)
-    x_new1 = FlightMechanicsSimulator.F16.rk4(
-        FlightMechanicsSimulator.F16.f,
+    x_new1 = F16.rk4(
+        F16.f,
         case.dt,
         Array(case[["x$ii" for ii in 1:13]]),
         case.time,
@@ -68,7 +68,7 @@ end
 # & Sons.
 # Example 3.6-2 (page 191)
 xcg = 0.35
-x_dot, outputs = FlightMechanicsSimulator.F16.f(time, x_stev, xcg, controls_stev)
+x_dot, outputs = F16.f(time, x_stev, xcg, controls_stev)
 
 # Linear acceleration
 @test isapprox(x_dot[1:3], zeros(3), atol = 5e-4)
@@ -89,8 +89,8 @@ cost =
 @test isapprox(x_dot[12], 0.0, atol = 1e-4)
 
 # RETRIM to refine flying condition
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = FlightMechanicsSimulator.F16.trimmer(
-    FlightMechanicsSimulator.F16.f,
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
+    F16.f,
     x_stev,
     controls_stev,
     0.0,
@@ -120,7 +120,7 @@ while time_ < 180.0 + dt / 2.0
     local x_dot, outputs, cost
 
     push!(results, vcat([time_], x))
-    x = FlightMechanicsSimulator.F16.rk4(FlightMechanicsSimulator.F16.f, dt, x, time_, xcg, controls)
+    x = F16.rk4(F16.f, dt, x, time_, xcg, controls)
 
     time_ += dt
 
