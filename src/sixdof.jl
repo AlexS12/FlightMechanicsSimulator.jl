@@ -18,8 +18,8 @@ function f(time, X, XCG, controls)
 
     # Assign state & control variables
     VT = X[1]
-    ALPHA = X[2] * RTOD
-    BETA = X[3] * RTOD
+    ALPHA = X[2] * RAD2DEG
+    BETA = X[3] * RAD2DEG
     PHI = X[4]
     THETA = X[5]
     PSI = X[6]
@@ -110,8 +110,8 @@ function sixdof_aero_earth_euler_fixed_mass(time, X, MASS, inertia, forces, mome
 
     # Assign state & control variables
     VT = X[1]
-    ALPHA = X[2] * RTOD
-    BETA = X[3] * RTOD
+    ALPHA = X[2] * RAD2DEG
+    BETA = X[3] * RAD2DEG
     PHI = X[4]
     THETA = X[5]
     PSI = X[6]

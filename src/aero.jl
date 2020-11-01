@@ -265,8 +265,8 @@ function calculate_aero_forces_moments(x, controls, xcg)
 
     # Assign state & control variables
     VT = x[1]
-    ALPHA = x[2] * RTOD
-    BETA = x[3] * RTOD
+    ALPHA = x[2] * RAD2DEG
+    BETA = x[3] * RAD2DEG
     PHI = x[4]
     THETA = x[5]
     PSI = x[6]
