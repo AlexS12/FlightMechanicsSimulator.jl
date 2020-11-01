@@ -1,60 +1,58 @@
-function f(time, X, XCG, controls)
+function f(time, x, xcg, controls)
 
-    # C     X(1)  -> vt (ft/s)
-    # C     X(2)  -> alpha (rad)
-    # C     X(3)  -> beta (rad)
-    # C     X(4)  -> phi (rad)
-    # C     X(5)  -> theta (rad)
-    # C     X(6)  -> psi (rad)
-    # C     X(7)  -> P (rad/s)
-    # C     X(8)  -> Q (rad/s)
-    # C     X(9)  -> R (rad/s)
-    # C     X(10) -> North (ft)
-    # C     X(11) -> East (ft)
-    # C     X(12) -> Altitude (ft)
-    # C     X(13) -> Pow
+    # C     x(1)  -> vt (ft/s)
+    # C     x(2)  -> α (rad)
+    # C     x(3)  -> β (rad)
+    # C     x(4)  -> ϕ (rad)
+    # C     x(5)  -> θ (rad)
+    # C     x(6)  -> ψ (rad)
+    # C     x(7)  -> p (rad/s)
+    # C     x(8)  -> q (rad/s)
+    # C     x(9)  -> r (rad/s)
+    # C     x(10) -> North (ft)
+    # C     x(11) -> East (ft)
+    # C     x(12) -> Altitude (ft)
+    # C     x(13) -> pow
 
     outputs = Array{Float64}(undef, 7)
 
     # Assign state & control variables
-    VT = X[1]
-    ALPHA = X[2] * RAD2DEG
-    BETA = X[3] * RAD2DEG
-    PHI = X[4]
-    THETA = X[5]
-    PSI = X[6]
-    P = X[7]
-    Q = X[8]
-    R = X[9]
-    ALT = X[12]
-    POW = X[13]
+    vt = x[1]
+    α = x[2] * RAD2DEG
+    β = x[3] * RAD2DEG
+    ϕ = x[4]
+    θ = x[5]
+    ψ = x[6]
+    p = x[7]
+    q = x[8]
+    r = x[9]
+    height = x[12]
+    pow = x[13]
 
     # Air data computer
-    AMACH, QBAR = adc(VT, ALT)
+    amach, qbar = adc(vt, height)
     # Engine model
-    THTL = controls[1]
-    CPOW = tgear(THTL)
-    xd_13 = pdot(POW, CPOW)
+    thtl = controls[1]
+    cpow = tgear(thtl)
+    xd_13 = pdot(pow, cpow)
 
     # Calculate forces and moments
-    T, TY, TZ, MTX, MTY, MTZ = calculate_prop_forces_moments(X, controls)
-    CXT, CYT, CZT, CLT, CMT, CNT = calculate_aero_forces_moments(X, controls, XCG)
+    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, controls)
+    CXA, CYA, CZA, LA, MA, NA = calculate_aero_forces_moments(x, controls, xcg)
 
-    STH = sin(THETA)
-    CTH = cos(THETA)
-    SPH = sin(PHI)
-    CPH = cos(PHI)
+    sθ, cθ = sin(θ), cos(θ)
+    sϕ, cϕ = sin(ϕ), cos(ϕ)
 
-    QS = QBAR * S
+    qbarS = qbar * S
 
     # Total forces & moments
-    Fx = -MASS * GD * STH + (QS * CXT + T)
-    Fy = MASS * GD * CTH * SPH + QS * CYT
-    Fz = MASS * GD * CTH * CPH + QS * CZT
+    Fx = -MASS * GD * sθ + (qbarS * CXA + Tx)
+    Fy = MASS * GD * cθ * sϕ + qbarS * CYA
+    Fz = MASS * GD * cθ * cϕ + qbarS * CZA
 
-    L = QS * B * CLT
-    M = QS * CBAR * CMT
-    N = QS * B * CNT
+    L = qbarS * B * LA
+    M = qbarS * CBAR * MA
+    N = qbarS * B * NA
 
     inertia = [
         AXX 0.0 AXZ;
@@ -66,26 +64,26 @@ function f(time, X, XCG, controls)
     moments = [L, M, N]
     h = [HX, 0, 0]
 
-    x_dot = sixdof_aero_earth_euler_fixed_mass(time, X, MASS, inertia, forces, moments, h)
+    x_dot = sixdof_aero_earth_euler_fixed_mass(time, x, MASS, inertia, forces, moments, h)
 
     x_dot = [x_dot..., xd_13]
     # Outputs
-    RMQS = QS / MASS
+    rmqs = qbarS / MASS
 
-    AX = (QS * CXT + T) / GD  # <<-- ASM: Definition missing
-    AY = RMQS * CYT
-    AZ = RMQS * CZT
+    ax = (qbarS * CXA + Tx) / GD  # <<-- ASM: Definition missing
+    ay = rmqs * CYA
+    az = rmqs * CZA
 
-    AN = -AZ / GD
-    ALAT = AY / GD
+    an = -az / GD
+    alat = ay / GD
 
-    outputs[1] = AN
-    outputs[2] = ALAT
-    outputs[3] = AX
-    outputs[4] = QBAR
-    outputs[5] = AMACH
-    outputs[6] = Q
-    outputs[7] = ALPHA
+    outputs[1] = an
+    outputs[2] = alat
+    outputs[3] = ax
+    outputs[4] = qbar
+    outputs[5] = amach
+    outputs[6] = q
+    outputs[7] = α
 
     return x_dot, outputs
 
