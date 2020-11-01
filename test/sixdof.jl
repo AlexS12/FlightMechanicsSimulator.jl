@@ -35,7 +35,7 @@ for case in eachrow(df)
     controls = Array(case[["c$ii" for ii in 1:4]])
 
     xd1, outputs1 =
-        FlightMechanicsSimulator.f(
+        FlightMechanicsSimulator.F16.f(
             case.time,
             x,
             case.xcg,

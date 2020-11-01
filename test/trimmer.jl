@@ -54,8 +54,8 @@ for case in eachrow(trim_test_data)
     ]
 
     # TRIM
-    x_trim, controls_trim, x_dot_trim, outputs_trim, cost = FlightMechanicsSimulator.trimmer(
-        FlightMechanicsSimulator.f,
+    x_trim, controls_trim, x_dot_trim, outputs_trim, cost = FlightMechanicsSimulator.F16.trimmer(
+        FlightMechanicsSimulator.F16.f,
         x,
         controls,
         0.0,
@@ -99,8 +99,8 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = FlightMechanicsSimulator.trimmer(
-        FlightMechanicsSimulator.f,
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = FlightMechanicsSimulator.F16.trimmer(
+        FlightMechanicsSimulator.F16.f,
         x,
         controls,
         0.0,
@@ -147,8 +147,8 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = FlightMechanicsSimulator.trimmer(
-        FlightMechanicsSimulator.f,
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = FlightMechanicsSimulator.F16.trimmer(
+        FlightMechanicsSimulator.F16.f,
         x,
         controls,
         0.0,
@@ -195,8 +195,8 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = FlightMechanicsSimulator.trimmer(
-        FlightMechanicsSimulator.f,
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = FlightMechanicsSimulator.F16.trimmer(
+        FlightMechanicsSimulator.F16.f,
         x,
         controls,
         0.0,
@@ -243,8 +243,8 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = FlightMechanicsSimulator.trimmer(
-        FlightMechanicsSimulator.f,
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = FlightMechanicsSimulator.F16.trimmer(
+        FlightMechanicsSimulator.F16.f,
         x,
         controls,
         0.0,
