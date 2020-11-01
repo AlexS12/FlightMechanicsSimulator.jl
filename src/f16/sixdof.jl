@@ -1,4 +1,4 @@
-function f(time, x, xcg, controls)
+function f(time, x, mass, xcg, controls)
 
     # C     x(1)  -> vt (ft/s)
     # C     x(2)  -> α (rad)
@@ -46,9 +46,9 @@ function f(time, x, xcg, controls)
     qbarS = qbar * S
 
     # Total forces & moments
-    Fx = -MASS * GD * sθ + (qbarS * CXA + Tx)
-    Fy = MASS * GD * cθ * sϕ + qbarS * CYA
-    Fz = MASS * GD * cθ * cϕ + qbarS * CZA
+    Fx = -mass * GD * sθ + (qbarS * CXA + Tx)
+    Fy = mass * GD * cθ * sϕ + qbarS * CYA
+    Fz = mass * GD * cθ * cϕ + qbarS * CZA
 
     L = qbarS * B * LA
     M = qbarS * CBAR * MA
@@ -64,11 +64,11 @@ function f(time, x, xcg, controls)
     moments = [L, M, N]
     h = [HX, 0, 0]
 
-    x_dot = sixdof_aero_earth_euler_fixed_mass(time, x, MASS, inertia, forces, moments, h)
+    x_dot = sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
 
     x_dot = [x_dot..., xd_13]
     # Outputs
-    rmqs = qbarS / MASS
+    rmqs = qbarS / mass
 
     ax = (qbarS * CXA + Tx) / GD  # <<-- ASM: Definition missing
     ay = rmqs * CYA

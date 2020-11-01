@@ -38,6 +38,7 @@ for case in eachrow(df)
         F16.f(
             case.time,
             x,
+            F16.MASS,
             case.xcg,
             controls,
         )

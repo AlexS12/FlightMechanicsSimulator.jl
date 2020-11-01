@@ -60,6 +60,7 @@ for case in eachrow(trim_test_data)
         controls,
         0.0,
         0.0,
+        F16.MASS,
         xcg;
     )
 
@@ -105,6 +106,7 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
         controls,
         0.0,
         0.0,
+        F16.MASS,
         xcg;
     )
 
@@ -153,6 +155,7 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
         controls,
         0.0,
         0.0,
+        F16.MASS,
         xcg;
     )
 
@@ -201,6 +204,7 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
         controls,
         0.0,
         0.0,
+        F16.MASS,
         xcg;
     )
 
@@ -249,6 +253,7 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
         controls,
         0.0,
         0.3,
+        F16.MASS,
         xcg;
     )
 
