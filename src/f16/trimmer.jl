@@ -2,7 +2,7 @@
 using NLsolve
 
 
-function trimmer(fun, x_guess, controls_guess, γ=0.0, ψ_dot=0.0, xcg=0.35; show_trace=false, ftol=1e-16, iterations=5000)
+function trimmer(fun, x_guess, controls_guess, γ=0.0, ψ_dot=0.0, mass=MASS, xcg=0.35; show_trace=false, ftol=1e-16, iterations=5000)
 
     #  STATE VECTOR
     # C     X(1)  -> vt (ft/s)
@@ -42,7 +42,7 @@ function trimmer(fun, x_guess, controls_guess, γ=0.0, ψ_dot=0.0, xcg=0.35; sho
     # alt (ft)
     # ψ_dot (rad/s)
     # γ (rad)
-    consts = [xcg, x_guess[1], x_guess[6], x_guess[10], x_guess[11], x_guess[12], ψ_dot, γ]
+    consts = [mass, xcg, x_guess[1], x_guess[6], x_guess[10], x_guess[11], x_guess[12], ψ_dot, γ]
 
     f_opt(sol) = trim_cost_function(sol, consts, fun; full_output=false)
 
@@ -60,14 +60,15 @@ end
 
 function trim_cost_function(sol, consts, fun; full_output=false)
 
-    xcg = consts[1]
-    tas = consts[2]
-    psi = consts[3]
-    x = consts[4]
-    y = consts[5]
-    alt = consts[6]
-    turn_rate = consts[7]
-    gamma = consts[8]
+    mass = consts[1]
+    xcg = consts[2]
+    tas = consts[3]
+    psi = consts[4]
+    x = consts[5]
+    y = consts[6]
+    alt = consts[7]
+    turn_rate = consts[8]
+    gamma = consts[9]
 
     alpha = sol[1]
     beta = sol[2]
@@ -76,7 +77,7 @@ function trim_cost_function(sol, consts, fun; full_output=false)
 
     x = calculate_state_with_constrains(tas, alpha, beta, gamma, turn_rate, x, y, alt, psi, thtl)
 
-    x_dot, outputs = fun(time, x, xcg, controls)
+    x_dot, outputs = fun(time, x, mass, xcg, controls)
 
     cost = [x_dot[1:3]..., x_dot[7:9]...]
 

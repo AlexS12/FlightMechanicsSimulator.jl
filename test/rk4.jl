@@ -49,11 +49,12 @@ xcg = 0.35
 
 df = DataFrame!(CSV.File("data/RK4.csv"))
 for case in eachrow(df)
-    x_new1 = FlightMechanicsSimulator.rk4(
-        FlightMechanicsSimulator.f,
+    x_new1 = F16.rk4(
+        F16.f,
         case.dt,
         Array(case[["x$ii" for ii in 1:13]]),
         case.time,
+        F16.MASS,
         case.xcg,
         Array(case[["c$ii" for ii in 1:4]]),
     )
@@ -68,7 +69,7 @@ end
 # & Sons.
 # Example 3.6-2 (page 191)
 xcg = 0.35
-x_dot, outputs = FlightMechanicsSimulator.f(time, x_stev, xcg, controls_stev)
+x_dot, outputs = F16.f(time, x_stev, F16.MASS, xcg, controls_stev)
 
 # Linear acceleration
 @test isapprox(x_dot[1:3], zeros(3), atol = 5e-4)
@@ -89,12 +90,13 @@ cost =
 @test isapprox(x_dot[12], 0.0, atol = 1e-4)
 
 # RETRIM to refine flying condition
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = FlightMechanicsSimulator.trimmer(
-    FlightMechanicsSimulator.f,
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
+    F16.f,
     x_stev,
     controls_stev,
     0.0,
     0.3,
+    F16.MASS,
     xcg
 )
 
@@ -120,7 +122,7 @@ while time_ < 180.0 + dt / 2.0
     local x_dot, outputs, cost
 
     push!(results, vcat([time_], x))
-    x = FlightMechanicsSimulator.rk4(FlightMechanicsSimulator.f, dt, x, time_, xcg, controls)
+    x = F16.rk4(F16.f, dt, x, time_, F16.MASS, xcg, controls)
 
     time_ += dt
 
@@ -171,5 +173,5 @@ xy_trajectory_data = [
 @test isapprox(x[7], x_trim[7])  # p
 @test isapprox(x[8], x_trim[8])  # q
 @test isapprox(x[9], x_trim[9])  # r
-@test isapprox(x[12], x_trim[12])  # alt
+@test isapprox(x[12], x_trim[12], atol=1e-12)  # alt
 @test isapprox(x[13], x_trim[13])  # pow
