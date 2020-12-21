@@ -258,12 +258,12 @@ DNDR(α, β) = interp2d(α, β, 0.2, 0.1, -1, -2, 8, 2, cndr_data, 3, 4)
 function calculate_aero_forces_moments(x, controls, xcg)
 
     # Unpack controls
-    THTL = controls[1]
-    EL = controls[2]
-    AIL = controls[3]
-    RDR = controls[4]
+    THTL = controls[1]  # 0-1
+    EL = controls[2]  # deg
+    AIL = controls[3]  # deg
+    RDR = controls[4]  # deg
 
-    # Assign state & control variables
+    # Assign state
     VT = x[1]
     ALPHA = x[2] * RAD2DEG
     BETA = x[3] * RAD2DEG

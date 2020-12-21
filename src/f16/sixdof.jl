@@ -16,7 +16,7 @@ function f(time, x, mass, xcg, controls)
 
     outputs = Array{Float64}(undef, 7)
 
-    # Assign state & control variables
+    # Assign state
     vt = x[1]
     α = x[2] * RAD2DEG
     β = x[3] * RAD2DEG
