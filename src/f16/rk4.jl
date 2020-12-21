@@ -1,11 +1,11 @@
-function rk4(f, DT, XX, TIME, XCG, CONTROLS)
+function rk4(f, DT, XX, TIME, MASS, XCG, CONTROLS)
 
     NX = length(XX)
     XA = Array{Float64}(undef, NX)
     X = Array{Float64}(undef, NX)
 
     # 1
-    XD, outputs = f(TIME, XX, XCG, CONTROLS)
+    XD, outputs = f(TIME, XX, MASS, XCG, CONTROLS)
 
     for M = 1:NX
         XA[M] = XD[M] * DT
@@ -13,7 +13,7 @@ function rk4(f, DT, XX, TIME, XCG, CONTROLS)
     end
 
     # 2
-    XD, outputs = f(TIME, XX, XCG, CONTROLS)
+    XD, outputs = f(TIME, XX, MASS, XCG, CONTROLS)
     for M = 1:NX
         Q = XD[M] * DT
         X[M] = XX[M] + 0.5 * Q
@@ -21,7 +21,7 @@ function rk4(f, DT, XX, TIME, XCG, CONTROLS)
     end
 
     # 3
-    XD, outputs = f(TIME, XX, XCG, CONTROLS)
+    XD, outputs = f(TIME, XX, MASS, XCG, CONTROLS)
     for M = 1:NX
         Q = XD[M] * DT
         X[M] = XX[M] + Q
@@ -29,7 +29,7 @@ function rk4(f, DT, XX, TIME, XCG, CONTROLS)
     end
 
     # 4
-    XD, outputs = f(TIME, XX, XCG, CONTROLS)
+    XD, outputs = f(TIME, XX, MASS, XCG, CONTROLS)
     for M = 1:NX
         X[M] = XX[M] + (XA[M] + XD[M] * DT) / 6.0
     end

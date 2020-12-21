@@ -7,7 +7,7 @@ using FlightMechanicsSimulator
 df = DataFrame!(CSV.File("data/adc.csv"))
 @testset "adc.jl" begin
     for case in eachrow(df)
-        mach_1, qbar_1 = FlightMechanicsSimulator.adc(case.vt, case.alt)
+        mach_1, qbar_1 = F16.adc(case.vt, case.alt)
         @test isapprox(mach_1, case.mach)
         @test isapprox(qbar_1, case.qbar)
     end
