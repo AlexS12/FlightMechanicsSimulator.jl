@@ -114,7 +114,8 @@ t0 = 0.0  # s
 t1 = 180.0  # s
 
 x = x_trim
-controls = controls_trim
+# Transform to Input for simulate
+controls = ConstantInput.(controls_trim)
 
 results = simulate(t0, t1, dt, x, F16.MASS, xcg, controls)
 
