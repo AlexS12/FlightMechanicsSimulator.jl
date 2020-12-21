@@ -110,25 +110,13 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
 @test isapprox(x_dot_trim[12], 0.0, atol = 1e-4)
 
 dt = 0.01  # s
-time_ = 0.0  # s
+t0 = 0.0  # s
+t1 = 180.0  # s
 
 x = x_trim
 controls = controls_trim
 
-results = []
-
-while time_ < 180.0 + dt / 2.0
-    global time_, x
-    local x_dot, outputs, cost
-
-    push!(results, vcat([time_], x))
-    x = F16.rk4(F16.f, dt, x, time_, F16.MASS, xcg, controls)
-
-    time_ += dt
-
-end
-
-results = hcat(results...)'
+results = simulate(t0, t1, dt, x, F16.MASS, xcg, controls)
 
 # Check X, Y against Stevens
 # Stevens, B. L., Lewis, F. L., & Johnson, E. N. (2015). Aircraft control
@@ -163,6 +151,9 @@ xy_trajectory_data = [
     @test isapprox(case[2], results[idx, 11], atol=20)
     @test isapprox(case[3], results[idx, 12], atol=20)
  end
+
+# Select last time step state
+ x = results[end, 2:end]
 
 # Check that TAS, α, β, θ, ϕ, p, q, r, alt, pow remain constant
 @test isapprox(x[1], x_trim[1])  # TAS

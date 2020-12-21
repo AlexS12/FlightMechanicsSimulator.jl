@@ -9,4 +9,7 @@ include("dynamic_systems.jl")
 export F16
 include("f16/F16.jl")  # F16 submodule
 
+export simulate
+include("simulation.jl")
+
 end
