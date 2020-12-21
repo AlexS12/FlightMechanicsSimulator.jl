@@ -9,4 +9,10 @@ include("dynamic_systems.jl")
 export F16
 include("f16/F16.jl")  # F16 submodule
 
+export simulate
+include("simulation.jl")
+
+export ConstantInput, StepInput, DoubletInput, RampInput, SinusoidalInput, get_value
+include("models/inputs.jl")
+
 end

@@ -6,3 +6,4 @@ using SafeTestsets
 @safetestset "SixDOF" begin include("sixdof.jl") end
 @safetestset "Propagator" begin include("rk4.jl") end
 @safetestset "Trimmer" begin include("trimmer.jl") end
+@safetestset "Inputs" begin include("models/inputs.jl") end
