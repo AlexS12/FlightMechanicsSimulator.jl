@@ -16,17 +16,18 @@ function simulate(tini, tfin, dt, x0, mass, xcg, controls)
     x = x0
 
     results = []
+    # Append initial condition
+    push!(results, vcat([t], x))
 
     while t < tfin + dt / 2.0
-        # Store results from previous step
-        push!(results, vcat([t], x))
         # Simulate next time step
         x = simulate_timestep(F16.f, dt, x, t, mass, xcg, controls)
+        # Store results from previous step
+        push!(results, vcat([t], x))
         # Prepare next time step
         t += dt
     end
-    # Append last result
-    push!(results, vcat([t], x))
+
     # Concat results
     results = hcat(results...)'
 
