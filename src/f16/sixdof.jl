@@ -14,8 +14,6 @@ function f(time, x, mass, xcg, controls)
     # C     x(12) -> Altitude (ft)
     # C     x(13) -> pow
 
-    outputs = Array{Float64}(undef, 7)
-
     # Assign state
     vt = x[1]
     α = x[2] * RAD2DEG
@@ -67,16 +65,42 @@ function f(time, x, mass, xcg, controls)
     x_dot = [x_dot..., xd_13]
 
     # Outputs
+    outputs = calculate_outputs(x, amach, qbar, S, mass, GD, [Fax, Fay, Faz], [Tx, Ty, Tz])
+
+    return x_dot, outputs
+
+end
+
+
+function calculate_outputs(x, amach, qbar, S, mass, g, Fa, Fp)
+
+    outputs = Array{Float64}(undef, 7)
+
+    # vt = x[1]
+    α = x[2] * RAD2DEG
+    # β = x[3] * RAD2DEG
+    # ϕ = x[4]
+    # θ = x[5]
+    # ψ = x[6]
+    # p = x[7]
+    q = x[8]
+    # r = x[9]
+    # height = x[12]
+    # pow = x[13]
+
+    Fax, Fay, Faz = Fa
+    Tx, _, _ = Fp
+
     qbarS = qbar * S
 
     rmqs = qbarS / mass
 
-    ax = (Fax + Tx) / GD  # <<-- ASM: Definition missing
+    ax = (Fax + Tx) / g  # <<-- ASM: Definition missing
     ay = Fay / mass
     az = Faz / mass
 
-    an = -az / GD
-    alat = ay / GD
+    an = -az / g
+    alat = ay / g
 
     outputs[1] = an
     outputs[2] = alat
@@ -86,6 +110,5 @@ function f(time, x, mass, xcg, controls)
     outputs[6] = q
     outputs[7] = α
 
-    return x_dot, outputs
-
+    return outputs
 end
