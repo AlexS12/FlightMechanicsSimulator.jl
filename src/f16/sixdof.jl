@@ -32,10 +32,6 @@ function f(time, x, mass, xcg, controls)
     # Air data computer
     # TODO: call atmosphere and pass outputs to adc instead of calling atmosphere inside adc
     amach, qbar = adc(vt, height)
-    # Engine model
-    thtl = controls[1]
-    cpow = tgear(thtl)
-    xd_13 = pdot(pow, cpow)
 
     # Calculate forces and moments
     Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, controls)
@@ -64,6 +60,11 @@ function f(time, x, mass, xcg, controls)
     h = [HX, 0, 0]
 
     x_dot = sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
+
+    # Engine dynamic model
+    thtl = controls[1]
+    cpow = tgear(thtl)
+    xd_13 = pdot(pow, cpow)
 
     x_dot = [x_dot..., xd_13]
     # Outputs
