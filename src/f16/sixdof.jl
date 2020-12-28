@@ -30,6 +30,7 @@ function f(time, x, mass, xcg, controls)
     pow = x[13]
 
     # Air data computer
+    # TODO: call atmosphere and pass outputs to adc instead of calling atmosphere inside adc
     amach, qbar = adc(vt, height)
     # Engine model
     thtl = controls[1]
