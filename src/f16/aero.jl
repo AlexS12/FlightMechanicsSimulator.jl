@@ -255,7 +255,7 @@ DNDA(α, β) = interp2d(α, β, 0.2, 0.1, -1, -2, 8, 2, cnda_data, 3, 4)
 DNDR(α, β) = interp2d(α, β, 0.2, 0.1, -1, -2, 8, 2, cndr_data, 3, 4)
 
 
-function calculate_aero_forces_moments(x, controls, xcg)
+function calculate_aero_forces_moments(x, controls, xcg, qbar, S, b, c)
 
     # Unpack controls
     THTL = controls[1]  # 0-1
@@ -298,6 +298,7 @@ function calculate_aero_forces_moments(x, controls, xcg)
     CQ = CBAR * Q * TVT
 
     D = damp(ALPHA)
+    # Non-dimensional coefficients
     CXT = CXT + CQ * D[1]
     CYT = CYT + B2V * (D[2] * R + D[3] * P)
     CZT = CZT + CQ * D[4]
@@ -305,5 +306,15 @@ function calculate_aero_forces_moments(x, controls, xcg)
     CMT = CMT + CQ * D[7] + CZT * (XCGR - xcg)
     CNT = CNT + B2V * (D[8] * R + D[9] * P) - CYT * (XCGR - xcg) * CBAR / B
 
-    return [CXT, CYT, CZT, CLT, CMT, CNT]
+    # Dimensional forces and moments
+    qbarS = qbar * S
+
+    Fx = qbarS * CXT
+    Fy = qbarS * CYT
+    Fz = qbarS * CZT
+    L = qbarS * b * CLT
+    M = qbarS * c * CMT
+    N = qbarS * b * CNT
+
+    return [Fx, Fy, Fz, L, M, N]
 end

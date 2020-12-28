@@ -35,19 +35,17 @@ function f(time, x, mass, xcg, controls)
 
     # Calculate forces and moments
     Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, amach, controls)
-    CXA, CYA, CZA, LA, MA, NA = calculate_aero_forces_moments(x, controls, xcg)
+    Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(x, controls, xcg, qbar, S, B, CBAR)
     Fgx, Fgy, Fgz = calculate_gravity_forces(GD, mass, θ, ϕ)
 
-    qbarS = qbar * S
-
     # Total forces & moments
-    Fx = Fgx + qbarS * CXA + Tx
-    Fy = Fgy + qbarS * CYA
-    Fz = Fgz + qbarS * CZA
+    Fx = Fgx + Fax + Tx
+    Fy = Fgy + Fay
+    Fz = Fgz + Faz
 
-    L = qbarS * B * LA
-    M = qbarS * CBAR * MA
-    N = qbarS * B * NA
+    L = La
+    M = Ma
+    N = Na
 
     inertia = [
         AXX 0.0 AXZ;
@@ -67,12 +65,15 @@ function f(time, x, mass, xcg, controls)
     xd_13 = pdot(pow, cpow)
 
     x_dot = [x_dot..., xd_13]
+
     # Outputs
+    qbarS = qbar * S
+
     rmqs = qbarS / mass
 
-    ax = (qbarS * CXA + Tx) / GD  # <<-- ASM: Definition missing
-    ay = rmqs * CYA
-    az = rmqs * CZA
+    ax = (Fax + Tx) / GD  # <<-- ASM: Definition missing
+    ay = Fay / mass
+    az = Faz / mass
 
     an = -az / GD
     alat = ay / GD
