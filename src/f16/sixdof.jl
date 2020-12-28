@@ -34,7 +34,7 @@ function f(time, x, mass, xcg, controls)
     amach, qbar = adc(vt, height)
 
     # Calculate forces and moments
-    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, controls)
+    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, amach, controls)
     CXA, CYA, CZA, LA, MA, NA = calculate_aero_forces_moments(x, controls, xcg)
     Fgx, Fgy, Fgz = calculate_gravity_forces(GD, mass, θ, ϕ)
 
