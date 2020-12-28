@@ -40,16 +40,14 @@ function f(time, x, mass, xcg, controls)
     # Calculate forces and moments
     Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, controls)
     CXA, CYA, CZA, LA, MA, NA = calculate_aero_forces_moments(x, controls, xcg)
-
-    sθ, cθ = sin(θ), cos(θ)
-    sϕ, cϕ = sin(ϕ), cos(ϕ)
+    Fgx, Fgy, Fgz = calculate_gravity_forces(GD, mass, θ, ϕ)
 
     qbarS = qbar * S
 
     # Total forces & moments
-    Fx = -mass * GD * sθ + (qbarS * CXA + Tx)
-    Fy = mass * GD * cθ * sϕ + qbarS * CYA
-    Fz = mass * GD * cθ * cϕ + qbarS * CZA
+    Fx = Fgx + qbarS * CXA + Tx
+    Fy = Fgy + qbarS * CYA
+    Fz = Fgz + qbarS * CZA
 
     L = qbarS * B * LA
     M = qbarS * CBAR * MA
