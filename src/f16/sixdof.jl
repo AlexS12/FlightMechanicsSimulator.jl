@@ -33,6 +33,7 @@ function f(time, x, mass, xcg, controls)
 
     # Calculate forces and moments
     Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, amach, controls)
+    h = calculate_prop_gyro_effects()
     Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(x, controls, xcg, qbar, S, B, CBAR)
     Fgx, Fgy, Fgz = calculate_gravity_forces(GD, mass, θ, ϕ)
 
@@ -45,15 +46,14 @@ function f(time, x, mass, xcg, controls)
     M = Ma
     N = Na
 
+    forces = [Fx, Fy, Fz]
+    moments = [L, M, N]
+
     inertia = [
         AXX 0.0 AXZ;
         0.0 AYY 0.0;
         AXZ 0.0 AZZ
         ]
-
-    forces = [Fx, Fy, Fz]
-    moments = [L, M, N]
-    h = [HX, 0, 0]
 
     x_dot = sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
 
