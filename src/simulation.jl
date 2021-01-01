@@ -21,7 +21,7 @@ function simulate(tini, tfin, dt, x0, mass, xcg, controls)
 
     while t < tfin + dt / 2.0
         # Simulate next time step
-        x = simulate_timestep(F16.f, dt, x, t, mass, xcg, controls)
+        x = propagate_timestep(F16.f, dt, x, t, mass, xcg, controls)
         # Store results from previous step
         push!(results, vcat([t], x))
         # Prepare next time step
@@ -35,7 +35,7 @@ function simulate(tini, tfin, dt, x0, mass, xcg, controls)
 end
 
 
-function simulate_timestep(f, dt, x, t, mass, xcg, controls)
+function propagate_timestep(f, dt, x, t, mass, xcg, controls)
     # Get control values for current timestep
     controls_arr = get_value.(controls, t)
     # Propagate
