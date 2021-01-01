@@ -120,7 +120,7 @@ function thrust(pow, alt, rmach)  # Engine thrust model
 end
 
 
-function calculate_prop_forces_moments(x, controls)
+function calculate_prop_forces_moments(x, mach, controls)
 
     # Assign state & control variables
     vt = x[1]
@@ -129,10 +129,9 @@ function calculate_prop_forces_moments(x, controls)
 
     thtl = controls[1]
 
-    # Air data computer and engine model
-    amach, qbar = adc(vt, alt)
-
-    thrust_ = thrust(pow, alt, amach)
+    thrust_ = thrust(pow, alt, mach)
 
     return [thrust_, 0.0, 0.0, 0.0, 0.0, 0.0]
 end
+
+calculate_prop_gyro_effects() = [HX, 0, 0]

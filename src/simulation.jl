@@ -16,21 +16,28 @@ function simulate(tini, tfin, dt, x0, mass, xcg, controls)
     x = x0
 
     results = []
+    # Append initial condition
+    push!(results, vcat([t], x))
 
     while t < tfin + dt / 2.0
+        # Simulate next time step
+        x = propagate_timestep(F16.f, dt, x, t, mass, xcg, controls)
         # Store results from previous step
         push!(results, vcat([t], x))
-        # Get control values for current timestep
-        controls_arr = get_value.(controls, t)
-        # Propagate
-        x = F16.rk4(F16.f, dt, x, t, mass, xcg, controls_arr)
         # Prepare next time step
         t += dt
     end
-    # Append last result
-    push!(results, vcat([t], x))
+
     # Concat results
     results = hcat(results...)'
 
     return results
+end
+
+
+function propagate_timestep(f, dt, x, t, mass, xcg, controls)
+    # Get control values for current timestep
+    controls_arr = get_value.(controls, t)
+    # Propagate
+    x = F16.rk4(f, dt, x, t, mass, xcg, controls_arr)
 end

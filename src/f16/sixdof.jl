@@ -14,8 +14,6 @@ function f(time, x, mass, xcg, controls)
     # C     x(12) -> Altitude (ft)
     # C     x(13) -> pow
 
-    outputs = Array{Float64}(undef, 7)
-
     # Assign state
     vt = x[1]
     α = x[2] * RAD2DEG
@@ -29,53 +27,82 @@ function f(time, x, mass, xcg, controls)
     height = x[12]
     pow = x[13]
 
+    # Update atmosphere and wind
+    T, ρ, a, p = atmosphere(height)
     # Air data computer
-    amach, qbar = adc(vt, height)
-    # Engine model
-    thtl = controls[1]
-    cpow = tgear(thtl)
-    xd_13 = pdot(pow, cpow)
+    amach, qbar = adc(vt, T, ρ, a, p)
 
-    # Calculate forces and moments
-    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, controls)
-    CXA, CYA, CZA, LA, MA, NA = calculate_aero_forces_moments(x, controls, xcg)
-
-    sθ, cθ = sin(θ), cos(θ)
-    sϕ, cϕ = sin(ϕ), cos(ϕ)
-
-    qbarS = qbar * S
-
-    # Total forces & moments
-    Fx = -mass * GD * sθ + (qbarS * CXA + Tx)
-    Fy = mass * GD * cθ * sϕ + qbarS * CYA
-    Fz = mass * GD * cθ * cϕ + qbarS * CZA
-
-    L = qbarS * B * LA
-    M = qbarS * CBAR * MA
-    N = qbarS * B * NA
-
+    # Update mass, inertia and CG
     inertia = [
         AXX 0.0 AXZ;
         0.0 AYY 0.0;
         AXZ 0.0 AZZ
         ]
 
+    # Calculate forces and moments
+    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, amach, controls)
+    h = calculate_prop_gyro_effects()
+    Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(x, controls, xcg, qbar, S, B, CBAR)
+    Fgx, Fgy, Fgz = calculate_gravity_forces(GD, mass, θ, ϕ)
+
+    # Total forces & moments
+    Fx = Fgx + Fax + Tx
+    Fy = Fgy + Fay
+    Fz = Fgz + Faz
+
+    L = La
+    M = Ma
+    N = Na
+
     forces = [Fx, Fy, Fz]
     moments = [L, M, N]
-    h = [HX, 0, 0]
 
     x_dot = sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
 
+    # Engine dynamic model
+    thtl = controls[1]
+    cpow = tgear(thtl)
+    xd_13 = pdot(pow, cpow)
+
     x_dot = [x_dot..., xd_13]
+
     # Outputs
+    outputs = calculate_outputs(x, amach, qbar, S, mass, GD, [Fax, Fay, Faz], [Tx, Ty, Tz])
+
+    return x_dot, outputs
+
+end
+
+
+function calculate_outputs(x, amach, qbar, S, mass, g, Fa, Fp)
+
+    outputs = Array{Float64}(undef, 7)
+
+    # vt = x[1]
+    α = x[2] * RAD2DEG
+    # β = x[3] * RAD2DEG
+    # ϕ = x[4]
+    # θ = x[5]
+    # ψ = x[6]
+    # p = x[7]
+    q = x[8]
+    # r = x[9]
+    # height = x[12]
+    # pow = x[13]
+
+    Fax, Fay, Faz = Fa
+    Tx, _, _ = Fp
+
+    qbarS = qbar * S
+
     rmqs = qbarS / mass
 
-    ax = (qbarS * CXA + Tx) / GD  # <<-- ASM: Definition missing
-    ay = rmqs * CYA
-    az = rmqs * CZA
+    ax = (Fax + Tx) / g  # <<-- ASM: Definition missing
+    ay = Fay / mass
+    az = Faz / mass
 
-    an = -az / GD
-    alat = ay / GD
+    an = -az / g
+    alat = ay / g
 
     outputs[1] = an
     outputs[2] = alat
@@ -85,6 +112,5 @@ function f(time, x, mass, xcg, controls)
     outputs[6] = q
     outputs[7] = α
 
-    return x_dot, outputs
-
+    return outputs
 end
