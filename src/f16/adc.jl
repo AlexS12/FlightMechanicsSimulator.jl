@@ -23,3 +23,13 @@ function adc(vt, alt)
     return amach, qbar
 
 end
+
+
+function adc(vt, T, ρ, a, p)
+
+    amach = vt / a  # mach number
+    qbar = 0.5 * ρ * vt^2  # dynamic pressure
+
+    return amach, qbar
+
+end

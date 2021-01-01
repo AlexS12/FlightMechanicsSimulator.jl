@@ -28,9 +28,9 @@ function f(time, x, mass, xcg, controls)
     pow = x[13]
 
     # Update atmosphere and wind
-    # TODO: call atmosphere and pass outputs to adc instead of calling atmosphere inside adc
+    T, ρ, a, p = atmosphere(height)
     # Air data computer
-    amach, qbar = adc(vt, height)
+    amach, qbar = adc(vt, T, ρ, a, p)
 
     # Update mass, inertia and CG
     inertia = [
