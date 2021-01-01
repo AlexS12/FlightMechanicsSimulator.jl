@@ -1,3 +1,6 @@
+using OrdinaryDiffEq
+
+
 """
     simulate(tini, tfin, dt, x0, mass, xcg, controls)
 
@@ -12,32 +15,13 @@ Propagate a simulation from tini to tfin with dt time step.
 """
 function simulate(tini, tfin, dt, x0, mass, xcg, controls)
 
-    t = tini
-    x = x0
+    tspan = (tini, tfin)
+    p = [mass, xcg, controls]
 
-    results = []
-    # Append initial condition
-    push!(results, vcat([t], x))
+    prob = ODEProblem{false}(F16.f, x0, tspan, p)
+    sol = solve(prob, RK4(), reltol=1e-10, saveat=dt)
 
-    while t < tfin + dt / 2.0
-        # Simulate next time step
-        x = propagate_timestep(F16.f, dt, x, t, mass, xcg, controls)
-        # Store results from previous step
-        push!(results, vcat([t], x))
-        # Prepare next time step
-        t += dt
-    end
-
-    # Concat results
-    results = hcat(results...)'
+    results = hcat([[sol.t[ii]; sol.u[ii]] for ii in 1:length(sol.t)]...)'
 
     return results
-end
-
-
-function propagate_timestep(f, dt, x, t, mass, xcg, controls)
-    # Get control values for current timestep
-    controls_arr = get_value.(controls, t)
-    # Propagate
-    x = F16.rk4(f, dt, x, t, mass, xcg, controls_arr)
 end

@@ -1,3 +1,16 @@
+function f(x, p, t)
+    mass = p[1]
+    xcg = p[2]
+    controls = p[3]
+
+    controls_arr = get_value.(controls, t)
+
+    x_dot, outputs = f(time, x, mass, xcg, controls_arr)
+
+    return x_dot
+end
+
+
 function f(time, x, mass, xcg, controls)
 
     # C     x(1)  -> vt (ft/s)
