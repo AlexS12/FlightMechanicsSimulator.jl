@@ -27,9 +27,17 @@ function f(time, x, mass, xcg, controls)
     height = x[12]
     pow = x[13]
 
-    # Air data computer
+    # Update atmosphere and wind
     # TODO: call atmosphere and pass outputs to adc instead of calling atmosphere inside adc
+    # Air data computer
     amach, qbar = adc(vt, height)
+
+    # Update mass, inertia and CG
+    inertia = [
+        AXX 0.0 AXZ;
+        0.0 AYY 0.0;
+        AXZ 0.0 AZZ
+        ]
 
     # Calculate forces and moments
     Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, amach, controls)
@@ -48,12 +56,6 @@ function f(time, x, mass, xcg, controls)
 
     forces = [Fx, Fy, Fz]
     moments = [L, M, N]
-
-    inertia = [
-        AXX 0.0 AXZ;
-        0.0 AYY 0.0;
-        AXZ 0.0 AZZ
-        ]
 
     x_dot = sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
 
