@@ -1,6 +1,7 @@
 using Test
 using CSV
 using DataFrames
+using OrdinaryDiffEq
 using FlightMechanicsSimulator
 
 # Stevens, B. L., Lewis, F. L., & Johnson, E. N. (2015). Aircraft control
@@ -117,7 +118,9 @@ x = x_trim
 # Transform to Input for simulate
 controls = ConstantInput.(controls_trim)
 
-results = simulate(t0, t1, dt, x, F16.MASS, xcg, controls)
+results = simulate(
+    t0, t1, dt, x, F16.MASS, xcg, controls, solver=RK4(), solve_args=Dict(:reltol=>1e-10, :saveat=>dt)
+    )
 
 # Check X, Y against Stevens
 # Stevens, B. L., Lewis, F. L., & Johnson, E. N. (2015). Aircraft control
