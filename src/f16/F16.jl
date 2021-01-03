@@ -8,7 +8,6 @@ include("engine.jl")
 include("aero.jl")
 include("gravity.jl")
 include("sixdof.jl")
-include("rk4.jl")
 include("trimmer.jl")
 
 end
