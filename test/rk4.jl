@@ -4,10 +4,13 @@ using DataFrames
 using OrdinaryDiffEq
 using FlightMechanicsSimulator
 
+
+# ---------- PROPAGATE COORDINATED TURN ----------
+# Check that this is a trimmed condition
 # Stevens, B. L., Lewis, F. L., & Johnson, E. N. (2015). Aircraft control
 # and simulation: dynamics, controls design, and autonomous systems. John Wiley
 # & Sons.
-# Example 3.6-5: Simulation of a Coordinated Turn (page 197)
+# Example 3.6-2 (page 191)
 
 # Trimmed conditions: page 192
 # C     X(1)  -> vt (ft/s)
@@ -38,37 +41,7 @@ x_stev = [
     0.0,
     64.12363,
 ]
-
-# THTL = controls[1]
-# EL = controls[2]
-# AIL = controls[3]
-# RDR = controls[4]
 controls_stev = [0.8349601, -1.481766, 0.09553108, -0.4118124]
-
-xcg = 0.35
-
-
-df = DataFrame!(CSV.File("data/RK4.csv"))
-for case in eachrow(df)
-    x_new1 = F16.rk4(
-        F16.f,
-        case.dt,
-        Array(case[["x$ii" for ii in 1:13]]),
-        case.time,
-        F16.MASS,
-        case.xcg,
-        Array(case[["c$ii" for ii in 1:4]]),
-    )
-        @test isapprox(x_new1, Array(case[["x$(ii)_new" for ii in 1:13]]))
-end
-
-
-# ---------- PROPAGATE COORDINATED TURN ----------
-# Check that this is a trimmed condition
-# Stevens, B. L., Lewis, F. L., & Johnson, E. N. (2015). Aircraft control
-# and simulation: dynamics, controls design, and autonomous systems. John Wiley
-# & Sons.
-# Example 3.6-2 (page 191)
 xcg = 0.35
 x_dot, outputs = F16.f(time, x_stev, F16.MASS, xcg, controls_stev)
 
