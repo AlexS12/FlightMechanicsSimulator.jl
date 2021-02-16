@@ -28,6 +28,9 @@ thtl_test = [0.2, 0.6]
 xcg_test = [0.35, 0.25]
 
 df = DataFrame!(CSV.File("data/sixdof.csv"))
+# Test file was wrong before and longitudinal load factor
+# needs to be corrected
+df[!, "o3"] = df[!, "o3"] / FlightMechanicsSimulator.F16.MASS
 
 for case in eachrow(df)
     x = Array(case[["x$ii" for ii in 1:13]])

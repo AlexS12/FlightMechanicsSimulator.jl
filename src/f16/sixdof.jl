@@ -110,16 +110,18 @@ function calculate_outputs(x, amach, qbar, S, mass, g, Fa, Fp)
 
     rmqs = qbarS / mass
 
-    ax = (Fax + Tx) / g  # <<-- ASM: Definition missing
+    # TODO: consider that thrust could have lateral and vertical components
+    ax = (Fax + Tx) / mass
     ay = Fay / mass
     az = Faz / mass
 
+    along = ax / g
     an = -az / g
     alat = ay / g
 
     outputs[1] = an
     outputs[2] = alat
-    outputs[3] = ax
+    outputs[3] = along
     outputs[4] = qbar
     outputs[5] = amach
     outputs[6] = q
