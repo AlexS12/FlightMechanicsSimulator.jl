@@ -60,8 +60,8 @@ function f(time, x, mass, xcg, controls)
 
     # Total forces & moments
     Fx = Fgx + Fax + Tx
-    Fy = Fgy + Fay
-    Fz = Fgz + Faz
+    Fy = Fgy + Fay + Ty
+    Fz = Fgz + Faz + Tz
 
     L = La
     M = Ma
@@ -104,22 +104,23 @@ function calculate_outputs(x, amach, qbar, S, mass, g, Fa, Fp)
     # pow = x[13]
 
     Fax, Fay, Faz = Fa
-    Tx, _, _ = Fp
+    Tx, Ty, Tz = Fp
 
     qbarS = qbar * S
 
     rmqs = qbarS / mass
 
-    ax = (Fax + Tx) / g  # <<-- ASM: Definition missing
-    ay = Fay / mass
-    az = Faz / mass
+    ax = (Fax + Tx) / mass
+    ay = (Fay + Ty) / mass
+    az = (Faz + Tz) / mass
 
+    along = ax / g
     an = -az / g
     alat = ay / g
 
     outputs[1] = an
     outputs[2] = alat
-    outputs[3] = ax
+    outputs[3] = along
     outputs[4] = qbar
     outputs[5] = amach
     outputs[6] = q
