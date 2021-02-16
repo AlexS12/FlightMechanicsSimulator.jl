@@ -60,8 +60,8 @@ function f(time, x, mass, xcg, controls)
 
     # Total forces & moments
     Fx = Fgx + Fax + Tx
-    Fy = Fgy + Fay
-    Fz = Fgz + Faz
+    Fy = Fgy + Fay + Ty
+    Fz = Fgz + Faz + Tz
 
     L = La
     M = Ma
@@ -104,16 +104,15 @@ function calculate_outputs(x, amach, qbar, S, mass, g, Fa, Fp)
     # pow = x[13]
 
     Fax, Fay, Faz = Fa
-    Tx, _, _ = Fp
+    Tx, Ty, Tz = Fp
 
     qbarS = qbar * S
 
     rmqs = qbarS / mass
 
-    # TODO: consider that thrust could have lateral and vertical components
     ax = (Fax + Tx) / mass
-    ay = Fay / mass
-    az = Faz / mass
+    ay = (Fay + Ty) / mass
+    az = (Faz + Tz) / mass
 
     along = ax / g
     an = -az / g
