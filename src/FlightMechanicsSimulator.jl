@@ -1,6 +1,6 @@
 module FlightMechanicsSimulator
 
-export GD, R0, RAD2DEG, DEG2RAD
+export gD, R0, RAD2DEG, DEG2RAD, M2FT, FT2M
 include("constants.jl")
 
 export sixdof_aero_earth_euler_fixed_mass
