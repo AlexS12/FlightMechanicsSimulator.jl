@@ -1,4 +1,7 @@
 function atmosphere(alt)
+
+    R0 = 2.377e-3  # Sea level density  (slug/ft³)
+
     # alt (ft)
     tfac = 1.0 - 0.703e-5 * alt
     # temperature (Rankine)
