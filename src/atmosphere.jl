@@ -1,6 +1,4 @@
-# TODO: move constants to FlightMechanicsSimulator.constantns
-# TODO: missing layers
-# TODO: move atmospheres to FlightMechanicsSimulator (not inside F16)
+# TODO: missing layers (do not forget tests)
 # TODO: documentation
 function atmosphere_isa(alt)
 
