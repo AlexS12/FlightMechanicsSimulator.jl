@@ -4,7 +4,7 @@ using DataFrames
 using FlightMechanicsSimulator
 
 
-df = DataFrame!(CSV.File("data/adc.csv"))
+df = DataFrame(CSV.File("data/adc.csv"))
 @testset "adc.jl" begin
 for case in eachrow(df)
         T, ρ, a, p = F16.atmosphere(case.alt)
@@ -15,7 +15,7 @@ for case in eachrow(df)
 end
 
 @testset "atmosphere_f16" begin
-    df = DataFrame!(CSV.File("data/adc.csv"))
+    df = DataFrame(CSV.File("data/adc.csv"))
     # df has duplicate altitudes with different vt
     df = unique(df, :alt)
     # Discontinuity alt (35000 ft) produces tests not passing because stevens atmosphere
