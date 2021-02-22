@@ -14,6 +14,24 @@ for case in eachrow(df)
     end
 end
 
+@testset "atmosphere_f16" begin
+    df = DataFrame!(CSV.File("data/adc.csv"))
+    # df has duplicate altitudes with different vt
+    df = unique(df, :alt)
+    # Discontinuity alt (35000 ft) produces tests not passing because stevens atmosphere
+    # is not continous at 35000 ft, so if conversion FT2M produces slightly different altitude,
+    # a wrong atmosphere layer will be chosen
+    df = df[(!isapprox).(df[:, :alt], 35000), :]
+    for case in eachrow(df)
+        T1, ρ1, a1, p1 = F16.atmosphere_f16(case.alt * FT2M)
+        T2, ρ2, a2, p2 = F16.atmosphere(case.alt)
+        @test isapprox(T1*KEL2RANK, T2)
+        @test isapprox(ρ1*KGM32SLUGFT3, ρ2)
+        @test isapprox(a1*M2FT, a2)
+        @test isapprox(p1*PA2PSF, p2)
+    end
+end
+
 
 # The atmosphere in Stevens does not provide exact results when tested against official tables
 @testset "ISA1978-Morelli" begin

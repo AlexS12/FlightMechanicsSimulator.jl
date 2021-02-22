@@ -16,6 +16,12 @@ function atmosphere(alt)
 end
 
 
+function atmosphere_f16(alt)
+    T, ρ, a, p = atmosphere(alt * M2FT)
+    return T * RANK2KEL, ρ * SLUGFT32KGM3, a * FT2M, p * PSF2PA
+end
+
+
 function adc(vt, T, ρ, a, p)
 
     amach = vt / a  # mach number
