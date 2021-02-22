@@ -43,4 +43,10 @@ end
     @test_broken isapprox(p, 2116.2, atol=0.05)  # psf
     @test_broken isapprox(ρ, 0.0023769, atol=5e-8)  # slug/ft³
     @test_broken isapprox(a, 1116.44, atol=0.005)  # ft/s
+    # Test in tropopause
+    T, ρ, a, p = F16.atmosphere(50000.0)  # 0 ft
+    @test_broken isapprox(T, 389.97, atol=0.005)  # Rankine
+    @test_broken isapprox(p, 243.6, atol=0.05)  # psf
+    @test_broken isapprox(ρ, 0.0003639, atol=5e-8)  # slug/ft³
+    @test_broken isapprox(a, 968.08, atol=0.005)  # ft/s
 end
