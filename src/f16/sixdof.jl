@@ -41,9 +41,9 @@ function f(time, x, mass, xcg, controls)
     pow = x[13]
 
     # Update atmosphere and wind
-    T, ρ, a, p = atmosphere(height)
+    T, ρ, a, p = atmosphere_f16(height*FT2M)
     # Air data computer
-    amach, qbar = adc(vt, T, ρ, a, p)
+    amach, qbar = adc(vt*FT2M, T, ρ, a, p)
 
     # Update mass, inertia and CG
     inertia = [
@@ -55,7 +55,7 @@ function f(time, x, mass, xcg, controls)
     # Calculate forces and moments
     Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, amach, controls)
     h = calculate_prop_gyro_effects()
-    Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(x, controls, xcg, qbar, S, B, CBAR)
+    Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(x, controls, xcg, qbar * PA2PSF, S, B, CBAR)
     Fgx, Fgy, Fgz = calculate_gravity_forces(GD, mass, θ, ϕ)
 
     # Total forces & moments
@@ -90,6 +90,8 @@ end
 function calculate_outputs(x, amach, qbar, S, mass, g, Fa, Fp)
 
     outputs = Array{Float64}(undef, 7)
+
+    qbar = qbar * PA2PSF
 
     # vt = x[1]
     α = x[2] * RAD2DEG
