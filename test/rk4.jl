@@ -13,7 +13,7 @@ using FlightMechanicsSimulator
 # Example 3.6-2 (page 191)
 
 # Trimmed conditions: page 192
-# C     X(1)  -> vt (ft/s)
+# C     X(1)  -> vt (m/s)
 # C     X(2)  -> alpha (rad)
 # C     X(3)  -> beta (rad)
 # C     X(4)  -> phi (rad)
@@ -22,12 +22,12 @@ using FlightMechanicsSimulator
 # C     X(7)  -> P (rad/s)
 # C     X(8)  -> Q (rad/s)
 # C     X(9)  -> R (rad/s)
-# C     X(10) -> North (ft)
-# C     X(11) -> East (ft)
-# C     X(12) -> Altitude (ft)
+# C     X(10) -> North (m)
+# C     X(11) -> East (m)
+# C     X(12) -> Altitude (m)
 # C     X(13) -> Pow
 x_stev = [
-    502.0,
+    502.0 * FT2M,
     0.2392628,
     0.0005061803,
     1.366289,
@@ -36,9 +36,9 @@ x_stev = [
     -0.01499617,
     0.2933811,
     0.06084932,
-    0.0,
-    0.0,
-    0.0,
+    0.0 * FT2M,
+    0.0 * FT2M,
+    0.0 * FT2M,
     64.12363,
 ]
 controls_stev = [0.8349601, -1.481766, 0.09553108, -0.4118124]

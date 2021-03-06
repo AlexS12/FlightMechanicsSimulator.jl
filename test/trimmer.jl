@@ -31,7 +31,7 @@ xcg = 0.35
 for case in eachrow(trim_test_data)
     local x, controls, x_trim, controls_trim, x_dot_trim, outputs_trim, cost
     x = [
-        case[1],  #-> vt (ft/s)
+        case[1]*FT2M,  #-> vt (m/s)
         deg2rad(10.),  # -> alpha (rad)
         0.0,  # -> beta (rad)
         0.0,  # -> phi (rad)
@@ -40,9 +40,9 @@ for case in eachrow(trim_test_data)
         0.0,  # -> P (rad/s)
         0.0,  # -> Q (rad/s)
         0.0,  # -> R (rad/s)
-        0.0,  # -> North (ft)
-        0.0,  # -> East (ft)
-        0.0,  # -> Altitude (ft)
+        0.0,  # -> North (m)
+        0.0,  # -> East (m)
+        0.0,  # -> Altitude (m)
         50.0,  # -> Pow
     ]
 
@@ -72,13 +72,13 @@ end
 
 #  Stevens, B. L., Lewis, F. L., & Johnson, E. N. (2015). Aircraft control
 #  and simulation: dynamics, controls design, and autonomous systems. John Wiley
-#  & Sons. (page 193 table 3.6-3)
+#  & Sons. (page 195 table 3.6-3)
 
-# NOMINAL
+# NOMINAL (first column)
 xcg = 0.35
 
 x = [
-    502,  #-> vt (ft/s)
+    502*FT2M,  #-> vt (m/s)
     deg2rad(10.),  # -> alpha (rad)
     0.0,  # -> beta (rad)
     0.0,  # -> phi (rad)
@@ -87,9 +87,9 @@ x = [
     0.0,  # -> P (rad/s)
     0.0,  # -> Q (rad/s)
     0.0,  # -> R (rad/s)
-    0.0,  # -> North (ft)
-    0.0,  # -> East (ft)
-    0.0,  # -> Altitude (ft)
+    0.0,  # -> North (m)
+    0.0,  # -> East (m)
+    0.0,  # -> Altitude (m)
     50.0,  # -> Pow
 ]
 
@@ -123,11 +123,11 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
 @test isapprox(controls_trim[3], -1.2e-7, atol=1e-6)  # DA
 @test isapprox(controls_trim[4], 6.2e-7, atol=1e-6)  # DR
 
-# XCG = 0.3
+# XCG = 0.3 (second column)
 xcg = 0.3
 
 x = [
-    502,  #-> vt (ft/s)
+    502*FT2M,  #-> vt (m/s)
     deg2rad(10.),  # -> alpha (rad)
     0.0,  # -> beta (rad)
     0.0,  # -> phi (rad)
@@ -136,9 +136,9 @@ x = [
     0.0,  # -> P (rad/s)
     0.0,  # -> Q (rad/s)
     0.0,  # -> R (rad/s)
-    0.0,  # -> North (ft)
-    0.0,  # -> East (ft)
-    0.0,  # -> Altitude (ft)
+    0.0,  # -> North (m)
+    0.0,  # -> East (m)
+    0.0,  # -> Altitude (m)
     50.0,  # -> Pow
 ]
 
@@ -172,11 +172,11 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
 @test isapprox(controls_trim[3], -7e-8, atol=1e-6)  # DA
 @test isapprox(controls_trim[4], 8.3e-7, atol=1e-6)  # DR
 
-# XCG = 0.3
+# XCG = 0.38 (third column)
 xcg = 0.38
 
 x = [
-    502,  #-> vt (ft/s)
+    502*FT2M,  #-> vt (m/s)
     deg2rad(10.),  # -> alpha (rad)
     0.0,  # -> beta (rad)
     0.0,  # -> phi (rad)
@@ -185,9 +185,9 @@ x = [
     0.0,  # -> P (rad/s)
     0.0,  # -> Q (rad/s)
     0.0,  # -> R (rad/s)
-    0.0,  # -> North (ft)
-    0.0,  # -> East (ft)
-    0.0,  # -> Altitude (ft)
+    0.0,  # -> North (m)
+    0.0,  # -> East (m)
+    0.0,  # -> Altitude (m)
     50.0,  # -> Pow
 ]
 
@@ -221,11 +221,12 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
 @test isapprox(controls_trim[3], -5.1e-8, atol=1e-6)  # DA
 @test isapprox(controls_trim[4], 4.3e-6, atol=1e-5)  # DR
 
-# Coordinated turn
+
+# Coordinated turn (fourth column)
 xcg = 0.3
 
 x = [
-    502,  #-> vt (ft/s)
+    502*FT2M,  #-> vt (m/s)
     deg2rad(10.),  # -> alpha (rad)
     0.0,  # -> beta (rad)
     0.0,  # -> phi (rad)
@@ -234,9 +235,9 @@ x = [
     0.0,  # -> P (rad/s)
     0.0,  # -> Q (rad/s)
     0.0,  # -> R (rad/s)
-    0.0,  # -> North (ft)
-    0.0,  # -> East (ft)
-    0.0,  # -> Altitude (ft)
+    0.0,  # -> North (m)
+    0.0,  # -> East (m)
+    0.0,  # -> Altitude (m)
     50.0,  # -> Pow
 ]
 
@@ -252,9 +253,9 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
         x,
         controls,
         0.0,
-        0.3,
+        0.3,  # rad/s
         F16.MASS,
-        xcg;
+        xcg,
     )
 
 @test isapprox(cost, zeros(6), atol=1e-12)

@@ -13,7 +13,7 @@ end
 
 function f(time, x, mass, xcg, controls)
 
-    # C     x(1)  -> vt (ft/s)
+    # C     x(1)  -> vt (m/s)
     # C     x(2)  -> α (rad)
     # C     x(3)  -> β (rad)
     # C     x(4)  -> ϕ (rad)
@@ -24,7 +24,7 @@ function f(time, x, mass, xcg, controls)
     # C     x(9)  -> r (rad/s)
     # C     x(10) -> North (ft)
     # C     x(11) -> East (ft)
-    # C     x(12) -> Altitude (ft)
+    # C     x(12) -> Altitude (m)
     # C     x(13) -> pow
 
     # Assign state
@@ -41,9 +41,9 @@ function f(time, x, mass, xcg, controls)
     pow = x[13]
 
     # Update atmosphere and wind
-    T, ρ, a, p = atmosphere_f16(height*FT2M)
+    T, ρ, a, p = atmosphere_f16(height)
     # Air data computer
-    amach, qbar = adc(vt*FT2M, T, ρ, a, p)
+    amach, qbar = adc(vt, T, ρ, a, p)
 
     # Update mass, inertia and CG
     inertia = [
@@ -56,6 +56,7 @@ function f(time, x, mass, xcg, controls)
     Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, amach, controls)
     h = calculate_prop_gyro_effects()
     Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(x, controls, xcg, qbar * PA2PSF, S, B, CBAR)
+    # TODO: should use gD and not GD*FT2M. But tests against Stevens would fail
     Fgx, Fgy, Fgz = calculate_gravity_forces(GD, mass, θ, ϕ)
 
     # Total forces & moments

@@ -123,8 +123,8 @@ end
 function calculate_prop_forces_moments(x, mach, controls)
 
     # Assign state & control variables
-    vt = x[1]
-    alt = x[12]
+    vt = x[1] * M2FT
+    alt = x[12] * M2FT
     pow = x[13]
 
     thtl = controls[1]

@@ -14,7 +14,7 @@ function sixdof_aero_earth_euler_fixed_mass!(time, x, mass, inertia, forces, mom
     # C     x(12) -> Altitude (ft)
 
     # Assign state
-    tas = x[1]
+    tas = x[1] * M2FT  # TODO
     α = x[2]
     β = x[3]
     ϕ = x[4]
