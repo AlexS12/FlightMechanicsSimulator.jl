@@ -56,9 +56,8 @@ function f(time, x, mass, xcg, controls)
     Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, amach, controls)
     h = calculate_prop_gyro_effects()
     Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(x, controls, xcg, qbar, S, B, CBAR)
-    # TODO:
-    Fax, Fay, Faz = [Fax, Fay, Faz] .* (GD * FT2M) / gD
     # TODO: should use gD and not GD*FT2M. But tests against Stevens would fail
+    # take into account when a gravity model can be chosen.
     Fgx, Fgy, Fgz = calculate_gravity_forces(GD*FT2M, mass, θ, ϕ)
 
     # Total forces & moments
