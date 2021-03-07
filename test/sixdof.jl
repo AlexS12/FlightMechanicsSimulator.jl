@@ -4,36 +4,16 @@ using DataFrames
 using FlightMechanicsSimulator
 
 
-t = 0.0;
-
-vt_test = [50.0, 75.0]  # ft/s
-α_test = deg2rad.([1.0, 5.0])
-β_test = deg2rad.([-5.0, 5.0])
-ϕ_test = deg2rad.([-30.0, 25.0])
-θ_test = deg2rad.([-15.0, 25.0])
-ψ_test = deg2rad.([45.0, 175.0])
-p_test = deg2rad.([-15.0, 30.0])
-q_test = deg2rad.([-5.0, 10.0])
-r_test = deg2rad.([-20.0, 30.0])
-norh_ft = 0.0  # ft
-east_ft = 0.0  # ft
-alt_test = [5000.0, 45000.0]  # ft
-pow_test = [10., 80.]  # %
-
-de_test = [-25.0, 20.0]  # deg
-da_test = [-15.0, 10.0]  # deg
-dr_test = [-25.0, 20.0]  # deg
-thtl_test = [0.2, 0.6]
-
-xcg_test = [0.35, 0.25]
-
-df = DataFrame!(CSV.File("data/sixdof.csv"))
+df = DataFrame(CSV.File("data/sixdof.csv"))
 # Test file was wrong before and longitudinal load factor
 # needs to be corrected
-df[!, "o3"] = df[!, "o3"] / FlightMechanicsSimulator.F16.MASS
+df[!, "o3"] = df[!, "o3"] / (FlightMechanicsSimulator.F16.MASS * KG2LB / F16.GD)
 
 for case in eachrow(df)
     x = Array(case[["x$ii" for ii in 1:13]])
+
+    x[1] = x[1] * FT2M
+    x[12] = x[12] * FT2M
 
     controls = Array(case[["c$ii" for ii in 1:4]])
 
@@ -45,6 +25,13 @@ for case in eachrow(df)
             case.xcg,
             controls,
         )
+
+    xd1[1] *= M2FT
+    xd1[10] *= M2FT
+    xd1[11] *= M2FT
+    xd1[12] *= M2FT
+
+    outputs1[4] *= PA2PSF
 
     @test isapprox(
         xd1,

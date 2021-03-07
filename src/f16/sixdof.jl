@@ -13,7 +13,7 @@ end
 
 function f(time, x, mass, xcg, controls)
 
-    # C     x(1)  -> vt (ft/s)
+    # C     x(1)  -> vt (m/s)
     # C     x(2)  -> α (rad)
     # C     x(3)  -> β (rad)
     # C     x(4)  -> ϕ (rad)
@@ -22,9 +22,9 @@ function f(time, x, mass, xcg, controls)
     # C     x(7)  -> p (rad/s)
     # C     x(8)  -> q (rad/s)
     # C     x(9)  -> r (rad/s)
-    # C     x(10) -> North (ft)
-    # C     x(11) -> East (ft)
-    # C     x(12) -> Altitude (ft)
+    # C     x(10) -> North (m)
+    # C     x(11) -> East (m)
+    # C     x(12) -> Altitude (m)
     # C     x(13) -> pow
 
     # Assign state
@@ -40,8 +40,12 @@ function f(time, x, mass, xcg, controls)
     height = x[12]
     pow = x[13]
 
+    # TODO: should use gD and not GD*FT2M. But tests against Stevens would fail
+    # take into account when a gravity model can be chosen.
+    gravity_down = GD*FT2M
+
     # Update atmosphere and wind
-    T, ρ, a, p = atmosphere(height)
+    T, ρ, a, p = atmosphere_f16(height)
     # Air data computer
     amach, qbar = adc(vt, T, ρ, a, p)
 
@@ -50,13 +54,16 @@ function f(time, x, mass, xcg, controls)
         AXX 0.0 AXZ;
         0.0 AYY 0.0;
         AXZ 0.0 AZZ
-        ]
+        ]  # Kg·m²
 
     # Calculate forces and moments
+    # Propulsion
     Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, amach, controls)
     h = calculate_prop_gyro_effects()
+    # Aerodynamics
     Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(x, controls, xcg, qbar, S, B, CBAR)
-    Fgx, Fgy, Fgz = calculate_gravity_forces(GD, mass, θ, ϕ)
+    # Gravity
+    Fgx, Fgy, Fgz = calculate_gravity_forces(gravity_down, mass, θ, ϕ)
 
     # Total forces & moments
     Fx = Fgx + Fax + Tx
@@ -80,7 +87,7 @@ function f(time, x, mass, xcg, controls)
     x_dot = [x_dot..., xd_13]
 
     # Outputs
-    outputs = calculate_outputs(x, amach, qbar, S, mass, GD, [Fax, Fay, Faz], [Tx, Ty, Tz])
+    outputs = calculate_outputs(x, amach, qbar, S, mass, gravity_down, [Fax, Fay, Faz], [Tx, Ty, Tz])
 
     return x_dot, outputs
 

@@ -76,6 +76,8 @@ max_data =
 
 function thrust(pow, alt, rmach)  # Engine thrust model
 
+    alt = alt * M2FT
+
     if alt <= 0.
         alt = 0.0
     end
@@ -116,6 +118,8 @@ function thrust(pow, alt, rmach)  # Engine thrust model
         thrst = tmil + (tmax - tmil) * (pow - 50.0) * 0.02
     end
 
+    # Transform from lbf to N (using GD defined in Stevens)
+    thrst = thrst * LB2KG * GD * FT2M
     return thrst
 end
 
@@ -123,7 +127,6 @@ end
 function calculate_prop_forces_moments(x, mach, controls)
 
     # Assign state & control variables
-    vt = x[1]
     alt = x[12]
     pow = x[13]
 

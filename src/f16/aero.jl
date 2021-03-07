@@ -306,6 +306,9 @@ function calculate_aero_forces_moments(x, controls, xcg, qbar, S, b, c)
     CMT = CMT + CQ * D[7] + CZT * (XCGR - xcg)
     CNT = CNT + B2V * (D[8] * R + D[9] * P) - CYT * (XCGR - xcg) * CBAR / B
 
+    # Correct differences in gravity acceleration between Stevens and constants.jl
+    CXT, CYT, CZT = [CXT, CYT, CZT] .* (GD * FT2M) / gD
+
     # Dimensional forces and moments
     qbarS = qbar * S
 

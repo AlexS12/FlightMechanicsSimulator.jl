@@ -5,7 +5,7 @@ using NLsolve
 function trimmer(fun, x_guess, controls_guess, γ=0.0, ψ_dot=0.0, mass=MASS, xcg=0.35; show_trace=false, ftol=1e-16, iterations=5000)
 
     #  STATE VECTOR
-    # C     X(1)  -> vt (ft/s)
+    # C     X(1)  -> vt (m/s)
     # C     X(2)  -> alpha (rad)
     # C     X(3)  -> beta (rad)
     # C     X(4)  -> phi (rad)
@@ -14,9 +14,9 @@ function trimmer(fun, x_guess, controls_guess, γ=0.0, ψ_dot=0.0, mass=MASS, xc
     # C     X(7)  -> P (rad/s)
     # C     X(8)  -> Q (rad/s)
     # C     X(9)  -> R (rad/s)
-    # C     X(10) -> North (ft)
-    # C     X(11) -> East (ft)
-    # C     X(12) -> Altitude (ft)
+    # C     X(10) -> North (m)
+    # C     X(11) -> East (m)
+    # C     X(12) -> Altitude (m)
     # C     X(13) -> POW (0-100)
 
     # THTL = controls[1]
@@ -34,12 +34,13 @@ function trimmer(fun, x_guess, controls_guess, γ=0.0, ψ_dot=0.0, mass=MASS, xc
     sol_gues = [x_guess[2], x_guess[3], controls_guess...]
 
     # CONSTS
+    # MASS
     # XCG
-    # TAS (ft/min)
+    # TAS (m/s)
     # psi (rad)
-    # north (ft)
-    # east (ft)
-    # alt (ft)
+    # north (m)
+    # east (m)
+    # alt (m)
     # ψ_dot (rad/s)
     # γ (rad)
     consts = [mass, xcg, x_guess[1], x_guess[6], x_guess[10], x_guess[11], x_guess[12], ψ_dot, γ]
@@ -91,7 +92,8 @@ end
 
 function calculate_state_with_constrains(tas, alpha, beta, gamma, turn_rate, x, y, alt, psi, thtl)
     # Coordinated turn bank --> phi
-    G = turn_rate * tas / GD
+    # TODO: should use gD and not GD*FT2M. But tests against Stevens would fail
+    G = turn_rate * tas / (GD * FT2M)
 
     if abs(gamma) < 1e-8
         phi = G * cos(beta) / (cos(alpha) - G * sin(alpha) * sin(beta))

@@ -13,37 +13,37 @@ using FlightMechanicsSimulator
     da_test = LinRange(-21.5, 21.5, 20)
     dr_test = LinRange(-30, 30, 20)
 
-    df = DataFrame!(CSV.File("data/damp.csv"))
+    df = DataFrame(CSV.File("data/damp.csv"))
     for case in eachrow(df)
         rv1 = F16.damp(case.alpha)
         @test isapprox(rv1, Array(case[2:end]), atol = 1.0e-14)
     end
 
-    df = DataFrame!(CSV.File("data/cx.csv"))
+    df = DataFrame(CSV.File("data/cx.csv"))
     for case in eachrow(df)
         rv1 = F16.CX(case.alpha, case.de)
         @test isapprox(rv1, case.cx, atol = 1.0e-15)
     end
 
-    df = DataFrame!(CSV.File("data/cy.csv"))
+    df = DataFrame(CSV.File("data/cy.csv"))
     for case in eachrow(df)
         rv1 = F16.CY(case.beta, case.da, case.dr)
         @test isapprox(rv1, case.cy, atol = 1.0e-15)
     end
 
-    df = DataFrame!(CSV.File("data/cz.csv"))
+    df = DataFrame(CSV.File("data/cz.csv"))
     for case in eachrow(df)
         rv1 = F16.CZ(case.alpha, case.beta, case.de)
         @test isapprox(rv1, case.cz, atol = 1.0e-15)
     end
 
-    df = DataFrame!(CSV.File("data/cm.csv"))
+    df = DataFrame(CSV.File("data/cm.csv"))
     for case in eachrow(df)
         rv1 = F16.CM(case.alpha, case.de)
         @test isapprox(rv1, case.cm, atol = 1.0e-15)
     end
 
-    df = DataFrame!(CSV.File("data/aero_coeffs.csv"))
+    df = DataFrame(CSV.File("data/aero_coeffs.csv"))
     for case in eachrow(df)
         rv1 = F16.CL(case.alpha, case.beta)
         @test isapprox(rv1, case.cl, atol = 1.0e-15)
