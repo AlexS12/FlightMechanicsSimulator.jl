@@ -1,6 +1,6 @@
 # TODO: doc
 function sixdof_aero_earth_euler_fixed_mass!(time, x, mass, inertia, forces, moments, h, x_dot)
-    # C     x(1)  -> tas (ft/s)
+    # C     x(1)  -> tas (m/s)
     # C     x(2)  -> α (rad)
     # C     x(3)  -> β (rad)
     # C     x(4)  -> ϕ (rad)
@@ -9,12 +9,12 @@ function sixdof_aero_earth_euler_fixed_mass!(time, x, mass, inertia, forces, mom
     # C     x(7)  -> p (rad/s)
     # C     x(8)  -> q (rad/s)
     # C     x(9)  -> r (rad/s)
-    # C     x(10) -> North (ft)
-    # C     x(11) -> East (ft)
-    # C     x(12) -> Altitude (ft)
+    # C     x(10) -> North (m)
+    # C     x(11) -> East (m)
+    # C     x(12) -> Altitude (m)
 
     # Assign state
-    tas = x[1] * M2FT  # TODO
+    tas = x[1]
     α = x[2]
     β = x[3]
     ϕ = x[4]

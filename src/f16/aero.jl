@@ -264,7 +264,7 @@ function calculate_aero_forces_moments(x, controls, xcg, qbar, S, b, c)
     RDR = controls[4]  # deg
 
     # Assign state
-    VT = x[1] * M2FT  # TODO
+    VT = x[1]
     ALPHA = x[2] * RAD2DEG
     BETA = x[3] * RAD2DEG
     PHI = x[4]
@@ -273,7 +273,7 @@ function calculate_aero_forces_moments(x, controls, xcg, qbar, S, b, c)
     P = x[7]
     Q = x[8]
     R = x[9]
-    ALT = x[12] * M2FT  # TODO
+    ALT = x[12]
     POW = x[13]
 
     # Look-up tables and component buildup

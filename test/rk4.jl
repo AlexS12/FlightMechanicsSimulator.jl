@@ -125,8 +125,8 @@ xy_trajectory_data = [
 
  for case in eachrow(xy_trajectory_data)
     idx = findall(x->abs(x-case[1])<1e-10, results[:, 1])[1]
-    @test isapprox(case[2], results[idx, 11], atol=20)
-    @test isapprox(case[3], results[idx, 12], atol=20)
+    @test isapprox(case[2], results[idx, 11] * M2FT, atol=20)
+    @test isapprox(case[3], results[idx, 12] * M2FT, atol=20)
  end
 
 # Select last time step state

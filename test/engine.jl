@@ -26,8 +26,8 @@ using FlightMechanicsSimulator
 
     df = DataFrame(CSV.File("data/thrust.csv"))
     for case in eachrow(df)
-        rv1 = F16.thrust(case.pow, case.alt, case.rmach)
-        @test isapprox(rv1, case.thrust, atol = 1.0e-10)
+        rv1 = F16.thrust(case.pow, case.alt * FT2M, case.rmach)
+        @test isapprox(rv1 / (LB2KG * F16.GD * FT2M), case.thrust, atol = 1.0e-10)
     end
 
 end
