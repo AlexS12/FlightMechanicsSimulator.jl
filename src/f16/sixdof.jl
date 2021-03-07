@@ -40,6 +40,10 @@ function f(time, x, mass, xcg, controls)
     height = x[12]
     pow = x[13]
 
+    # TODO: should use gD and not GD*FT2M. But tests against Stevens would fail
+    # take into account when a gravity model can be chosen.
+    gravity_down = GD*FT2M
+
     # Update atmosphere and wind
     T, ρ, a, p = atmosphere_f16(height)
     # Air data computer
@@ -53,12 +57,13 @@ function f(time, x, mass, xcg, controls)
         ]  # Kg·m²
 
     # Calculate forces and moments
+    # Propulsion
     Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, amach, controls)
     h = calculate_prop_gyro_effects()
+    # Aerodynamics
     Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(x, controls, xcg, qbar, S, B, CBAR)
-    # TODO: should use gD and not GD*FT2M. But tests against Stevens would fail
-    # take into account when a gravity model can be chosen.
-    Fgx, Fgy, Fgz = calculate_gravity_forces(GD*FT2M, mass, θ, ϕ)
+    # Gravity
+    Fgx, Fgy, Fgz = calculate_gravity_forces(gravity_down, mass, θ, ϕ)
 
     # Total forces & moments
     Fx = Fgx + Fax + Tx
@@ -82,8 +87,7 @@ function f(time, x, mass, xcg, controls)
     x_dot = [x_dot..., xd_13]
 
     # Outputs
-    # TODO
-    outputs = calculate_outputs(x, amach, qbar, S, mass, GD*FT2M, [Fax, Fay, Faz], [Tx, Ty, Tz])
+    outputs = calculate_outputs(x, amach, qbar, S, mass, gravity_down, [Fax, Fay, Faz], [Tx, Ty, Tz])
 
     return x_dot, outputs
 
