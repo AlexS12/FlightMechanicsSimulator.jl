@@ -1,7 +1,6 @@
 using SafeTestsets
 
 @safetestset "ADC" begin include("adc.jl") end
-@safetestset "Atmosphere" begin include("atmosphere.jl") end
 @safetestset "Aerodynamics" begin include("aero.jl") end
 @safetestset "Engine" begin include("engine.jl") end
 @safetestset "SixDOF" begin include("sixdof.jl") end

@@ -1,5 +1,7 @@
 module FlightMechanicsSimulator
 
+using FlightMechanicsUtils
+
 export gD, R_AIR, γ_AIR,
   RAD2DEG, DEG2RAD,
   M2FT, FT2M,
@@ -8,9 +10,6 @@ export gD, R_AIR, γ_AIR,
   PSF2PA, PA2PSF,
   SLUGFT32KGM3, KGM32SLUGFT3
 include("constants.jl")
-
-export atmosphere_isa
-include("atmosphere.jl")
 
 export sixdof_aero_earth_euler_fixed_mass
 include("dynamic_systems.jl")
