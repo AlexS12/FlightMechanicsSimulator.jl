@@ -9,6 +9,9 @@ Manifest.toml
 docs/build/
 docs/site/
 
+# Dev environment
+dev/
+
 *.log
 
 # Compiled Object files
