@@ -1,6 +1,7 @@
 module F16
 
 using ..FlightMechanicsSimulator
+using FlightMechanicsUtils
 
 include("constants.jl")
 include("adc.jl")

@@ -2,6 +2,7 @@ using Test
 using CSV
 using DataFrames
 using FlightMechanicsSimulator
+using FlightMechanicsUtils
 
 
 df = DataFrame(CSV.File("data/adc.csv"))
