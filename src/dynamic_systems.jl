@@ -49,9 +49,7 @@ function sixdof_aero_earth_euler_fixed_mass!(time, x, mass, inertia, forces, mom
     x_dot[1], x_dot[2], x_dot[3] = uvw_dot_to_tasαβ_dot(u, v, w, udot, vdot, wdot)
 
     # Kinematics
-    x_dot[4] = p + (sθ / cθ) * (q * sϕ + r * cϕ)
-    x_dot[5] = q * cϕ - r * sϕ
-    x_dot[6] = (q * sϕ + r * cϕ) / cθ
+    x_dot[6], x_dot[5], x_dot[4] = pqr_2_ψθϕ_dot(p, q, r, θ, ϕ)
 
     # Moments
     pq = p * q
