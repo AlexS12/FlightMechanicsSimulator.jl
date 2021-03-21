@@ -119,19 +119,5 @@ function calculate_state_with_constrains(tas, α, β, γ, ψ_dot, x, y, alt, ψ,
     # Angular kinemtic -> p, q, r
     p, q, r = ψθϕ_dot_2_pqr(ψ_dot, 0, 0, θ, ϕ)
 
-    x = [
-        tas,
-        α,
-        β,
-        ϕ,
-        θ,
-        ψ,
-        p,
-        q,
-        r,
-        x,
-        y,
-        alt,
-        tgear(thtl)
-    ]
+    x = [tas, α, β, ϕ, θ, ψ, p, q, r, x, y, alt, tgear(thtl)]
 end
