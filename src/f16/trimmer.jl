@@ -64,19 +64,19 @@ function trim_cost_function(sol, consts, fun; full_output=false)
     mass = consts[1]
     xcg = consts[2]
     tas = consts[3]
-    psi = consts[4]
+    ψ = consts[4]
     x = consts[5]
     y = consts[6]
     alt = consts[7]
-    turn_rate = consts[8]
-    gamma = consts[9]
+    ψ_dot = consts[8]
+    γ = consts[9]
 
-    alpha = sol[1]
-    beta = sol[2]
+    α = sol[1]
+    β = sol[2]
     thtl = sol[3]
     controls = sol[3:6]
 
-    x = calculate_state_with_constrains(tas, alpha, beta, gamma, turn_rate, x, y, alt, psi, thtl)
+    x = calculate_state_with_constrains(tas, α, β, γ, ψ_dot, x, y, alt, ψ, thtl)
 
     x_dot, outputs = fun(time, x, mass, xcg, controls)
 
@@ -90,42 +90,42 @@ function trim_cost_function(sol, consts, fun; full_output=false)
 end
 
 
-function calculate_state_with_constrains(tas, alpha, beta, gamma, turn_rate, x, y, alt, psi, thtl)
+function calculate_state_with_constrains(tas, α, β, γ, ψ_dot, x, y, alt, ψ, thtl)
     # Coordinated turn bank --> phi
     # TODO: should use gD and not GD*FT2M. But tests against Stevens would fail
     # coordinated_turn_bank from FlightMechanicsUtils should accept gravity as argument to
     # replace this piece of code.
     # https://github.com/AlexS12/FlightMechanicsUtils.jl/issues/22
-    G = turn_rate * tas / (GD * FT2M)
+    G = ψ_dot * tas / (GD * FT2M)
 
-    if abs(gamma) < 1e-8
-        phi = G * cos(beta) / (cos(alpha) - G * sin(alpha) * sin(beta))
-        phi = atan(phi)
+    if abs(γ) < 1e-8
+        ϕ = G * cos(β) / (cos(α) - G * sin(α) * sin(β))
+        ϕ = atan(ϕ)
     else
-        a = 1 - G * tan(alpha) * sin(beta)
-        b = sin(gamma) / cos(beta)
-        c = 1 + G^2 * cos(beta)^2
+        a = 1 - G * tan(α) * sin(β)
+        b = sin(γ) / cos(β)
+        c = 1 + G^2 * cos(β)^2
 
-        sq = sqrt(c * (1 - b^2) + G^2 * sin(beta)^2)
+        sq = sqrt(c * (1 - b^2) + G^2 * sin(β)^2)
 
-        num = (a - b^2) + b * tan(alpha) * sq
-        den = a ^ 2 - b^2 * (1 + c * tan(alpha)^2)
+        num = (a - b^2) + b * tan(α) * sq
+        den = a ^ 2 - b^2 * (1 + c * tan(α)^2)
 
-        phi = atan(G * cos(beta) / cos(alpha) * num / den)
+        ϕ = atan(G * cos(β) / cos(α) * num / den)
     end
 
     # Climb -> theta
-    theta = rate_of_climb_constrain_no_wind(gamma, alpha, beta, phi)
+    θ = rate_of_climb_constrain_no_wind(γ, α, β, ϕ)
     # Angular kinemtic -> p, q, r
-    p, q, r = ψθϕ_dot_2_pqr(turn_rate, 0, 0, theta, phi)
+    p, q, r = ψθϕ_dot_2_pqr(ψ_dot, 0, 0, θ, ϕ)
 
     x = [
         tas,
-        alpha,
-        beta,
-        phi,
-        theta,
-        psi,
+        α,
+        β,
+        ϕ,
+        θ,
+        ψ,
         p,
         q,
         r,
