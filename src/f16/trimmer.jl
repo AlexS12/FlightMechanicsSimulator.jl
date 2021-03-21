@@ -93,6 +93,9 @@ end
 function calculate_state_with_constrains(tas, alpha, beta, gamma, turn_rate, x, y, alt, psi, thtl)
     # Coordinated turn bank --> phi
     # TODO: should use gD and not GD*FT2M. But tests against Stevens would fail
+    # coordinated_turn_bank from FlightMechanicsUtils should accept gravity as argument to
+    # replace this piece of code.
+    # https://github.com/AlexS12/FlightMechanicsUtils.jl/issues/22
     G = turn_rate * tas / (GD * FT2M)
 
     if abs(gamma) < 1e-8
@@ -112,16 +115,9 @@ function calculate_state_with_constrains(tas, alpha, beta, gamma, turn_rate, x, 
     end
 
     # Climb -> theta
-    a = cos(alpha) * cos(beta)
-    b = sin(phi) * sin(beta) + cos(phi) * sin(alpha) * cos(beta)
-    sq = sqrt(a^2 - sin(gamma)^2 + b^2)
-    theta = (a * b + sin(gamma) * sq) / (a^2 - sin(gamma)^2)
-    theta = atan(theta)
-
+    theta = rate_of_climb_constrain_no_wind(gamma, alpha, beta, phi)
     # Angular kinemtic -> p, q, r
-    p = - turn_rate * sin(theta)
-    q = turn_rate * sin(phi) * cos(theta)
-    r = turn_rate * cos(theta) * cos(phi)
+    p, q, r = ψθϕ_dot_2_pqr(turn_rate, 0, 0, theta, phi)
 
     x = [
         tas,
