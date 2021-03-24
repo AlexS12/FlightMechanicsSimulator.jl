@@ -2,7 +2,12 @@
 using NLsolve
 
 
-function trimmer(fun, x_guess, controls_guess, γ=0.0, ψ_dot=0.0, mass=MASS, xcg=0.35; show_trace=false, ftol=1e-16, iterations=5000)
+function trimmer(
+    fun, x_guess, controls_guess, γ=0.0, ψ_dot=0.0, mass=MASS, xcg=0.35;
+    show_trace=false,
+    ftol=1e-16,
+    iterations=5000
+)
 
     #  STATE VECTOR
     # C     X(1)  -> vt (m/s)
@@ -25,29 +30,31 @@ function trimmer(fun, x_guess, controls_guess, γ=0.0, ψ_dot=0.0, mass=MASS, xc
     # RDR = controls[4]
 
     # TRIMMING SOLUTION
-    # alpha (rad)
-    # beta (rad)
-    # thtl  (0-1)
-    # el  (deg)
-    # ail (deg)
-    # rdr (deg)
-    sol_gues = [x_guess[2], x_guess[3], controls_guess...]
+    sol_gues = [
+        x_guess[2],  # alpha (rad)
+        x_guess[3],  # beta (rad)
+        controls_guess..., # thtl  (0-1), el (deg), ail (deg), rdr (deg)
+    ]
 
     # CONSTS
-    # MASS
-    # XCG
-    # TAS (m/s)
-    # psi (rad)
-    # north (m)
-    # east (m)
-    # alt (m)
-    # ψ_dot (rad/s)
-    # γ (rad)
-    consts = [mass, xcg, x_guess[1], x_guess[6], x_guess[10], x_guess[11], x_guess[12], ψ_dot, γ]
+    consts = [
+        mass,  # MASS,
+        xcg,  # XCG
+        x_guess[1],  # TAS (m/s)
+        x_guess[6],  # psi (rad)
+        x_guess[10],  # north (m)
+        x_guess[11],  # east (m)
+        x_guess[12],  # alt (m)
+        ψ_dot,  # ψ_dot (rad/s)
+        γ,  # γ (rad)
+    ]
 
     f_opt(sol) = trim_cost_function(sol, consts, fun; full_output=false)
 
-    result = nlsolve(f_opt, sol_gues; ftol=ftol, show_trace=show_trace, iterations=iterations)
+    result = nlsolve(
+        f_opt, sol_gues;
+        ftol=ftol, show_trace=show_trace, iterations=iterations
+    )
 
      if show_trace
             println(result)
@@ -64,19 +71,19 @@ function trim_cost_function(sol, consts, fun; full_output=false)
     mass = consts[1]
     xcg = consts[2]
     tas = consts[3]
-    psi = consts[4]
+    ψ = consts[4]
     x = consts[5]
     y = consts[6]
     alt = consts[7]
-    turn_rate = consts[8]
-    gamma = consts[9]
+    ψ_dot = consts[8]
+    γ = consts[9]
 
-    alpha = sol[1]
-    beta = sol[2]
+    α = sol[1]
+    β = sol[2]
     thtl = sol[3]
     controls = sol[3:6]
 
-    x = calculate_state_with_constrains(tas, alpha, beta, gamma, turn_rate, x, y, alt, psi, thtl)
+    x = calculate_state_with_constrains(tas, α, β, γ, ψ_dot, x, y, alt, ψ, thtl)
 
     x_dot, outputs = fun(time, x, mass, xcg, controls)
 
@@ -90,52 +97,16 @@ function trim_cost_function(sol, consts, fun; full_output=false)
 end
 
 
-function calculate_state_with_constrains(tas, alpha, beta, gamma, turn_rate, x, y, alt, psi, thtl)
+function calculate_state_with_constrains(tas, α, β, γ, ψ_dot, x, y, alt, ψ, thtl)
     # Coordinated turn bank --> phi
     # TODO: should use gD and not GD*FT2M. But tests against Stevens would fail
-    G = turn_rate * tas / (GD * FT2M)
-
-    if abs(gamma) < 1e-8
-        phi = G * cos(beta) / (cos(alpha) - G * sin(alpha) * sin(beta))
-        phi = atan(phi)
-    else
-        a = 1 - G * tan(alpha) * sin(beta)
-        b = sin(gamma) / cos(beta)
-        c = 1 + G^2 * cos(beta)^2
-
-        sq = sqrt(c * (1 - b^2) + G^2 * sin(beta)^2)
-
-        num = (a - b^2) + b * tan(alpha) * sq
-        den = a ^ 2 - b^2 * (1 + c * tan(alpha)^2)
-
-        phi = atan(G * cos(beta) / cos(alpha) * num / den)
-    end
-
+    ϕ = coordinated_turn_bank(ψ_dot, α, β, tas, γ, GD * FT2M)
     # Climb -> theta
-    a = cos(alpha) * cos(beta)
-    b = sin(phi) * sin(beta) + cos(phi) * sin(alpha) * cos(beta)
-    sq = sqrt(a^2 - sin(gamma)^2 + b^2)
-    theta = (a * b + sin(gamma) * sq) / (a^2 - sin(gamma)^2)
-    theta = atan(theta)
-
+    θ = rate_of_climb_constrain_no_wind(γ, α, β, ϕ)
     # Angular kinemtic -> p, q, r
-    p = - turn_rate * sin(theta)
-    q = turn_rate * sin(phi) * cos(theta)
-    r = turn_rate * cos(theta) * cos(phi)
+    p, q, r = ψθϕ_dot_2_pqr(ψ_dot, 0, 0, θ, ϕ)
+    # Construct state vector
+    x = [tas, α, β, ϕ, θ, ψ, p, q, r, x, y, alt, tgear(thtl)]
 
-    x = [
-        tas,
-        alpha,
-        beta,
-        phi,
-        theta,
-        psi,
-        p,
-        q,
-        r,
-        x,
-        y,
-        alt,
-        tgear(thtl)
-    ]
+    return x
 end

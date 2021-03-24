@@ -35,11 +35,7 @@ function sixdof_aero_earth_euler_fixed_mass!(time, x, mass, inertia, forces, mom
     Ixz = inertia[1, 3]
 
     # Get ready for state equations
-    # TODO: use wind to body
-    cβ = cos(β)
-    u = tas * cos(α) * cβ
-    v = tas * sin(β)
-    w = tas * sin(α) * cβ
+    u, v, w = wind2body(tas, 0, 0, α, β)
 
     sψ, cψ = sin(ψ), cos(ψ)
     sθ, cθ = sin(θ), cos(θ)
@@ -49,17 +45,11 @@ function sixdof_aero_earth_euler_fixed_mass!(time, x, mass, inertia, forces, mom
     udot = r * v - q * w + Fx / mass
     vdot = p * w - r * u + Fy / mass
     wdot = q * u - p * v + Fz / mass
-    dum = (u * u + w * w)
 
-    # TODO: use uvw_dot_to_tasαβ_dot
-    x_dot[1] = (u * udot + v * vdot + w * wdot) / tas
-    x_dot[2] = (u * wdot - w * udot) / dum
-    x_dot[3] = (tas * vdot - v * x_dot[1]) * cβ / dum
+    x_dot[1], x_dot[2], x_dot[3] = uvw_dot_to_tasαβ_dot(u, v, w, udot, vdot, wdot)
 
     # Kinematics
-    x_dot[4] = p + (sθ / cθ) * (q * sϕ + r * cϕ)
-    x_dot[5] = q * cϕ - r * sϕ
-    x_dot[6] = (q * sϕ + r * cϕ) / cθ
+    x_dot[6], x_dot[5], x_dot[4] = pqr_2_ψθϕ_dot(p, q, r, θ, ϕ)
 
     # Moments
     pq = p * q

@@ -3,6 +3,7 @@ using CSV
 using DataFrames
 using OrdinaryDiffEq
 using FlightMechanicsSimulator
+using FlightMechanicsUtils
 
 
 # ---------- PROPAGATE COORDINATED TURN ----------
