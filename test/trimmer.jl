@@ -59,6 +59,7 @@ for case in eachrow(trim_test_data)
         F16.f,
         x,
         controls,
+        F16StevensAtmosphere,
         0.0,
         0.0,
         F16.MASS,
@@ -105,6 +106,7 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
         F16.f,
         x,
         controls,
+        F16StevensAtmosphere,
         0.0,
         0.0,
         F16.MASS,
@@ -154,6 +156,7 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
         F16.f,
         x,
         controls,
+        F16StevensAtmosphere,
         0.0,
         0.0,
         F16.MASS,
@@ -203,6 +206,7 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
         F16.f,
         x,
         controls,
+        F16StevensAtmosphere,
         0.0,
         0.0,
         F16.MASS,
@@ -253,10 +257,11 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
         F16.f,
         x,
         controls,
+        F16StevensAtmosphere,
         0.0,
         0.3,  # rad/s
         F16.MASS,
-        xcg,
+        xcg;
     )
 
 @test isapprox(cost, zeros(6), atol=1e-12)
