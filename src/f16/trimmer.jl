@@ -2,7 +2,12 @@
 using NLsolve
 
 
-function trimmer(fun, x_guess, controls_guess, γ=0.0, ψ_dot=0.0, mass=MASS, xcg=0.35; show_trace=false, ftol=1e-16, iterations=5000)
+function trimmer(
+    fun, x_guess, controls_guess, γ=0.0, ψ_dot=0.0, mass=MASS, xcg=0.35;
+    show_trace=false,
+    ftol=1e-16,
+    iterations=5000
+)
 
     #  STATE VECTOR
     # C     X(1)  -> vt (m/s)
@@ -25,29 +30,31 @@ function trimmer(fun, x_guess, controls_guess, γ=0.0, ψ_dot=0.0, mass=MASS, xc
     # RDR = controls[4]
 
     # TRIMMING SOLUTION
-    # alpha (rad)
-    # beta (rad)
-    # thtl  (0-1)
-    # el  (deg)
-    # ail (deg)
-    # rdr (deg)
-    sol_gues = [x_guess[2], x_guess[3], controls_guess...]
+    sol_gues = [
+        x_guess[2],  # alpha (rad)
+        x_guess[3],  # beta (rad)
+        controls_guess..., # thtl  (0-1), el (deg), ail (deg), rdr (deg)
+    ]
 
     # CONSTS
-    # MASS
-    # XCG
-    # TAS (m/s)
-    # psi (rad)
-    # north (m)
-    # east (m)
-    # alt (m)
-    # ψ_dot (rad/s)
-    # γ (rad)
-    consts = [mass, xcg, x_guess[1], x_guess[6], x_guess[10], x_guess[11], x_guess[12], ψ_dot, γ]
+    consts = [
+        mass,  # MASS,
+        xcg,  # XCG
+        x_guess[1],  # TAS (m/s)
+        x_guess[6],  # psi (rad)
+        x_guess[10],  # north (m)
+        x_guess[11],  # east (m)
+        x_guess[12],  # alt (m)
+        ψ_dot,  # ψ_dot (rad/s)
+        γ,  # γ (rad)
+    ]
 
     f_opt(sol) = trim_cost_function(sol, consts, fun; full_output=false)
 
-    result = nlsolve(f_opt, sol_gues; ftol=ftol, show_trace=show_trace, iterations=iterations)
+    result = nlsolve(
+        f_opt, sol_gues;
+        ftol=ftol, show_trace=show_trace, iterations=iterations
+    )
 
      if show_trace
             println(result)
@@ -98,6 +105,8 @@ function calculate_state_with_constrains(tas, α, β, γ, ψ_dot, x, y, alt, ψ,
     θ = rate_of_climb_constrain_no_wind(γ, α, β, ϕ)
     # Angular kinemtic -> p, q, r
     p, q, r = ψθϕ_dot_2_pqr(ψ_dot, 0, 0, θ, ϕ)
-
+    # Construct state vector
     x = [tas, α, β, ϕ, θ, ψ, p, q, r, x, y, alt, tgear(thtl)]
+
+    return x
 end
