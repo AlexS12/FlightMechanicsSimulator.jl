@@ -1,3 +1,5 @@
+# ------------------------------------- Atmosphere -------------------------------------
+# Define abstract type and interface.
 abstract type Atmosphere end
 
 
@@ -41,6 +43,7 @@ Get geopotential height (m).
 get_height(a::Atmosphere) = a.height
 
 
+# --------------------------------- F16StevensAtmosphere ---------------------------------
 """
     F16StevensAtmosphere{T<:Number}<:Atmosphere
 
@@ -88,6 +91,9 @@ function F16StevensAtmosphere(h)
     return F16StevensAtmosphere(T, p, ρ, a, h)
 end
 
+
+
+# ---------------------------------------- ISA1976 ----------------------------------------
 """
     ISA1976{T<:Number}<:Atmosphere
 
