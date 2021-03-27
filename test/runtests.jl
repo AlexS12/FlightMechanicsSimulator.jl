@@ -7,3 +7,4 @@ using SafeTestsets
 @safetestset "Propagator" begin include("rk4.jl") end
 @safetestset "Trimmer" begin include("trimmer.jl") end
 @safetestset "Inputs" begin include("models/inputs.jl") end
+@safetestset "Atmosphere" begin include("models/atmosphere.jl") end
