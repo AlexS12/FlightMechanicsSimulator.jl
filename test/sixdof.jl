@@ -25,6 +25,7 @@ for case in eachrow(df)
             F16.MASS,
             case.xcg,
             controls,
+            F16StevensAtmosphere,
         )
 
     xd1[1] *= M2FT

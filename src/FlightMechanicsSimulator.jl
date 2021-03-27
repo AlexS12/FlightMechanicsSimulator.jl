@@ -15,4 +15,8 @@ include("simulation.jl")
 export ConstantInput, StepInput, DoubletInput, RampInput, SinusoidalInput, get_value
 include("models/inputs.jl")
 
+export ISA1976, F16StevensAtmosphere
+export get_density, get_height, get_pressure, get_sound_velocity, get_temperature
+include("models/atmosphere.jl")
+
 end

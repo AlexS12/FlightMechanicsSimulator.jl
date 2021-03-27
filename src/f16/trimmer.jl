@@ -3,7 +3,7 @@ using NLsolve
 
 
 function trimmer(
-    fun, x_guess, controls_guess, γ=0.0, ψ_dot=0.0, mass=MASS, xcg=0.35;
+    fun, x_guess, controls_guess, atmosphere, γ=0.0, ψ_dot=0.0, mass=MASS, xcg=0.35;
     show_trace=false,
     ftol=1e-16,
     iterations=5000
@@ -47,6 +47,7 @@ function trimmer(
         x_guess[12],  # alt (m)
         ψ_dot,  # ψ_dot (rad/s)
         γ,  # γ (rad)
+        atmosphere,
     ]
 
     f_opt(sol) = trim_cost_function(sol, consts, fun; full_output=false)
@@ -77,6 +78,7 @@ function trim_cost_function(sol, consts, fun; full_output=false)
     alt = consts[7]
     ψ_dot = consts[8]
     γ = consts[9]
+    atmosphere = consts[10]
 
     α = sol[1]
     β = sol[2]
@@ -85,7 +87,7 @@ function trim_cost_function(sol, consts, fun; full_output=false)
 
     x = calculate_state_with_constrains(tas, α, β, γ, ψ_dot, x, y, alt, ψ, thtl)
 
-    x_dot, outputs = fun(time, x, mass, xcg, controls)
+    x_dot, outputs = fun(time, x, mass, xcg, controls, atmosphere)
 
     cost = [x_dot[1:3]..., x_dot[7:9]...]
 

@@ -2,16 +2,17 @@ function f(x, p, t)
     mass = p[1]
     xcg = p[2]
     controls = p[3]
+    atmosphere = p[4]
 
     controls_arr = get_value.(controls, t)
 
-    x_dot, outputs = f(time, x, mass, xcg, controls_arr)
+    x_dot, outputs = f(time, x, mass, xcg, controls_arr, atmosphere)
 
     return x_dot
 end
 
 
-function f(time, x, mass, xcg, controls)
+function f(time, x, mass, xcg, controls, atmosphere)
 
     # C     x(1)  -> vt (m/s)
     # C     x(2)  -> α (rad)
@@ -44,8 +45,12 @@ function f(time, x, mass, xcg, controls)
     # take into account when a gravity model can be chosen.
     gravity_down = GD*FT2M
 
-    # Update atmosphere and wind
-    T, ρ, a, p = atmosphere_f16(height)
+    atmosphere = atmosphere(height)
+    T = get_temperature(atmosphere)
+    ρ = get_density(atmosphere)
+    a = get_sound_velocity(atmosphere)
+    p = get_pressure(atmosphere)
+
     # Air data computer
     amach, qbar = adc(vt, T, ρ, a, p)
 
