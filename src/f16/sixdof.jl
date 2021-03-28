@@ -3,16 +3,18 @@ function f(x, p, t)
     xcg = p[2]
     controls = p[3]
     atmosphere = p[4]
+    gravity=p[5]
 
     controls_arr = get_value.(controls, t)
 
-    x_dot, outputs = f(time, x, mass, xcg, controls_arr, atmosphere)
+    x_dot, outputs = f(time, x, mass, xcg, controls_arr, atmosphere, gravity)
 
     return x_dot
 end
 
 
-function f(time, x, mass, xcg, controls, atmosphere)
+# TODO: remove default arg
+function f(time, x, mass, xcg, controls, atmosphere, gravity)
 
     # C     x(1)  -> vt (m/s)
     # C     x(2)  -> α (rad)
@@ -43,7 +45,7 @@ function f(time, x, mass, xcg, controls, atmosphere)
 
     # TODO: should use gD and not GD*FT2M. But tests against Stevens would fail
     # take into account when a gravity model can be chosen.
-    gravity_down = GD*FT2M
+    gravity_down = get_gravity_accel(gravity)
 
     atmosphere = atmosphere(height)
     T = get_temperature(atmosphere)
