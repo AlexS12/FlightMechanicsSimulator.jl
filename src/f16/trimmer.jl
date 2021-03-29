@@ -84,8 +84,9 @@ function trim_cost_function(sol, consts, fun; full_output=false)
     β = sol[2]
     thtl = sol[3]
     controls = sol[3:6]
+    gd = get_gravity_accel(gravity)
 
-    x = calculate_state_with_constrains(tas, α, β, γ, ψ_dot, x, y, alt, ψ, thtl)
+    x = calculate_state_with_constrains(tas, α, β, γ, ψ_dot, x, y, gd, alt, ψ, thtl)
 
     x_dot, outputs = fun(time, x, controls, aircraft, atmosphere, gravity)
 
@@ -99,10 +100,9 @@ function trim_cost_function(sol, consts, fun; full_output=false)
 end
 
 
-function calculate_state_with_constrains(tas, α, β, γ, ψ_dot, x, y, alt, ψ, thtl)
+function calculate_state_with_constrains(tas, α, β, γ, ψ_dot, x, y, gd, alt, ψ, thtl)
     # Coordinated turn bank --> phi
-    # TODO: should use gD and not GD*FT2M. But tests against Stevens would fail
-    ϕ = coordinated_turn_bank(ψ_dot, α, β, tas, γ, GD * FT2M)
+    ϕ = coordinated_turn_bank(ψ_dot, α, β, tas, γ, gd)
     # Climb -> theta
     θ = rate_of_climb_constrain_no_wind(γ, α, β, ϕ)
     # Angular kinemtic -> p, q, r
