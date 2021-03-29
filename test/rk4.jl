@@ -44,7 +44,7 @@ x_stev = [
 ]
 controls_stev = [0.8349601, -1.481766, 0.09553108, -0.4118124]
 xcg = 0.35
-x_dot, outputs = F16.f(
+x_dot, outputs = f(
     time,
     x_stev,
     controls_stev,
@@ -73,7 +73,7 @@ cost =
 
 # RETRIM to refine flying condition
 x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
-    F16.f,
+    f,
     x_stev,
     controls_stev,
     F16.F16Stevens(F16.MASS, F16.INERTIA, xcg),

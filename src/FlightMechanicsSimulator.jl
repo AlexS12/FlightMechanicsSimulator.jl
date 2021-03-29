@@ -8,6 +8,7 @@ export sixdof_aero_earth_euler_fixed_mass
 include("dynamic_systems.jl")
 
 export simulate
+export f
 include("simulation.jl")
 
 export ConstantInput, StepInput, DoubletInput, RampInput, SinusoidalInput, get_value
@@ -24,6 +25,8 @@ include("models/gravity.jl")
 export Aircraft
 export get_mass, get_inertia_tensor, get_cg_mac
 export get_chord, get_surface, get_wing_span
+export calculate_prop_forces_moments, calculate_prop_gyro_effects, calculate_pdot
+export calculate_aero_forces_moments
 include("models/aircraft.jl")
 
 export F16

@@ -10,3 +10,10 @@ function get_cg_mac(ac::Aircraft) end
 function get_surface(ac::Aircraft) end
 function get_chord(ac::Aircraft) end
 function get_wing_span(ac::Aircraft) end
+
+# Forces and moments
+function calculate_prop_forces_moments end
+function calculate_prop_gyro_effects end
+function calculate_pdot end
+
+function calculate_aero_forces_moments end

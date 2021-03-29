@@ -19,7 +19,7 @@ for case in eachrow(df)
     controls = Array(case[["c$ii" for ii in 1:4]])
 
     xd1, outputs1 =
-        F16.f(
+        f(
             case.time,
             x,
             controls,
