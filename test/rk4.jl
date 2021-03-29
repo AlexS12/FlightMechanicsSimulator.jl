@@ -44,7 +44,15 @@ x_stev = [
 ]
 controls_stev = [0.8349601, -1.481766, 0.09553108, -0.4118124]
 xcg = 0.35
-x_dot, outputs = F16.f(time, x_stev, F16.MASS, xcg, controls_stev, F16StevensAtmosphere)
+x_dot, outputs = F16.f(
+    time,
+    x_stev,
+    F16.MASS,
+    xcg,
+    controls_stev,
+    F16StevensAtmosphere,
+    LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M),
+)
 
 # Linear acceleration
 @test isapprox(x_dot[1:3], zeros(3), atol = 5e-4)
@@ -70,6 +78,7 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
     x_stev,
     controls_stev,
     F16StevensAtmosphere,
+    LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M),
     0.0,
     0.3,
     F16.MASS,
@@ -94,7 +103,7 @@ x = x_trim
 controls = ConstantInput.(controls_trim)
 
 results = simulate(
-    t0, t1, dt, x, F16.MASS, xcg, controls, F16StevensAtmosphere;
+    t0, t1, dt, x, F16.MASS, xcg, controls, F16StevensAtmosphere, LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M);
     solver=RK4(), solve_args=Dict(:reltol=>1e-10, :saveat=>dt)
     )
 

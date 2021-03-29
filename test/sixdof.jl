@@ -26,6 +26,7 @@ for case in eachrow(df)
             case.xcg,
             controls,
             F16StevensAtmosphere,
+            LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M),
         )
 
     xd1[1] *= M2FT

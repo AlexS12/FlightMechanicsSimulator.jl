@@ -3,16 +3,17 @@ function f(x, p, t)
     xcg = p[2]
     controls = p[3]
     atmosphere = p[4]
+    gravity=p[5]
 
     controls_arr = get_value.(controls, t)
 
-    x_dot, outputs = f(time, x, mass, xcg, controls_arr, atmosphere)
+    x_dot, outputs = f(time, x, mass, xcg, controls_arr, atmosphere, gravity)
 
     return x_dot
 end
 
 
-function f(time, x, mass, xcg, controls, atmosphere)
+function f(time, x, mass, xcg, controls, atmosphere, gravity)
 
     # C     x(1)  -> vt (m/s)
     # C     x(2)  -> α (rad)
@@ -41,10 +42,6 @@ function f(time, x, mass, xcg, controls, atmosphere)
     height = x[12]
     pow = x[13]
 
-    # TODO: should use gD and not GD*FT2M. But tests against Stevens would fail
-    # take into account when a gravity model can be chosen.
-    gravity_down = GD*FT2M
-
     atmosphere = atmosphere(height)
     T = get_temperature(atmosphere)
     ρ = get_density(atmosphere)
@@ -59,7 +56,7 @@ function f(time, x, mass, xcg, controls, atmosphere)
         AXX 0.0 AXZ;
         0.0 AYY 0.0;
         AXZ 0.0 AZZ
-        ]  # Kg·m²
+    ]  # Kg·m²
 
     # Calculate forces and moments
     # Propulsion
@@ -68,7 +65,7 @@ function f(time, x, mass, xcg, controls, atmosphere)
     # Aerodynamics
     Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(x, controls, xcg, qbar, S, B, CBAR)
     # Gravity
-    Fgx, Fgy, Fgz = calculate_gravity_forces(gravity_down, mass, θ, ϕ)
+    Fgx, Fgy, Fgz = get_gravity_body(gravity, θ, ϕ) .* mass
 
     # Total forces & moments
     Fx = Fgx + Fax + Tx
@@ -92,6 +89,7 @@ function f(time, x, mass, xcg, controls, atmosphere)
     x_dot = [x_dot..., xd_13]
 
     # Outputs
+    gravity_down = get_gravity_accel(gravity)
     outputs = calculate_outputs(x, amach, qbar, S, mass, gravity_down, [Fax, Fay, Faz], [Tx, Ty, Tz])
 
     return x_dot, outputs
