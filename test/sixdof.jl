@@ -22,9 +22,8 @@ for case in eachrow(df)
         F16.f(
             case.time,
             x,
-            F16.MASS,
-            case.xcg,
             controls,
+            F16.F16Stevens(F16.MASS, F16.INERTIA, case.xcg),
             F16StevensAtmosphere,
             LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M),
         )

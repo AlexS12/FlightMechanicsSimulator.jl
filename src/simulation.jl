@@ -9,16 +9,15 @@ Propagate a simulation from tini to tfin with dt time step.
 - tfin: final simulation time (s)
 - dt: time step (s)
 - x0: initial state. Array{13, Number} according to `F16.f`
-- mass: aircraft total mass (lb). Constant for the simulation.
-- xcg: aircraft CG position MAC [0-1]. Constant for the simulation.
 - controls: inputs. Array{4, Input} according to `F16.f`
+- aircraft: aircraft instance.
 """
-function simulate(tini, tfin, dt, x0, mass, xcg, controls, atmosphere, gravity;
+function simulate(tini, tfin, dt, x0, controls, aircraft, atmosphere, gravity;
     solver=TSit5(), solve_args=Dict()
     )
 
     tspan = (tini, tfin)
-    p = [mass, xcg, controls, atmosphere, gravity]
+    p = [controls, aircraft, atmosphere, gravity]
 
     prob = ODEProblem{false}(F16.f, x0, tspan, p)
     sol = solve(prob, solver; solve_args...)

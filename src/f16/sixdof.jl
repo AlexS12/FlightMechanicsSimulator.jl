@@ -1,19 +1,18 @@
 function f(x, p, t)
-    mass = p[1]
-    xcg = p[2]
-    controls = p[3]
-    atmosphere = p[4]
-    gravity=p[5]
+    controls = p[1]
+    aircraft = p[2]
+    atmosphere = p[3]
+    gravity=p[4]
 
     controls_arr = get_value.(controls, t)
 
-    x_dot, outputs = f(time, x, mass, xcg, controls_arr, atmosphere, gravity)
+    x_dot, outputs = f(time, x, controls_arr, aircraft, atmosphere, gravity)
 
     return x_dot
 end
 
 
-function f(time, x, mass, xcg, controls, atmosphere, gravity)
+function f(time, x, controls, aircraft, atmosphere, gravity)
 
     # C     x(1)  -> vt (m/s)
     # C     x(2)  -> α (rad)
@@ -28,8 +27,11 @@ function f(time, x, mass, xcg, controls, atmosphere, gravity)
     # C     x(11) -> East (m)
     # C     x(12) -> Altitude (m)
     # C     x(13) -> pow
-    # TODO: pass as argument
-    ac = F16Stevens()
+    ac = aircraft
+
+    mass = get_mass(ac)
+    xcg = get_cg_mac(ac)
+    inertia = get_inertia_tensor(ac)
 
     # Assign state
     vt = x[1]
@@ -52,13 +54,6 @@ function f(time, x, mass, xcg, controls, atmosphere, gravity)
 
     # Air data computer
     amach, qbar = adc(vt, T, ρ, a, p)
-
-    # Update mass, inertia and CG
-    inertia = [
-        AXX 0.0 AXZ;
-        0.0 AYY 0.0;
-        AXZ 0.0 AZZ
-    ]  # Kg·m²
 
     # Calculate forces and moments
     # Propulsion

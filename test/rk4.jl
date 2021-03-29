@@ -47,9 +47,8 @@ xcg = 0.35
 x_dot, outputs = F16.f(
     time,
     x_stev,
-    F16.MASS,
-    xcg,
     controls_stev,
+    F16.F16Stevens(F16.MASS, F16.INERTIA, xcg),
     F16StevensAtmosphere,
     LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M),
 )
@@ -77,12 +76,11 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
     F16.f,
     x_stev,
     controls_stev,
+    F16.F16Stevens(F16.MASS, F16.INERTIA, xcg),
     F16StevensAtmosphere,
     LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M),
     0.0,
     0.3,
-    F16.MASS,
-    xcg,
 )
 
 # Linear acceleration
@@ -103,8 +101,16 @@ x = x_trim
 controls = ConstantInput.(controls_trim)
 
 results = simulate(
-    t0, t1, dt, x, F16.MASS, xcg, controls, F16StevensAtmosphere, LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M);
-    solver=RK4(), solve_args=Dict(:reltol=>1e-10, :saveat=>dt)
+    t0,
+    t1,
+    dt,
+    x,
+    controls,
+    F16.F16Stevens(F16.MASS, F16.INERTIA, xcg),
+    F16StevensAtmosphere,
+    LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M);
+    solver=RK4(),
+    solve_args=Dict(:reltol=>1e-10, :saveat=>dt),
     )
 
 # Check X, Y against Stevens

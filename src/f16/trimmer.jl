@@ -3,7 +3,7 @@ using NLsolve
 
 
 function trimmer(
-    fun, x_guess, controls_guess, atmosphere, gravity, γ=0.0, ψ_dot=0.0, mass=MASS, xcg=0.35;
+    fun, x_guess, controls_guess, aircraft, atmosphere, gravity, γ=0.0, ψ_dot=0.0;
     show_trace=false,
     ftol=1e-16,
     iterations=5000
@@ -38,8 +38,6 @@ function trimmer(
 
     # CONSTS
     consts = [
-        mass,  # MASS,
-        xcg,  # XCG
         x_guess[1],  # TAS (m/s)
         x_guess[6],  # psi (rad)
         x_guess[10],  # north (m)
@@ -47,6 +45,7 @@ function trimmer(
         x_guess[12],  # alt (m)
         ψ_dot,  # ψ_dot (rad/s)
         γ,  # γ (rad)
+        aircraft,
         atmosphere,
         gravity,
     ]
@@ -70,17 +69,16 @@ end
 
 function trim_cost_function(sol, consts, fun; full_output=false)
 
-    mass = consts[1]
-    xcg = consts[2]
-    tas = consts[3]
-    ψ = consts[4]
-    x = consts[5]
-    y = consts[6]
-    alt = consts[7]
-    ψ_dot = consts[8]
-    γ = consts[9]
-    atmosphere = consts[10]
-    gravity = consts[11]
+    tas = consts[1]
+    ψ = consts[2]
+    x = consts[3]
+    y = consts[4]
+    alt = consts[5]
+    ψ_dot = consts[6]
+    γ = consts[7]
+    aircraft = consts[8]
+    atmosphere = consts[9]
+    gravity = consts[10]
 
     α = sol[1]
     β = sol[2]
@@ -89,7 +87,7 @@ function trim_cost_function(sol, consts, fun; full_output=false)
 
     x = calculate_state_with_constrains(tas, α, β, γ, ψ_dot, x, y, alt, ψ, thtl)
 
-    x_dot, outputs = fun(time, x, mass, xcg, controls, atmosphere, gravity)
+    x_dot, outputs = fun(time, x, controls, aircraft, atmosphere, gravity)
 
     cost = [x_dot[1:3]..., x_dot[7:9]...]
 
