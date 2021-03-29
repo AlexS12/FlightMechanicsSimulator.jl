@@ -19,7 +19,7 @@ function simulate(tini, tfin, dt, x0, controls, aircraft, atmosphere, gravity;
     tspan = (tini, tfin)
     p = [controls, aircraft, atmosphere, gravity]
 
-    prob = ODEProblem{false}(F16Stevens.f, x0, tspan, p)
+    prob = ODEProblem{false}(f, x0, tspan, p)
     sol = solve(prob, solver; solve_args...)
 
     results = hcat([[sol.t[ii]; sol.u[ii]] for ii in 1:length(sol.t)]...)'
