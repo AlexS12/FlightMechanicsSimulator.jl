@@ -72,7 +72,7 @@ cost =
 @test isapprox(x_dot[12], 0.0, atol = 1e-4)
 
 # RETRIM to refine flying condition
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trimmer(
     f,
     x_stev,
     controls_stev,

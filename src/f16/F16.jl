@@ -16,6 +16,5 @@ include("aircraft.jl")
 include("adc.jl")
 include("engine.jl")
 include("aero.jl")
-include("trimmer.jl")
 
 end

@@ -55,7 +55,7 @@ for case in eachrow(trim_test_data)
     ]
 
     # TRIM
-    x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
+    x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trimmer(
         f,
         x,
         controls,
@@ -102,7 +102,7 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trimmer(
         f,
         x,
         controls,
@@ -152,7 +152,7 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trimmer(
         f,
         x,
         controls,
@@ -202,7 +202,7 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trimmer(
         f,
         x,
         controls,
@@ -253,7 +253,7 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trimmer(
         f,
         x,
         controls,

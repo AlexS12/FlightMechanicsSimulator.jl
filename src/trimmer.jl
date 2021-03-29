@@ -1,6 +1,3 @@
-# using Optim
-using NLsolve
-
 
 function trimmer(
     fun, x_guess, controls_guess, aircraft, atmosphere, gravity, γ=0.0, ψ_dot=0.0;
@@ -86,7 +83,9 @@ function trim_cost_function(sol, consts, fun; full_output=false)
     controls = sol[3:6]
     gd = get_gravity_accel(gravity)
 
-    x = calculate_state_with_constrains(tas, α, β, γ, ψ_dot, x, y, gd, alt, ψ, thtl)
+    ϕ, θ, p, q, r = apply_trimmer_constrains(tas, α, β, γ, ψ_dot, x, y, gd, alt, ψ, thtl)
+    # Construct state vector
+    x = [tas, α, β, ϕ, θ, ψ, p, q, r, x, y, alt, tgear(aircraft, thtl)]
 
     x_dot, outputs = fun(time, x, controls, aircraft, atmosphere, gravity)
 
@@ -100,15 +99,13 @@ function trim_cost_function(sol, consts, fun; full_output=false)
 end
 
 
-function calculate_state_with_constrains(tas, α, β, γ, ψ_dot, x, y, gd, alt, ψ, thtl)
+function apply_trimmer_constrains(tas, α, β, γ, ψ_dot, x, y, gd, alt, ψ, thtl)
     # Coordinated turn bank --> phi
     ϕ = coordinated_turn_bank(ψ_dot, α, β, tas, γ, gd)
     # Climb -> theta
     θ = rate_of_climb_constrain_no_wind(γ, α, β, ϕ)
     # Angular kinemtic -> p, q, r
     p, q, r = ψθϕ_dot_2_pqr(ψ_dot, 0, 0, θ, ϕ)
-    # Construct state vector
-    x = [tas, α, β, ϕ, θ, ψ, p, q, r, x, y, alt, tgear(thtl)]
 
-    return x
+    return ϕ, θ, p, q, r
 end
