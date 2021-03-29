@@ -30,20 +30,20 @@ const GD = floor(gD * M2FT, digits=2)
 
 
 # TODO: doc
-struct F16Stevens{T}<:Aircraft
+struct F16{T}<:Aircraft
     mass::T
     inertia::SMatrix{3, 3, T}
     cg_mac::T
 end
 
 
-F16Stevens() = F16Stevens(MASS, INERTIA, XCGR)
+F16() = F16(MASS, INERTIA, XCGR)
 
 
-get_mass(ac::F16Stevens) = ac.mass
-get_inertia_tensor(ac::F16Stevens) = ac.inertia
-get_xcg_mac(ac::F16Stevens) = ac.cg_mac
+get_mass(ac::F16) = ac.mass
+get_inertia_tensor(ac::F16) = ac.inertia
+get_xcg_mac(ac::F16) = ac.cg_mac
 
-get_surface(ac::F16Stevens) = S
-get_chord(ac::F16Stevens) = CBAR
-get_wing_span(ac::F16Stevens) = B
+get_surface(ac::F16) = S
+get_chord(ac::F16) = CBAR
+get_wing_span(ac::F16) = B

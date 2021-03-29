@@ -14,8 +14,8 @@ using FlightMechanicsUtils
     # a wrong atmosphere layer will be chosen
     df = df[(!isapprox).(df[:, :alt], 35000), :]
     for case in eachrow(df)
-        T1, ρ1, a1, p1 = F16.atmosphere_f16(case.alt * FT2M)
-        T2, ρ2, a2, p2 = F16.atmosphere(case.alt)
+        T1, ρ1, a1, p1 = F16Stevens.atmosphere_f16(case.alt * FT2M)
+        T2, ρ2, a2, p2 = F16Stevens.atmosphere(case.alt)
         @test isapprox(T1*KEL2RANK, T2)
         @test isapprox(ρ1*KGM32SLUGFT3, ρ2)
         @test isapprox(a1*M2FT, a2)
@@ -29,13 +29,13 @@ end
     # Morelli, Eugene A., and Vladislav Klein. Aircraft system identification: Theory and
     # practice. Williamsburg, VA: Sunflyte Enterprises, 2016. Appendix C, p. 574.
     # Test sea level
-    T, ρ, a, p = F16.atmosphere(0.0)  # 0 ft
+    T, ρ, a, p = F16Stevens.atmosphere(0.0)  # 0 ft
     @test_broken isapprox(T, 518.67, atol=0.005)  # Rankine
     @test_broken isapprox(p, 2116.2, atol=0.05)  # psf
     @test_broken isapprox(ρ, 0.0023769, atol=5e-8)  # slug/ft³
     @test_broken isapprox(a, 1116.44, atol=0.005)  # ft/s
     # Test in tropopause
-    T, ρ, a, p = F16.atmosphere(50000.0)  # 0 ft
+    T, ρ, a, p = F16Stevens.atmosphere(50000.0)  # 0 ft
     @test_broken isapprox(T, 389.97, atol=0.005)  # Rankine
     @test_broken isapprox(p, 243.6, atol=0.05)  # psf
     @test_broken isapprox(ρ, 0.0003639, atol=5e-8)  # slug/ft³

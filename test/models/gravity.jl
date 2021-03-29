@@ -7,7 +7,7 @@ using Test
     # Check constructor with default value
     grav_1 = LHDownGravity()
     # Check constructor with custom value
-    grav_2 = LHDownGravity(F16.GD * FT2M)
+    grav_2 = LHDownGravity(F16Stevens.GD * FT2M)
 
     # Check return type
     @test isa(grav_1, LHDownGravity)

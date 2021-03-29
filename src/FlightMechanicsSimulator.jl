@@ -35,7 +35,10 @@ export calculate_aero_forces_moments
 export tgear
 include("models/aircraft.jl")
 
+
 export F16
-include("f16/F16.jl")  # F16 submodule
+export F16Stevens
+include("F16Stevens/F16Stevens.jl")  # F16 submodule
+using .F16Stevens
 
 end

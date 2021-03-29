@@ -1,4 +1,4 @@
-module F16
+module F16Stevens
 
 using StaticArrays
 using FlightMechanicsUtils
@@ -12,6 +12,8 @@ import ..FlightMechanicsSimulator: calculate_pdot
 import ..FlightMechanicsSimulator: calculate_aero_forces_moments
 import ..FlightMechanicsSimulator: tgear
 
+
+export F16
 include("aircraft.jl")
 include("adc.jl")
 include("engine.jl")

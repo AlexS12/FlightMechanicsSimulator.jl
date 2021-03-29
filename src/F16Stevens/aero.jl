@@ -255,7 +255,7 @@ DNDA(α, β) = interp2d(α, β, 0.2, 0.1, -1, -2, 8, 2, cnda_data, 3, 4)
 DNDR(α, β) = interp2d(α, β, 0.2, 0.1, -1, -2, 8, 2, cndr_data, 3, 4)
 
 
-function calculate_aero_forces_moments(ac::F16Stevens, x, controls, xcg, qbar, S, b, c)
+function calculate_aero_forces_moments(ac::F16, x, controls, xcg, qbar, S, b, c)
 
     # Unpack controls
     THTL = controls[1]  # 0-1
