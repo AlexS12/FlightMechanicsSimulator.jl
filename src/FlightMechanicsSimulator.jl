@@ -9,7 +9,7 @@ using FlightMechanicsUtils
 export sixdof_aero_earth_euler_fixed_mass
 include("dynamic_systems.jl")
 
-export trimmer
+export trim
 include("trimmer.jl")
 
 export simulate

@@ -1,5 +1,5 @@
 
-function trimmer(
+function trim(
     fun, x_guess, controls_guess, aircraft, atmosphere, gravity, γ=0.0, ψ_dot=0.0;
     show_trace=false,
     ftol=1e-16,
