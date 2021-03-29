@@ -29,7 +29,7 @@ function get_xcg_mac(ac::Aircraft) end
 """
     get_surface(ac:Aircraft)
 
-Get aircraft wing surface (m²).
+Get aircraft wing surface, ``S`` (m²).
 """
 function get_surface(ac::Aircraft) end
 
@@ -37,7 +37,7 @@ function get_surface(ac::Aircraft) end
 """
     get_chord(ac::Aircraft)
 
-Get aircraft mean aerodynamic chord (m).
+Get aircraft mean aerodynamic chord, ``c``, (m).
 """
 function get_chord(ac::Aircraft) end
 
