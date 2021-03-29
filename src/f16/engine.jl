@@ -142,3 +142,5 @@ calculate_prop_gyro_effects(ac::F16Stevens) = [HX, 0, 0]
 
 
 calculate_pdot(ac::F16Stevens, thtl, pow) = pdot(pow, tgear(thtl))
+
+tgear(ac::F16Stevens, thtl) = tgear(thtl)

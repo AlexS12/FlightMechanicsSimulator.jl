@@ -27,6 +27,7 @@ export get_mass, get_inertia_tensor, get_cg_mac
 export get_chord, get_surface, get_wing_span
 export calculate_prop_forces_moments, calculate_prop_gyro_effects, calculate_pdot
 export calculate_aero_forces_moments
+export tgear
 include("models/aircraft.jl")
 
 export F16

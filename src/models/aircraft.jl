@@ -17,3 +17,6 @@ function calculate_prop_gyro_effects end
 function calculate_pdot end
 
 function calculate_aero_forces_moments end
+
+# Flight Control system
+function tgear end

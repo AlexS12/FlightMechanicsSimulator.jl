@@ -10,6 +10,7 @@ import ..FlightMechanicsSimulator: calculate_prop_forces_moments
 import ..FlightMechanicsSimulator: calculate_prop_gyro_effects
 import ..FlightMechanicsSimulator: calculate_pdot
 import ..FlightMechanicsSimulator: calculate_aero_forces_moments
+import ..FlightMechanicsSimulator: tgear
 
 include("aircraft.jl")
 include("adc.jl")
