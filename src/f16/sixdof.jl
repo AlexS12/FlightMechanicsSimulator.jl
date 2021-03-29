@@ -53,7 +53,8 @@ function f(time, x, controls, aircraft, atmosphere, gravity)
     p = get_pressure(atmosphere)
 
     # Air data computer
-    amach, qbar = adc(vt, T, ρ, a, p)
+    amach = vt / a  # mach number
+    qbar = 0.5 * ρ * vt^2  # dynamic pressure
 
     # Calculate forces and moments
     # Propulsion
