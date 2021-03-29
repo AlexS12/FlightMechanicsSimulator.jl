@@ -7,7 +7,6 @@ include("constants.jl")
 include("adc.jl")
 include("engine.jl")
 include("aero.jl")
-include("gravity.jl")
 include("sixdof.jl")
 include("trimmer.jl")
 
