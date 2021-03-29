@@ -28,6 +28,8 @@ function f(time, x, mass, xcg, controls, atmosphere, gravity)
     # C     x(11) -> East (m)
     # C     x(12) -> Altitude (m)
     # C     x(13) -> pow
+    # TODO: pass as argument
+    ac = F16Stevens()
 
     # Assign state
     vt = x[1]
@@ -60,10 +62,10 @@ function f(time, x, mass, xcg, controls, atmosphere, gravity)
 
     # Calculate forces and moments
     # Propulsion
-    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(x, amach, controls)
-    h = calculate_prop_gyro_effects()
+    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(ac, x, amach, controls)
+    h = calculate_prop_gyro_effects(ac)
     # Aerodynamics
-    Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(x, controls, xcg, qbar, S, B, CBAR)
+    Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(ac, x, controls, xcg, qbar, S, B, CBAR)
     # Gravity
     Fgx, Fgy, Fgz = get_gravity_body(gravity, θ, ϕ) .* mass
 
@@ -83,7 +85,7 @@ function f(time, x, mass, xcg, controls, atmosphere, gravity)
 
     # Engine dynamic model
     thtl = controls[1]
-    pdot = calculate_pdot(thtl, pow)
+    pdot = calculate_pdot(ac, thtl, pow)
 
     x_dot = [x_dot..., pdot]
 

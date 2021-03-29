@@ -7,9 +7,6 @@ using FlightMechanicsUtils
 export sixdof_aero_earth_euler_fixed_mass
 include("dynamic_systems.jl")
 
-export F16
-include("f16/F16.jl")  # F16 submodule
-
 export simulate
 include("simulation.jl")
 
@@ -23,5 +20,13 @@ include("models/atmosphere.jl")
 export LHDownGravity
 export get_gravity_accel, get_gravity_body, get_gravity_horizon
 include("models/gravity.jl")
+
+export Aircraft
+export get_mass, get_inertia_tensor, get_cg_mac
+export get_chord, get_surface, get_wing_span
+include("models/aircraft.jl")
+
+export F16
+include("f16/F16.jl")  # F16 submodule
 
 end
