@@ -45,9 +45,21 @@ function get_chord(ac::Aircraft) end
 """
     get_wing_span(ac::Aircraft)
 
-Get aircraft wing span (m).
+Get aircraft wing span, ``b``, (m).
 """
 function get_wing_span(ac::Aircraft) end
+
+
+"""
+    get_aspect_ratio(ac::Aircraft)
+
+Get aspect ratio, ``b^2/S``.
+"""
+function get_aspect_ratio(ac::Aircraft)
+    b = get_wing_span(ac)
+    S = get_surface(ac)
+    return b^2 / S
+end
 
 # Forces and moments
 # TODO: document once headers are standarized. Right now they are too specific to F16Stevens

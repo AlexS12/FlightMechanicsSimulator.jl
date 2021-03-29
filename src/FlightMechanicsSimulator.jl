@@ -29,7 +29,7 @@ include("models/gravity.jl")
 
 export Aircraft
 export get_mass, get_inertia_tensor, get_xcg_mac
-export get_chord, get_surface, get_wing_span
+export get_chord, get_surface, get_wing_span, get_aspect_ratio
 export calculate_prop_forces_moments, calculate_prop_gyro_effects, calculate_pdot
 export calculate_aero_forces_moments
 export tgear
