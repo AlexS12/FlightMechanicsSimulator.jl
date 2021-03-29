@@ -21,6 +21,17 @@ Get gravity vector in local horizon coordinates (North, East, Down) (m/s²).
 function get_gravity_horizon(g::Gravity) end
 
 
+"""
+    get_gravity_horizon(g::Gravity, θ, ϕ)
+
+Get gravity vector in body axis (m/s²).
+"""
+function get_gravity_body(g::Gravity, θ, ϕ)
+    ax, ay, az = horizon2body(get_gravity_horizon(g)..., 0.0, θ, ϕ)
+    return @SVector [ax, ay, az]
+end
+
+
 # ------------------------------ Local Horizon Down Gravity -------------------------------
 """
     LHDownGravity{T<:Number} <: Gravity

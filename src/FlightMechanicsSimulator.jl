@@ -21,7 +21,7 @@ export get_density, get_height, get_pressure, get_sound_velocity, get_temperatur
 include("models/atmosphere.jl")
 
 export LHDownGravity
-export get_gravity_accel, get_gravity_horizon
+export get_gravity_accel, get_gravity_body, get_gravity_horizon
 include("models/gravity.jl")
 
 end
