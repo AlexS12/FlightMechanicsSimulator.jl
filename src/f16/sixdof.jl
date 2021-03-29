@@ -83,10 +83,9 @@ function f(time, x, mass, xcg, controls, atmosphere, gravity)
 
     # Engine dynamic model
     thtl = controls[1]
-    cpow = tgear(thtl)
-    xd_13 = pdot(pow, cpow)
+    pdot = calculate_pdot(thtl, pow)
 
-    x_dot = [x_dot..., xd_13]
+    x_dot = [x_dot..., pdot]
 
     # Outputs
     gravity_down = get_gravity_accel(gravity)

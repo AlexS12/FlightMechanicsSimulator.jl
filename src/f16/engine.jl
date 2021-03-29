@@ -137,4 +137,8 @@ function calculate_prop_forces_moments(x, mach, controls)
     return [thrust_, 0.0, 0.0, 0.0, 0.0, 0.0]
 end
 
+
 calculate_prop_gyro_effects() = [HX, 0, 0]
+
+
+calculate_pdot(thtl, pow) = pdot(pow, tgear(thtl))
