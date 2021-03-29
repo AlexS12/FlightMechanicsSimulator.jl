@@ -60,7 +60,7 @@ function f(time, x, controls, aircraft, atmosphere, gravity)
     ac = aircraft
 
     mass = get_mass(ac)
-    xcg = get_cg_mac(ac)
+    xcg = get_xcg_mac(ac)
     inertia = get_inertia_tensor(ac)
 
     S = get_surface(ac)

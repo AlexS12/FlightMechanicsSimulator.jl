@@ -4,7 +4,14 @@ abstract type Aircraft end
 # Mass properties
 function get_mass(ac::Aircraft) end
 function get_inertia_tensor(ac::Aircraft) end
-function get_cg_mac(ac::Aircraft) end
+
+
+"""
+    get_xcg_mac(ac::Aircraft)
+
+Get aircraft center of gravity position (units of mean aerodynamic chord).
+"""
+function get_xcg_mac(ac::Aircraft) end
 
 # Geometric properties
 function get_surface(ac::Aircraft) end

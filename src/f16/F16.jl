@@ -4,7 +4,7 @@ using StaticArrays
 using FlightMechanicsUtils
 using ..FlightMechanicsSimulator
 
-import ..FlightMechanicsSimulator: get_mass, get_inertia_tensor, get_cg_mac
+import ..FlightMechanicsSimulator: get_mass, get_inertia_tensor, get_xcg_mac
 import ..FlightMechanicsSimulator: get_chord, get_surface, get_wing_span
 import ..FlightMechanicsSimulator: calculate_prop_forces_moments
 import ..FlightMechanicsSimulator: calculate_prop_gyro_effects

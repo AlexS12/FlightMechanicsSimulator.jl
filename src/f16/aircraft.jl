@@ -42,7 +42,7 @@ F16Stevens() = F16Stevens(MASS, INERTIA, XCGR)
 
 get_mass(ac::F16Stevens) = ac.mass
 get_inertia_tensor(ac::F16Stevens) = ac.inertia
-get_cg_mac(ac::F16Stevens) = ac.cg_mac
+get_xcg_mac(ac::F16Stevens) = ac.cg_mac
 
 get_surface(ac::F16Stevens) = S
 get_chord(ac::F16Stevens) = CBAR
