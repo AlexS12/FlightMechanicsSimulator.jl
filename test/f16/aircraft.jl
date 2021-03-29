@@ -19,7 +19,7 @@ using Test
     @test isapprox(get_chord(ac1), F16Stevens.CBAR)
     @test isapprox(get_aspect_ratio(ac1), F16Stevens.B^2 / F16Stevens.S)
 
-    inertia = @SMatrix ones(Float64, 3, 3)
+    inertia = @SMatrix [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0]
     ac2 = F16(12345.0, inertia, 0.5)
 
     @test isapprox(get_mass(ac2), 12345.0)
