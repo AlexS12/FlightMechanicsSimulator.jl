@@ -1,16 +1,20 @@
 module FlightMechanicsSimulator
 
+using NLsolve
+using OrdinaryDiffEq
 using StaticArrays
+
 using FlightMechanicsUtils
 
 
 export sixdof_aero_earth_euler_fixed_mass
 include("dynamic_systems.jl")
 
-export F16
-include("f16/F16.jl")  # F16 submodule
+export trim
+include("trimmer.jl")
 
 export simulate
+export f
 include("simulation.jl")
 
 export ConstantInput, StepInput, DoubletInput, RampInput, SinusoidalInput, get_value
@@ -23,5 +27,19 @@ include("models/atmosphere.jl")
 export LHDownGravity
 export get_gravity_accel, get_gravity_body, get_gravity_horizon
 include("models/gravity.jl")
+
+export Aircraft
+export get_mass, get_inertia_tensor, get_xcg_mac
+export get_chord, get_surface, get_wing_span, get_aspect_ratio
+export calculate_prop_forces_moments, calculate_prop_gyro_effects, calculate_pdot
+export calculate_aero_forces_moments
+export tgear
+include("models/aircraft.jl")
+
+
+export F16
+export F16Stevens
+include("F16Stevens/F16Stevens.jl")  # F16 submodule
+using .F16Stevens
 
 end

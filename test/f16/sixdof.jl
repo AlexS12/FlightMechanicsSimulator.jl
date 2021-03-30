@@ -8,7 +8,7 @@ using FlightMechanicsUtils
 df = DataFrame(CSV.File("data/sixdof.csv"))
 # Test file was wrong before and longitudinal load factor
 # needs to be corrected
-df[!, "o3"] = df[!, "o3"] / (FlightMechanicsSimulator.F16.MASS * KG2LB / F16.GD)
+df[!, "o3"] = df[!, "o3"] / (FlightMechanicsSimulator.F16Stevens.MASS * KG2LB / F16Stevens.GD)
 
 for case in eachrow(df)
     x = Array(case[["x$ii" for ii in 1:13]])
@@ -19,14 +19,13 @@ for case in eachrow(df)
     controls = Array(case[["c$ii" for ii in 1:4]])
 
     xd1, outputs1 =
-        F16.f(
+        f(
             case.time,
             x,
-            F16.MASS,
-            case.xcg,
             controls,
+            F16(F16Stevens.MASS, F16Stevens.INERTIA, case.xcg),
             F16StevensAtmosphere,
-            LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M),
+            LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
         )
 
     xd1[1] *= M2FT

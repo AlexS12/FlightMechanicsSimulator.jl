@@ -124,7 +124,7 @@ function thrust(pow, alt, rmach)  # Engine thrust model
 end
 
 
-function calculate_prop_forces_moments(x, mach, controls)
+function calculate_prop_forces_moments(ac::F16, x, mach, controls)
 
     # Assign state & control variables
     alt = x[12]
@@ -137,4 +137,10 @@ function calculate_prop_forces_moments(x, mach, controls)
     return [thrust_, 0.0, 0.0, 0.0, 0.0, 0.0]
 end
 
-calculate_prop_gyro_effects() = [HX, 0, 0]
+
+calculate_prop_gyro_effects(ac::F16) = [HX, 0, 0]
+
+
+calculate_pdot(ac::F16, thtl, pow) = pdot(pow, tgear(thtl))
+
+tgear(ac::F16, thtl) = tgear(thtl)

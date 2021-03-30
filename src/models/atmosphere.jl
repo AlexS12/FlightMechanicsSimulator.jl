@@ -87,7 +87,7 @@ Calculate atmosphere for given height, `h` (m).
 - `F16StevensAtmosphere`
 """
 function F16StevensAtmosphere(h)
-    T, ρ, a, p = F16.atmosphere_f16(h)
+    T, ρ, a, p = F16Stevens.atmosphere_f16(h)
     return F16StevensAtmosphere(T, p, ρ, a, h)
 end
 

@@ -55,16 +55,15 @@ for case in eachrow(trim_test_data)
     ]
 
     # TRIM
-    x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
-        F16.f,
+    x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
+        f,
         x,
         controls,
+        F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
         F16StevensAtmosphere,
-        LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M),
+        LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
         0.0,
         0.0,
-        F16.MASS,
-        xcg;
     )
 
     @test isapprox(cost, zeros(6), atol=1e-12)
@@ -103,16 +102,15 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
-        F16.f,
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
+        f,
         x,
         controls,
+        F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
         F16StevensAtmosphere,
-        LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M),
+        LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
         0.0,
         0.0,
-        F16.MASS,
-        xcg;
     )
 
 @test isapprox(cost, zeros(6), atol=1e-12)
@@ -154,16 +152,15 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
-        F16.f,
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
+        f,
         x,
         controls,
+        F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
         F16StevensAtmosphere,
-        LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M),
+        LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
         0.0,
         0.0,
-        F16.MASS,
-        xcg;
     )
 
 @test isapprox(cost, zeros(6), atol=1e-12)
@@ -205,16 +202,15 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
-        F16.f,
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
+        f,
         x,
         controls,
+        F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
         F16StevensAtmosphere,
-        LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M),
+        LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
         0.0,
         0.0,
-        F16.MASS,
-        xcg;
     )
 
 @test isapprox(cost, zeros(6), atol=1e-12)
@@ -257,16 +253,15 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = F16.trimmer(
-        F16.f,
+x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
+        f,
         x,
         controls,
+        F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
         F16StevensAtmosphere,
-        LHDownGravity(FlightMechanicsSimulator.F16.GD*FT2M),
+        LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
         0.0,
         0.3,  # rad/s
-        F16.MASS,
-        xcg;
     )
 
 @test isapprox(cost, zeros(6), atol=1e-12)
