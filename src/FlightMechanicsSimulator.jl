@@ -1,6 +1,7 @@
 module FlightMechanicsSimulator
 
 using NLsolve
+using OrdinaryDiffEq
 using StaticArrays
 
 using FlightMechanicsUtils

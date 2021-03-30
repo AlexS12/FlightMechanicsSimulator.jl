@@ -1,6 +1,3 @@
-using OrdinaryDiffEq
-
-
 """
     simulate(tini, tfin, dt, x0, mass, xcg, controls)
 
