@@ -92,6 +92,11 @@ function f(time, x, controls, aircraft, atmosphere, gravity)
     # Propulsion
     Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(ac, x, amach, controls)
     h = calculate_prop_gyro_effects(ac)
+
+    # Engine dynamic model
+    thtl = controls[1]
+    pdot = calculate_pdot(ac, thtl, pow)
+
     # Aerodynamics
     Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(ac, x, controls, xcg, qbar, S, b, c)
     # Gravity
@@ -110,10 +115,6 @@ function f(time, x, controls, aircraft, atmosphere, gravity)
     moments = [L, M, N]
 
     x_dot = sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
-
-    # Engine dynamic model
-    thtl = controls[1]
-    pdot = calculate_pdot(ac, thtl, pow)
 
     x_dot = [x_dot..., pdot]
 
