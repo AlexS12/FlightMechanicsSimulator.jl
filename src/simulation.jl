@@ -35,13 +35,23 @@ function f(x, p, t)
     # TODO: receive as argument in p
     dynamic_system = SixDOFAeroEuler(SVector{12}(x[1:12]))
 
+    atmosphere = atmosphere(x[12])
+
     x_dot, outputs = f(time, x, dynamic_system, controls_arr, aircraft, atmosphere, gravity)
 
     return x_dot
 end
 
 
-function f(time, x_, dynamic_system, controls, aircraft, atmosphere, gravity)
+function f(
+    time,
+    x_,
+    dynamic_system::DynamicSystemState,
+    controls,
+    aircraft::Aircraft,
+    atmosphere::Atmosphere,
+    gravity::Gravity
+    )
 
     # C     x(1)  -> vt (m/s)
     # C     x(2)  -> α (rad)
@@ -83,7 +93,6 @@ function f(time, x_, dynamic_system, controls, aircraft, atmosphere, gravity)
     # Not part of Dynamic System
     pow = x_[13]
 
-    atmosphere = atmosphere(height)
     T = get_temperature(atmosphere)
     ρ = get_density(atmosphere)
     a = get_sound_velocity(atmosphere)

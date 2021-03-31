@@ -27,7 +27,7 @@ for case in eachrow(df)
             SixDOFAeroEuler(SVector{12}(x[1:12])),
             controls,
             F16(F16Stevens.MASS, F16Stevens.INERTIA, case.xcg),
-            F16StevensAtmosphere,
+            F16StevensAtmosphere(x[12]),
             LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
         )
 

@@ -53,7 +53,7 @@ x_dot, outputs = f(
     SixDOFAeroEuler(SVector{12}(x_stev[1:12])),
     controls_stev,
     F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
-    F16StevensAtmosphere,
+    F16StevensAtmosphere(x_stev[12]),
     LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
 )
 
@@ -81,7 +81,7 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
     x_stev,
     controls_stev,
     F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
-    F16StevensAtmosphere,
+    F16StevensAtmosphere(x_stev[12]),
     LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
     0.0,
     0.3,
