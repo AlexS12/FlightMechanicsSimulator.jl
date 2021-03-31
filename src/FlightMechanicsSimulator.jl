@@ -1,5 +1,6 @@
 module FlightMechanicsSimulator
 
+using DataFrames
 using NLsolve
 using OrdinaryDiffEq
 using StaticArrays
@@ -12,10 +13,6 @@ include("dynamic_systems.jl")
 
 export trim
 include("trimmer.jl")
-
-export simulate
-export f
-include("simulation.jl")
 
 export ConstantInput, StepInput, DoubletInput, RampInput, SinusoidalInput, get_value
 include("models/inputs.jl")
@@ -41,6 +38,10 @@ export get_x, state_eqs
 export SixDOFAeroEulerDot
 export get_xdot, get_dynamic_system_state
 include("models/dynamic_system.jl")
+
+export simulate
+export f
+include("simulation.jl")
 
 export F16
 export F16Stevens

@@ -49,8 +49,7 @@ controls_stev = [0.8349601, -1.481766, 0.09553108, -0.4118124]
 xcg = 0.35
 x_dot, outputs = f(
     time,
-    x_stev,
-    SixDOFAeroEuler(SVector{12}(x_stev[1:12])),
+    SixDOFAeroEuler(x_stev),
     controls_stev,
     F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
     F16StevensAtmosphere(x_stev[12]),
@@ -108,8 +107,7 @@ results = simulate(
     t0,
     t1,
     dt,
-    x,
-    SixDOFAeroEuler(x[1:12]),
+    SixDOFAeroEuler(x),
     controls,
     F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
     F16StevensAtmosphere,
@@ -147,22 +145,22 @@ xy_trajectory_data = [
  ]
 
  for case in eachrow(xy_trajectory_data)
-    idx = findall(x->abs(x-case[1])<1e-10, results[:, 1])[1]
-    @test isapprox(case[2], results[idx, 11] * M2FT, atol=20)
-    @test isapprox(case[3], results[idx, 12] * M2FT, atol=20)
+    r = results[findall(in(case[1]), results.time), :]
+    @test isapprox(case[2], r[1, :x] * M2FT, atol=20)
+    @test isapprox(case[3], r[1, :y] * M2FT, atol=20)
  end
 
 # Select last time step state
- x = results[end, 2:end]
+ x = results[end, :]
 
 # Check that TAS, α, β, θ, ϕ, p, q, r, alt, pow remain constant
-@test isapprox(x[1], x_trim[1])  # TAS
-@test isapprox(x[2], x_trim[2])  # α
-@test isapprox(x[3], x_trim[3])  # β
-@test isapprox(x[4], x_trim[4])  # θ
-@test isapprox(x[5], x_trim[5])  # ϕ
-@test isapprox(x[7], x_trim[7])  # p
-@test isapprox(x[8], x_trim[8])  # q
-@test isapprox(x[9], x_trim[9])  # r
-@test isapprox(x[12], x_trim[12], atol=1e-12)  # alt
-@test isapprox(x[13], x_trim[13])  # pow
+@test isapprox(x[:tas], x_trim[1])  # TAS
+@test isapprox(x[:α], x_trim[2])  # α
+@test isapprox(x[:β], x_trim[3])  # β
+@test isapprox(x[:ϕ], x_trim[4])  # ϕ
+@test isapprox(x[:θ], x_trim[5])  # θ
+@test isapprox(x[:p], x_trim[7])  # p
+@test isapprox(x[:q], x_trim[8])  # q
+@test isapprox(x[:r], x_trim[9])  # r
+@test isapprox(x[:z], x_trim[12], atol=1e-12)  # alt
+@test isapprox(x[:pow], x_trim[13])  # pow

@@ -9,19 +9,22 @@ Propagate a simulation from tini to tfin with dt time step.
 - controls: inputs. Array{4, Input} according to `F16Stevens.f`
 - aircraft: aircraft instance.
 """
-function simulate(tini, tfin, dt, x0, dss, controls, aircraft, atmosphere, gravity;
+function simulate(tini, tfin, dt, dss, controls, aircraft, atmosphere, gravity;
     solver=TSit5(), solve_args=Dict()
     )
 
     tspan = (tini, tfin)
     p = [dss, controls, aircraft, atmosphere, gravity]
 
+    x0 = get_x(dss)
     prob = ODEProblem{false}(f, x0, tspan, p)
     sol = solve(prob, solver; solve_args...)
 
-    results = hcat([[sol.t[ii]; sol.u[ii]] for ii in 1:length(sol.t)]...)'
+    df = DataFrame(sol')
+    rename!(df, get_x_names(dss))
+    df[!, :time] = sol.t
 
-    return results
+    return df
 end
 
 
@@ -34,15 +37,13 @@ function f(x, p, t)
 
     controls_arr = get_value.(controls, t)
     # TODO: receive as argument in p
-    dynamic_system = typeof(dss)(
-        SVector{get_n_states(dss)}(
-            x[1:get_n_states(dss)]
-        )
+    dynamic_system_state = typeof(dss)(
+        SVector{length(x)}(x)
     )
 
     atmosphere = atmosphere(x[12])
 
-    x_dot, outputs = f(time, x, dynamic_system, controls_arr, aircraft, atmosphere, gravity)
+    x_dot, outputs = f(time, dynamic_system_state, controls_arr, aircraft, atmosphere, gravity)
 
     return x_dot
 end
@@ -50,7 +51,6 @@ end
 
 function f(
     time,
-    x_,
     dynamic_system::DynamicSystemState,
     controls,
     aircraft::Aircraft,
@@ -94,9 +94,7 @@ function f(
     q = x[8]
     r = x[9]
     height = x[12]
-
-    # Not part of Dynamic System
-    pow = x_[13]
+    pow = x[13]
 
     T = get_temperature(atmosphere)
     ρ = get_density(atmosphere)
@@ -110,7 +108,7 @@ function f(
 
     # Calculate forces and moments
     # Propulsion
-    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(ac, x_, amach, controls)
+    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(ac, x, amach, controls)
     h = calculate_prop_gyro_effects(ac)
 
     # Engine dynamic model
@@ -135,10 +133,10 @@ function f(
     moments = [L, M, N]
 
     dynamic_system_state_dot = state_eqs(
-        dynamic_system, time, mass, inertia, forces, moments, h
+        dynamic_system, time, mass, inertia, forces, moments, h, pdot
     )
 
-    x_dot = [get_xdot(dynamic_system_state_dot)..., pdot]
+    x_dot = get_xdot(dynamic_system_state_dot)
 
     # Outputs
     gravity_down = get_gravity_accel(gravity)

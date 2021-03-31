@@ -23,14 +23,14 @@ for case in eachrow(df)
     xd1, outputs1 =
         f(
             case.time,
-            x,
-            SixDOFAeroEuler(SVector{12}(x[1:12])),
+            SixDOFAeroEuler(x),
             controls,
             F16(F16Stevens.MASS, F16Stevens.INERTIA, case.xcg),
             F16StevensAtmosphere(x[12]),
             LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
         )
 
+    xd1 = Array(xd1)  # Allow modification xd1 was a SVector
     xd1[1] *= M2FT
     xd1[10] *= M2FT
     xd1[11] *= M2FT
