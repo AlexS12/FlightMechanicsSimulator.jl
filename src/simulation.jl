@@ -29,7 +29,7 @@ function f(x, p, t)
     controls = p[1]
     aircraft = p[2]
     atmosphere = p[3]
-    gravity=p[4]
+    gravity = p[4]
 
     controls_arr = get_value.(controls, t)
     # TODO: receive as argument in p
