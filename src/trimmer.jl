@@ -1,6 +1,6 @@
 
 function trim(
-    fun, x_guess, controls_guess, aircraft, atmosphere, gravity, γ=0.0, ψ_dot=0.0;
+    x_guess, controls_guess, aircraft, atmosphere, gravity, γ=0.0, ψ_dot=0.0;
     show_trace=false,
     ftol=1e-16,
     iterations=5000
@@ -47,7 +47,7 @@ function trim(
         gravity,
     ]
 
-    f_opt(sol) = trim_cost_function(sol, consts, fun; full_output=false)
+    f_opt(sol) = trim_cost_function(sol, consts; full_output=false)
 
     result = nlsolve(
         f_opt, sol_gues;
@@ -59,12 +59,12 @@ function trim(
      end
 
     sol = result.zero
-    x, controls, xd, outputs, cost = trim_cost_function(sol, consts, fun; full_output=true)
+    x, controls, xd, outputs, cost = trim_cost_function(sol, consts; full_output=true)
     return x, controls, xd, outputs, cost
 end
 
 
-function trim_cost_function(sol, consts, fun; full_output=false)
+function trim_cost_function(sol, consts; full_output=false)
 
     tas = consts[1]
     ψ = consts[2]
@@ -89,7 +89,7 @@ function trim_cost_function(sol, consts, fun; full_output=false)
     # TODO: allow trimmer to use other dynamic systems for trimming the a/c
     dynamic_system = SixDOFAeroEuler(x)
 
-    x_dot, outputs = fun(time, dynamic_system, controls, aircraft, atmosphere, gravity)
+    x_dot, outputs = f(time, dynamic_system, controls, aircraft, atmosphere, gravity)
 
     cost = [x_dot[1:3]..., x_dot[7:9]...]
 
