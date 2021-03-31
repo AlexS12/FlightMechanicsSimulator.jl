@@ -105,7 +105,6 @@ controls = ConstantInput.(controls_trim)
 results = simulate(
     t0,
     t1,
-    dt,
     SixDOFAeroEuler(x),
     controls,
     F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
