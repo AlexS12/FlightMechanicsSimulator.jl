@@ -9,12 +9,12 @@ Propagate a simulation from tini to tfin with dt time step.
 - controls: inputs. Array{4, Input} according to `F16Stevens.f`
 - aircraft: aircraft instance.
 """
-function simulate(tini, tfin, dt, x0, controls, aircraft, atmosphere, gravity;
+function simulate(tini, tfin, dt, x0, dss, controls, aircraft, atmosphere, gravity;
     solver=TSit5(), solve_args=Dict()
     )
 
     tspan = (tini, tfin)
-    p = [controls, aircraft, atmosphere, gravity]
+    p = [dss, controls, aircraft, atmosphere, gravity]
 
     prob = ODEProblem{false}(f, x0, tspan, p)
     sol = solve(prob, solver; solve_args...)
@@ -26,14 +26,19 @@ end
 
 
 function f(x, p, t)
-    controls = p[1]
-    aircraft = p[2]
-    atmosphere = p[3]
-    gravity = p[4]
+    dss = p[1]
+    controls = p[2]
+    aircraft = p[3]
+    atmosphere = p[4]
+    gravity = p[5]
 
     controls_arr = get_value.(controls, t)
     # TODO: receive as argument in p
-    dynamic_system = SixDOFAeroEuler(SVector{12}(x[1:12]))
+    dynamic_system = typeof(dss)(
+        SVector{get_n_states(dss)}(
+            x[1:get_n_states(dss)]
+        )
+    )
 
     atmosphere = atmosphere(x[12])
 

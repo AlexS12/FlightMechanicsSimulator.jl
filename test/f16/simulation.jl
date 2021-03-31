@@ -109,6 +109,7 @@ results = simulate(
     t1,
     dt,
     x,
+    SixDOFAeroEuler(x[1:12]),
     controls,
     F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
     F16StevensAtmosphere,
