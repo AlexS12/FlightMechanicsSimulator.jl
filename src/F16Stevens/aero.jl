@@ -274,7 +274,6 @@ function calculate_aero_forces_moments(ac::F16, x, controls, xcg, qbar, S, b, c)
     Q = x[8]
     R = x[9]
     ALT = x[12]
-    POW = x[13]
 
     # Look-up tables and component buildup
     CXT = CX(ALPHA, EL)
