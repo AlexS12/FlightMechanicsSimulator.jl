@@ -1,6 +1,8 @@
 using Test
 using CSV
 using DataFrames
+using StaticArrays
+
 using FlightMechanicsSimulator
 using FlightMechanicsUtils
 
@@ -22,6 +24,7 @@ for case in eachrow(df)
         f(
             case.time,
             x,
+            SixDOFAeroEuler(SVector{12}(x[1:12])),
             controls,
             F16(F16Stevens.MASS, F16Stevens.INERTIA, case.xcg),
             F16StevensAtmosphere,

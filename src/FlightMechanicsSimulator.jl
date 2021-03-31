@@ -36,6 +36,11 @@ export calculate_aero_forces_moments
 export tgear
 include("models/aircraft.jl")
 
+export SixDOFAeroEuler
+export get_x, state_eqs
+export SixDOFAeroEulerDot
+export get_xdot, get_dynamic_system_state
+include("models/dynamic_system.jl")
 
 export F16
 export F16Stevens

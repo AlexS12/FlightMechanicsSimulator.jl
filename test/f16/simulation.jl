@@ -1,9 +1,12 @@
 using Test
+
 using CSV
 using DataFrames
-using OrdinaryDiffEq
-using FlightMechanicsSimulator
 using FlightMechanicsUtils
+using OrdinaryDiffEq
+using StaticArrays
+
+using FlightMechanicsSimulator
 
 
 # ---------- PROPAGATE COORDINATED TURN ----------
@@ -47,6 +50,7 @@ xcg = 0.35
 x_dot, outputs = f(
     time,
     x_stev,
+    SixDOFAeroEuler(SVector{12}(x_stev[1:12])),
     controls_stev,
     F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
     F16StevensAtmosphere,

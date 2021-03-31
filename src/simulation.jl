@@ -32,14 +32,16 @@ function f(x, p, t)
     gravity=p[4]
 
     controls_arr = get_value.(controls, t)
+    # TODO: receive as argument in p
+    dynamic_system = SixDOFAeroEuler(SVector{12}(x[1:12]))
 
-    x_dot, outputs = f(time, x, controls_arr, aircraft, atmosphere, gravity)
+    x_dot, outputs = f(time, x, dynamic_system, controls_arr, aircraft, atmosphere, gravity)
 
     return x_dot
 end
 
 
-function f(time, x, controls, aircraft, atmosphere, gravity)
+function f(time, x_, dynamic_system, controls, aircraft, atmosphere, gravity)
 
     # C     x(1)  -> vt (m/s)
     # C     x(2)  -> α (rad)
@@ -65,6 +67,8 @@ function f(time, x, controls, aircraft, atmosphere, gravity)
     b = get_wing_span(ac)
 
     # Assign state
+    x = get_x(dynamic_system)
+
     vt = x[1]
     α = x[2] * RAD2DEG
     β = x[3] * RAD2DEG
@@ -75,7 +79,9 @@ function f(time, x, controls, aircraft, atmosphere, gravity)
     q = x[8]
     r = x[9]
     height = x[12]
-    pow = x[13]
+
+    # Not part of Dynamic System
+    pow = x_[13]
 
     atmosphere = atmosphere(height)
     T = get_temperature(atmosphere)
@@ -90,7 +96,7 @@ function f(time, x, controls, aircraft, atmosphere, gravity)
 
     # Calculate forces and moments
     # Propulsion
-    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(ac, x, amach, controls)
+    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(ac, x_, amach, controls)
     h = calculate_prop_gyro_effects(ac)
 
     # Engine dynamic model
@@ -114,9 +120,11 @@ function f(time, x, controls, aircraft, atmosphere, gravity)
     forces = [Fx, Fy, Fz]
     moments = [L, M, N]
 
-    x_dot = sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
+    dynamic_system_state_dot = state_eqs(
+        dynamic_system, time, mass, inertia, forces, moments, h
+    )
 
-    x_dot = [x_dot..., pdot]
+    x_dot = [get_xdot(dynamic_system_state_dot)..., pdot]
 
     # Outputs
     gravity_down = get_gravity_accel(gravity)
