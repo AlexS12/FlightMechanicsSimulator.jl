@@ -24,7 +24,7 @@ get_n_states(dss::SixDOFAeroEuler) = 13
 get_x_names(dss::SixDOFAeroEuler) = [:tas, :α, :β, :ϕ, :θ, :ψ, :p, :q, :r, :x, :y, :z, :pow]
 
 
-function state_eqs(dss::SixDOFAeroEuler, time, mass, inertia, forces, moments, h, pdot)
+function state_eqs(dss::SixDOFAeroEuler, time, mass, inertia, forces, moments, h, pow_dot)
 
     xdot = sixdof_aero_earth_euler_fixed_mass(
          time,
@@ -36,7 +36,7 @@ function state_eqs(dss::SixDOFAeroEuler, time, mass, inertia, forces, moments, h
          h
     )
 
-    xdot = [xdot..., pdot]
+    xdot = [xdot..., pow_dot]
 
     return SixDOFAeroEulerDot(dss, SVector{13}(xdot))
 end
