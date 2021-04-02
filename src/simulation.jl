@@ -33,9 +33,7 @@ function f(x, p, t)
 
     controls_arr = get_value.(controls, t)
 
-    dynamic_system_state = typeof(dss)(
-        SVector{length(x)}(x)
-    )
+    dynamic_system_state = typeof(dss)(x)
 
     atmosphere = atmosphere(x[12])
 
