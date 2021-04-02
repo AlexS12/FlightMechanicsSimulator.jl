@@ -83,7 +83,7 @@ function trim_cost_function(sol, consts; full_output=false)
     controls = sol[3:6]
     gd = get_gravity_accel(gravity)
 
-    ϕ, θ, p, q, r = apply_trimmer_constrains(tas, α, β, γ, ψ_dot, x, y, gd, alt, ψ, thtl)
+    ϕ, θ, p, q, r = apply_trimmer_constrains(tas, α, β, γ, ψ_dot, gd)
     # Construct state vector
     x = [tas, α, β, ϕ, θ, ψ, p, q, r, x, y, alt, tgear(aircraft, thtl)]
     # TODO: allow trimmer to use other dynamic systems for trimming the a/c
@@ -101,7 +101,7 @@ function trim_cost_function(sol, consts; full_output=false)
 end
 
 
-function apply_trimmer_constrains(tas, α, β, γ, ψ_dot, x, y, gd, alt, ψ, thtl)
+function apply_trimmer_constrains(tas, α, β, γ, ψ_dot, gd)
     # Coordinated turn bank --> phi
     ϕ = coordinated_turn_bank(ψ_dot, α, β, tas, γ, gd)
     # Climb -> theta
