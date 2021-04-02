@@ -1,5 +1,34 @@
+struct SixDOFAeroEuler{T}<:DSState{T}
+    x::SVector{13, T}
+end
+
+SixDOFAeroEuler(x::AbstractVector) = SixDOFAeroEuler(SVector{13, eltype(x)}(x))
+
+get_x_names(dss::SixDOFAeroEuler) = [:tas, :α, :β, :ϕ, :θ, :ψ, :p, :q, :r, :x, :y, :z, :pow]
+
+
+function state_eqs(dss::SixDOFAeroEuler, time, mass, inertia, forces, moments, h, pow_dot)
+
+    xdot = sixdof_aero_earth_euler_fixed_mass(
+         time,
+         get_x(dss),
+         mass,
+         inertia,
+         forces,
+         moments,
+         h
+    )
+
+    xdot = [xdot..., pow_dot]
+
+    return DSStateDot(dss, xdot)
+end
+
+
 # TODO: doc
-function sixdof_aero_earth_euler_fixed_mass!(time, x, mass, inertia, forces, moments, h, x_dot)
+function sixdof_aero_earth_euler_fixed_mass!(
+    time, x, mass, inertia, forces, moments, h, x_dot
+    )
     # C     x(1)  -> tas (m/s)
     # C     x(2)  -> α (rad)
     # C     x(3)  -> β (rad)

@@ -10,9 +10,6 @@ using FlightMechanicsUtils
 import Base: eltype
 
 
-export sixdof_aero_earth_euler_fixed_mass
-include("dynamic_systems.jl")
-
 export trim
 include("trimmer.jl")
 
@@ -35,11 +32,14 @@ export calculate_aero_forces_moments
 export tgear
 include("models/aircraft.jl")
 
-export SixDOFAeroEuler
-export get_x, get_n_states, state_eqs
 export DSStateDot
+export get_x, get_n_states, state_eqs
 export get_xdot, get_ds_state
 include("models/dynamic_system.jl")
+
+export SixDOFAeroEuler
+export sixdof_aero_earth_euler_fixed_mass
+include("dynamics/sixdof_aero_euler.jl")
 
 export simulate
 export f
