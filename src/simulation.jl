@@ -32,7 +32,7 @@ function f(x, p, t)
     gravity = p[5]
 
     controls_arr = get_value.(controls, t)
-    # TODO: receive as argument in p
+
     dynamic_system_state = typeof(dss)(
         SVector{length(x)}(x)
     )
