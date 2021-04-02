@@ -52,19 +52,6 @@ function f(
     gravity::Gravity
     )
 
-    # C     x(1)  -> vt (m/s)
-    # C     x(2)  -> α (rad)
-    # C     x(3)  -> β (rad)
-    # C     x(4)  -> ϕ (rad)
-    # C     x(5)  -> θ (rad)
-    # C     x(6)  -> ψ (rad)
-    # C     x(7)  -> p (rad/s)
-    # C     x(8)  -> q (rad/s)
-    # C     x(9)  -> r (rad/s)
-    # C     x(10) -> North (m)
-    # C     x(11) -> East (m)
-    # C     x(12) -> Altitude (m)
-    # C     x(13) -> pow
     ac = aircraft
 
     mass = get_mass(ac)
@@ -75,20 +62,13 @@ function f(
     c = get_chord(ac)
     b = get_wing_span(ac)
 
-    # Assign state
-    x = get_x(dss)
-
-    vt = x[1]
-    α = x[2] * RAD2DEG
-    β = x[3] * RAD2DEG
-    ϕ = x[4]
-    θ = x[5]
-    ψ = x[6]
-    p = x[7]
-    q = x[8]
-    r = x[9]
-    height = x[12]
-    pow = x[13]
+    vt = get_tas(dss)
+    α = get_α(dss) * RAD2DEG
+    β = get_β(dss) * RAD2DEG
+    ψ, θ, ϕ = get_euler_angles(dss)
+    p, q, r = get_ang_vel_body(dss)
+    height = get_height(dss)
+    pow = get_engine_power(dss)
 
     T = get_temperature(atmosphere)
     ρ = get_density(atmosphere)
@@ -99,6 +79,9 @@ function f(
     # TODO: this will be inside AeroState
     amach = vt / a  # mach number
     qbar = 0.5 * ρ * vt^2  # dynamic pressure
+
+    # TODO: modify interfaces using x to use dss
+    x = get_x(dss)
 
     # Calculate forces and moments
     # Propulsion
