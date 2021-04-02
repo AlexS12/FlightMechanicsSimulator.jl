@@ -3,6 +3,7 @@ abstract type DSState end
 
 get_x(dss::DSState) = dss.x
 get_n_states(dss::DSState) = length(dss.x)
+function get_x_names(dss::DSState) end
 function state_eqs(dss::DSState, time, mass, inertia, forces, moments, h) end
 
 
