@@ -47,7 +47,7 @@ end
 
 function f(
     time,
-    dynamic_system::DynamicSystemState,
+    dynamic_system::DSState,
     controls,
     aircraft::Aircraft,
     atmosphere::Atmosphere,

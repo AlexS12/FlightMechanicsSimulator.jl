@@ -7,6 +7,8 @@ using StaticArrays
 
 using FlightMechanicsUtils
 
+import Base: eltype
+
 
 export sixdof_aero_earth_euler_fixed_mass
 include("dynamic_systems.jl")
@@ -34,9 +36,9 @@ export tgear
 include("models/aircraft.jl")
 
 export SixDOFAeroEuler
-export get_x, state_eqs
-export SixDOFAeroEulerDot
-export get_xdot, get_dynamic_system_state
+export get_x, get_n_states, state_eqs
+export DSStateDot
+export get_xdot, get_ds_state
 include("models/dynamic_system.jl")
 
 export simulate

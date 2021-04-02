@@ -1,26 +1,41 @@
-abstract type DynamicSystemState end
+abstract type DSState end
 
 
-get_x(dss::DynamicSystemState) = dss.x
-get_n_states(dss::DynamicSystemState) = length(dss.x)
-function state_eqs(dss::DynamicSystemState,time, mass, inertia, forces, moments, h) end
+get_x(dss::DSState) = dss.x
+get_n_states(dss::DSState) = length(dss.x)
+function state_eqs(dss::DSState, time, mass, inertia, forces, moments, h) end
 
 
-abstract type DynamicSystemStateDot end
+struct DSStateDot{S, N, T}
+    dss::S
+    xdot::SVector{N, T}
+    DSStateDot(dss::S, xdot::V) where {S<:DSState, V<:SVector} =
+        new{typeof(dss), get_n_states(dss), eltype(dss)}(
+            dss,
+            SVector{get_n_states(dss), eltype(dss)}(xdot)
+        )
+end
+
+function DSStateDot(dss::DSState, xdot::AbstractArray)
+    return DSStateDot(dss, SVector{get_n_states(dss), eltype(dss)}(xdot))
+end
 
 
-get_xdot(dssd::DynamicSystemStateDot) = dssd.xdot
-get_dynamic_system_state(dssd::DynamicSystemStateDot) = dssd.dss
+get_xdot(dssd::DSStateDot) = dssd.xdot
+get_ds_state(dssd::DSStateDot) = dssd.dss
+
+get_x(dssd::DSStateDot) = get_x(dssd.dss)
+get_n_states(dssd::DSStateDot) = get_n_states(dssd.dss)
 
 
-struct SixDOFAeroEuler{T}<:DynamicSystemState
+struct SixDOFAeroEuler{T}<:DSState
     x::SVector{13, T}
 end
 
-SixDOFAeroEuler(x::AbstractVector) = SixDOFAeroEuler(SVector{13}(x))
+SixDOFAeroEuler(x::AbstractVector) = SixDOFAeroEuler(SVector{13, eltype(x)}(x))
 
+eltype(::Type{SixDOFAeroEuler{T}}) where {T} = T
 
-get_n_states(dss::SixDOFAeroEuler) = 13
 get_x_names(dss::SixDOFAeroEuler) = [:tas, :α, :β, :ϕ, :θ, :ψ, :p, :q, :r, :x, :y, :z, :pow]
 
 
@@ -38,14 +53,5 @@ function state_eqs(dss::SixDOFAeroEuler, time, mass, inertia, forces, moments, h
 
     xdot = [xdot..., pow_dot]
 
-    return SixDOFAeroEulerDot(dss, SVector{13}(xdot))
+    return DSStateDot(dss, xdot)
 end
-
-
-struct SixDOFAeroEulerDot{S<:DynamicSystemState, T}<:DynamicSystemStateDot
-    dss::S
-    # TODO: SVector could probably be inefered from T
-    xdot::SVector{13, T}
-end
-
-SixDOFAeroEulerDot(dss, x::AbstractVector) = SixDOFAeroEulerDot(dss, SVector{13}(x))

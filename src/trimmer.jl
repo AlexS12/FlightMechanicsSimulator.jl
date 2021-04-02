@@ -87,9 +87,11 @@ function trim_cost_function(sol, consts; full_output=false)
     # Construct state vector
     x = [tas, α, β, ϕ, θ, ψ, p, q, r, x, y, alt, tgear(aircraft, thtl)]
     # TODO: allow trimmer to use other dynamic systems for trimming the a/c
-    dynamic_system = SixDOFAeroEuler(x)
+    dss = SixDOFAeroEuler(x)
 
-    x_dot, outputs = f(time, dynamic_system, controls, aircraft, atmosphere, gravity)
+    x_dot, outputs = f(time, dss, controls, aircraft, atmosphere, gravity)
+
+    dss_dot = DSStateDot(dss, x_dot)
 
     cost = [x_dot[1:3]..., x_dot[7:9]...]
 
