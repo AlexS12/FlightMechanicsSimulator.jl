@@ -33,11 +33,11 @@ function f(x, p, t)
 
     controls_arr = get_value.(controls, t)
 
-    dynamic_system_state = typeof(dss)(x)
+    dss = typeof(dss)(x)
 
     atmosphere = atmosphere(x[12])
 
-    x_dot, outputs = f(time, dynamic_system_state, controls_arr, aircraft, atmosphere, gravity)
+    x_dot, outputs = f(time, dss, controls_arr, aircraft, atmosphere, gravity)
 
     return x_dot
 end
@@ -45,7 +45,7 @@ end
 
 function f(
     time,
-    dynamic_system::DSState,
+    dss::DSState,
     controls,
     aircraft::Aircraft,
     atmosphere::Atmosphere,
@@ -76,7 +76,7 @@ function f(
     b = get_wing_span(ac)
 
     # Assign state
-    x = get_x(dynamic_system)
+    x = get_x(dss)
 
     vt = x[1]
     α = x[2] * RAD2DEG
@@ -126,11 +126,11 @@ function f(
     forces = [Fx, Fy, Fz]
     moments = [L, M, N]
 
-    dynamic_system_state_dot = state_eqs(
-        dynamic_system, time, mass, inertia, forces, moments, h, pdot
+    dssd = state_eqs(
+        dss, time, mass, inertia, forces, moments, h, pdot
     )
 
-    x_dot = get_xdot(dynamic_system_state_dot)
+    x_dot = get_xdot(dssd)
 
     # Outputs
     gravity_down = get_gravity_accel(gravity)

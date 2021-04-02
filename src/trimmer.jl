@@ -91,7 +91,7 @@ function trim_cost_function(sol, consts; full_output=false)
 
     x_dot, outputs = f(time, dss, controls, aircraft, atmosphere, gravity)
 
-    dss_dot = DSStateDot(dss, x_dot)
+    dssd = DSStateDot(dss, x_dot)
 
     cost = [x_dot[1:3]..., x_dot[7:9]...]
 
