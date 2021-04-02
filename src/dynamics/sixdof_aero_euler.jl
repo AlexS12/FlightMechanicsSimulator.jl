@@ -6,6 +6,41 @@ SixDOFAeroEuler(x::AbstractVector) = SixDOFAeroEuler(SVector{13, eltype(x)}(x))
 
 get_x_names(dss::SixDOFAeroEuler) = [:tas, :α, :β, :ϕ, :θ, :ψ, :p, :q, :r, :x, :y, :z, :pow]
 
+# Mandatory getters for DSState
+get_earth_position(dss::SixDOFAeroEuler) = get_x(dss)[10:12]
+get_height(dss::SixDOFAeroEuler) = -get_x(dss)[12]
+
+get_euler_angles(dss::SixDOFAeroEuler) = get_x(dss)[6:-1:4]
+
+get_tas(dss::SixDOFAeroEuler) = get_x(dss)[1]
+get_α(dss::SixDOFAeroEuler) = get_x(dss)[2]
+get_β(dss::SixDOFAeroEuler) = get_x(dss)[3]
+get_tasαβ(dss::SixDOFAeroEuler) = get_x(dss)[1:3]
+get_body_velocity(dss::SixDOFAeroEuler) = wind2body(get_tas(dss), 0, 0, get_α(dss), get_β(dss))
+get_horizon_velocity(dss::SixDOFAeroEuler) = body2horizon(
+    get_body_velocity(dss)..., get_euler_angles(dss)...
+)
+
+get_ang_vel_body(dss::SixDOFAeroEuler) = get_x(dss)[7:9]
+get_euler_angles_rates(dss::SixDOFAeroEuler) = pqr_2_ψθϕ_dot(
+    get_ang_vel_body(dss)..., get_euler_angles(dss)[2:3]
+)
+
+get_engine_power(dss::SixDOFAeroEuler) = get_x(dss)[13]
+
+# Mandatory getters for DSStateDot
+get_tas_dot(dssd::DSStateDot{S, N, T}) where {S<:SixDOFAeroEuler, N, T} = get_xdot(dssd)[1]
+get_α_dot(dssd::DSStateDot{S, N, T}) where {S<:SixDOFAeroEuler, N, T} = get_xdot(dssd)[2]
+get_β_dot(dssd::DSStateDot{S, N, T}) where {S<:SixDOFAeroEuler, N, T} = get_xdot(dssd)[3]
+get_tasαβ_dot(dssd::DSStateDot{S, N, T}) where {S<:SixDOFAeroEuler, N, T} = get_xdot(dssd)[1:3]
+get_accel_body(dssd::DSStateDot{S, N, T}) where {S<:SixDOFAeroEuler, N, T} = tasαβ_dot_to_uvw_dot(
+    get_tasαβ(dssd)..., get_tasαβ_dot(dssd)...
+)
+
+get_ang_accel_body(dssd::DSStateDot{S, N, T}) where {S<:SixDOFAeroEuler, N, T} = get_xdot(dssd)[7:9]
+get_engine_power_dot(dssd::DSStateDot{S, N, T}) where {S<:SixDOFAeroEuler, N, T} = get_xdot(dssd)[13]
+
+
 
 function state_eqs(dss::SixDOFAeroEuler, time, mass, inertia, forces, moments, h, pow_dot)
 

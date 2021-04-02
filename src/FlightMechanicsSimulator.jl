@@ -35,6 +35,16 @@ include("models/aircraft.jl")
 export DSStateDot
 export get_x, get_n_states, state_eqs
 export get_xdot, get_ds_state
+export get_earth_position, get_height
+export get_euler_angles
+export get_tas, get_α, get_β, get_tasαβ
+export get_body_velocity, get_horizon_velocity
+export get_ang_vel_body, get_euler_angles_rates
+export get_engine_power
+export get_tas_dot, get_α_dot, get_β_dot, get_tasαβ_dot
+export get_accel_body
+export get_ang_vel_body
+export get_engine_power_dot
 include("models/dynamic_system.jl")
 
 export SixDOFAeroEuler
