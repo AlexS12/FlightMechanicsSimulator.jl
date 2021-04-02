@@ -1,26 +1,10 @@
 
 function trim(
-    x_guess, controls_guess, aircraft, atmosphere, gravity, γ=0.0, ψ_dot=0.0;
+    dss_guess, controls_guess, aircraft, atmosphere, gravity, γ=0.0, ψ_dot=0.0;
     show_trace=false,
     ftol=1e-16,
     iterations=5000
 )
-
-    #  STATE VECTOR
-    # C     X(1)  -> vt (m/s)
-    # C     X(2)  -> alpha (rad)
-    # C     X(3)  -> beta (rad)
-    # C     X(4)  -> phi (rad)
-    # C     X(5)  -> theta (rad)
-    # C     X(6)  -> psi (rad)
-    # C     X(7)  -> P (rad/s)
-    # C     X(8)  -> Q (rad/s)
-    # C     X(9)  -> R (rad/s)
-    # C     X(10) -> North (m)
-    # C     X(11) -> East (m)
-    # C     X(12) -> Altitude (m)
-    # C     X(13) -> POW (0-100)
-
     # THTL = controls[1]
     # EL = controls[2]
     # AIL = controls[3]
@@ -28,18 +12,16 @@ function trim(
 
     # TRIMMING SOLUTION
     sol_gues = [
-        x_guess[2],  # alpha (rad)
-        x_guess[3],  # beta (rad)
+        get_α(dss_guess),  # alpha (rad)
+        get_β(dss_guess),  # beta (rad)
         controls_guess..., # thtl  (0-1), el (deg), ail (deg), rdr (deg)
     ]
 
     # CONSTS
     consts = [
-        x_guess[1],  # TAS (m/s)
-        x_guess[6],  # psi (rad)
-        x_guess[10],  # north (m)
-        x_guess[11],  # east (m)
-        x_guess[12],  # alt (m)
+        get_tas(dss_guess),  # TAS (m/s)
+        get_euler_angles(dss_guess)[1],  # psi (rad)
+        get_earth_position(dss_guess)...,  # north, east, down (m)
         ψ_dot,  # ψ_dot (rad/s)
         γ,  # γ (rad)
         aircraft,
@@ -47,7 +29,9 @@ function trim(
         gravity,
     ]
 
-    f_opt(sol) = trim_cost_function(sol, consts; full_output=false)
+    ds_type = typeof(dss_guess)
+
+    f_opt(sol) = trim_cost_function(ds_type, sol, consts; full_output=false)
 
     result = nlsolve(
         f_opt, sol_gues;
@@ -58,13 +42,16 @@ function trim(
             println(result)
      end
 
+    # TODO: return a DSStateDot instead of x
     sol = result.zero
-    x, controls, xd, outputs, cost = trim_cost_function(sol, consts; full_output=true)
+    x, controls, xd, outputs, cost = trim_cost_function(
+        ds_type, sol, consts; full_output=true
+    )
     return x, controls, xd, outputs, cost
 end
 
 
-function trim_cost_function(sol, consts; full_output=false)
+function trim_cost_function(::Type{T}, sol, consts; full_output=false) where {T<:SixDOFAeroEuler}
 
     tas = consts[1]
     ψ = consts[2]
@@ -85,12 +72,11 @@ function trim_cost_function(sol, consts; full_output=false)
 
     ϕ, θ, p, q, r = apply_trimmer_constrains(tas, α, β, γ, ψ_dot, gd)
     # Construct state vector
+    # TODO: implement a method to construct x for each ds?
     x = [tas, α, β, ϕ, θ, ψ, p, q, r, x, y, alt, tgear(aircraft, thtl)]
-    # TODO: allow trimmer to use other dynamic systems for trimming the a/c
+
     dss = SixDOFAeroEuler(x)
-
     x_dot, outputs = f(time, dss, controls, aircraft, atmosphere, gravity)
-
     dssd = DSStateDot(dss, x_dot)
 
     cost = [x_dot[1:3]..., x_dot[7:9]...]

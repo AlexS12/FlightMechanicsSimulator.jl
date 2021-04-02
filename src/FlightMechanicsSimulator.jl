@@ -10,9 +10,6 @@ using FlightMechanicsUtils
 import Base: eltype
 
 
-export trim
-include("trimmer.jl")
-
 export ConstantInput, StepInput, DoubletInput, RampInput, SinusoidalInput, get_value
 include("models/inputs.jl")
 
@@ -50,6 +47,9 @@ include("models/dynamic_system.jl")
 export SixDOFAeroEuler
 export sixdof_aero_earth_euler_fixed_mass
 include("dynamics/sixdof_aero_euler.jl")
+
+export trim
+include("trimmer.jl")
 
 export simulate
 export f

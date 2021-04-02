@@ -76,7 +76,7 @@ cost =
 
 # RETRIM to refine flying condition
 x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
-    x_stev,
+    SixDOFAeroEuler(x_stev),
     controls_stev,
     F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
     F16StevensAtmosphere(x_stev[12]),

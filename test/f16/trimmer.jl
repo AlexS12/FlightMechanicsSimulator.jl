@@ -56,7 +56,7 @@ for case in eachrow(trim_test_data)
 
     # TRIM
     x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
-        x,
+        SixDOFAeroEuler(x),
         controls,
         F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
         F16StevensAtmosphere(x[12]),
@@ -102,7 +102,7 @@ controls = [
 ]
 
 x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
-        x,
+        SixDOFAeroEuler(x),
         controls,
         F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
         F16StevensAtmosphere(x[12]),
@@ -151,7 +151,7 @@ controls = [
 ]
 
 x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
-        x,
+        SixDOFAeroEuler(x),
         controls,
         F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
         F16StevensAtmosphere(x[12]),
@@ -200,7 +200,7 @@ controls = [
 ]
 
 x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
-        x,
+        SixDOFAeroEuler(x),
         controls,
         F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
         F16StevensAtmosphere(x[12]),
@@ -250,7 +250,7 @@ controls = [
 ]
 
 x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
-        x,
+        SixDOFAeroEuler(x),
         controls,
         F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
         F16StevensAtmosphere(x[12]),
