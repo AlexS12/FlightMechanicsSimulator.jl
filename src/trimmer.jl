@@ -66,10 +66,10 @@ function trim(
 
     # TODO: return a DSStateDot instead of x
     sol = result.zero
-    x, controls, xd, outputs, cost = trim_cost_function(
+    dssd, controls, outputs, cost = trim_cost_function(
         ds_type, sol, trim_conditions; full_output=true
     )
-    return x, controls, xd, outputs, cost
+    return dssd, controls, outputs, cost
 end
 
 
@@ -113,7 +113,7 @@ function trim_cost_function(ds::Type{T}, sol, trim_conditions; full_output=false
     cost = [x_dot[1:3]..., x_dot[7:9]...]
 
     if full_output
-        return get_x(dss), trim_solution.controls, x_dot, outputs, cost
+        return dssd, trim_solution.controls, outputs, cost
     else
         return cost
     end

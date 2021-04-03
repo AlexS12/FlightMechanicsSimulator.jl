@@ -55,7 +55,7 @@ for case in eachrow(trim_test_data)
     ]
 
     # TRIM
-    x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
+    dssd, controls_trim, outputs_trim, cost = trim(
         SixDOFAeroEuler(x),
         controls,
         F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
@@ -64,6 +64,9 @@ for case in eachrow(trim_test_data)
         0.0,
         0.0,
     )
+
+    x_trim = get_x(dssd)
+    x_dot_trim = get_xdot(dssd)
 
     @test isapprox(cost, zeros(6), atol=1e-12)
     @test isapprox(controls_trim[1], case[2], atol=case[5])  # THTL
@@ -101,7 +104,7 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
+dssd, controls_trim, outputs_trim, cost = trim(
         SixDOFAeroEuler(x),
         controls,
         F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
@@ -110,6 +113,9 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
         0.0,
         0.0,
     )
+
+x_trim = get_x(dssd)
+x_dot_trim = get_xdot(dssd)
 
 @test isapprox(cost, zeros(6), atol=1e-12)
 @test isapprox(x_trim[2], 0.03691, atol=0.00005)  # AOA
@@ -150,7 +156,7 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
+dssd, controls_trim, outputs_trim, cost = trim(
         SixDOFAeroEuler(x),
         controls,
         F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
@@ -159,6 +165,9 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
         0.0,
         0.0,
     )
+
+x_trim = get_x(dssd)
+x_dot_trim = get_xdot(dssd)
 
 @test isapprox(cost, zeros(6), atol=1e-12)
 @test isapprox(x_trim[2], 0.03936, atol=0.00005)  # AOA
@@ -199,7 +208,7 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
+dssd, controls_trim, outputs_trim, cost = trim(
         SixDOFAeroEuler(x),
         controls,
         F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
@@ -208,6 +217,9 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
         0.0,
         0.0,
     )
+
+x_trim = get_x(dssd)
+x_dot_trim = get_xdot(dssd)
 
 @test isapprox(cost, zeros(6), atol=1e-12)
 @test isapprox(x_trim[2], 0.03544, atol=0.00005)  # AOA
@@ -249,7 +261,7 @@ controls = [
     0.0,  # rudder
 ]
 
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
+dssd, controls_trim, outputs_trim, cost = trim(
         SixDOFAeroEuler(x),
         controls,
         F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
@@ -258,6 +270,9 @@ x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
         0.0,
         0.3,  # rad/s
     )
+
+x_trim = get_x(dssd)
+x_dot_trim = get_xdot(dssd)
 
 @test isapprox(cost, zeros(6), atol=1e-12)
 @test isapprox(x_trim[2], 0.2485, atol=0.0005)  # AOA
