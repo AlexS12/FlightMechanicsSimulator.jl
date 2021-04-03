@@ -47,7 +47,7 @@ x_stev = [
 ]
 controls_stev = [0.8349601, -1.481766, 0.09553108, -0.4118124]
 xcg = 0.35
-x_dot, outputs = f(
+dssd, outputs = f(
     time,
     SixDOFAeroEuler(x_stev),
     controls_stev,
@@ -55,6 +55,8 @@ x_dot, outputs = f(
     F16StevensAtmosphere(x_stev[12]),
     LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
 )
+
+x_dot = get_xdot(dssd)
 
 # Linear acceleration
 @test isapprox(x_dot[1:3], zeros(3), atol = 5e-4)

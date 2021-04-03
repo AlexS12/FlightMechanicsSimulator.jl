@@ -107,9 +107,9 @@ function trim_cost_function(ds::Type{T}, sol, trim_conditions; full_output=false
     )
     # Construct state vector
     dss = ds(trim_conditions, trim_solution, aircraft)
-    x_dot, outputs = f(time, dss, trim_solution.controls, aircraft, atmosphere, gravity)
-    dssd = DSStateDot(dss, x_dot)
+    dssd, outputs = f(time, dss, trim_solution.controls, aircraft, atmosphere, gravity)
 
+    x_dot = get_xdot(dssd)
     cost = [x_dot[1:3]..., x_dot[7:9]...]
 
     if full_output

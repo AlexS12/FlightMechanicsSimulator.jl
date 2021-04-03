@@ -20,7 +20,7 @@ for case in eachrow(df)
 
     controls = Array(case[["c$ii" for ii in 1:4]])
 
-    xd1, outputs1 =
+    dssd, outputs1 =
         f(
             case.time,
             SixDOFAeroEuler(x),
@@ -30,7 +30,8 @@ for case in eachrow(df)
             LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
         )
 
-    xd1 = Array(xd1)  # Allow modification xd1 was a SVector
+    xd1 = get_xdot(dssd)  # This is a SVector
+    xd1 = Array(xd1)  # Allow modification of xd1
     xd1[1] *= M2FT
     xd1[10] *= M2FT
     xd1[11] *= M2FT

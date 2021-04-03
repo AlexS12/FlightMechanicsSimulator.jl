@@ -37,9 +37,9 @@ function f(x, p, t)
 
     atmosphere = atmosphere(x[12])
 
-    x_dot, outputs = f(time, dss, controls_arr, aircraft, atmosphere, gravity)
+    dssd, outputs = f(time, dss, controls_arr, aircraft, atmosphere, gravity)
 
-    return x_dot
+    return get_xdot(dssd)
 end
 
 
@@ -113,13 +113,11 @@ function f(
         dss, time, mass, inertia, forces, moments, h, pdot
     )
 
-    x_dot = get_xdot(dssd)
-
     # Outputs
     gravity_down = get_gravity_accel(gravity)
     outputs = calculate_outputs(x, amach, qbar, S, mass, gravity_down, [Fax, Fay, Faz], [Tx, Ty, Tz])
 
-    return x_dot, outputs
+    return dssd, outputs
 
 end
 
