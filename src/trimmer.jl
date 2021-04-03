@@ -1,3 +1,29 @@
+struct TrimConditions
+    # TODO: improve typing
+    tas::Number  # m/s
+    ψ::Number  # rad
+    position::AbstractArray  # [x, y, z] earth (m)
+    ψ_dot::Number  # rad/s
+    γ::Number  # rad
+    aircraft::Aircraft
+    atmosphere::Atmosphere
+    gravity::Gravity
+end
+
+
+struct TrimSolution
+    # TODO: improve typing
+    α::Number
+    β::Number
+    controls::AbstractArray
+    θ::Number
+    ϕ::Number
+    p::Number
+    q::Number
+    r::Number
+end
+
+
 
 function trim(
     dss_guess, controls_guess, aircraft, atmosphere, gravity, γ=0.0, ψ_dot=0.0;
@@ -5,10 +31,6 @@ function trim(
     ftol=1e-16,
     iterations=5000
 )
-    # THTL = controls[1]
-    # EL = controls[2]
-    # AIL = controls[3]
-    # RDR = controls[4]
 
     # TRIMMING SOLUTION
     sol_gues = [
@@ -18,20 +40,20 @@ function trim(
     ]
 
     # CONSTS
-    consts = [
+    trim_conditions = TrimConditions(
         get_tas(dss_guess),  # TAS (m/s)
         get_euler_angles(dss_guess)[1],  # psi (rad)
-        get_earth_position(dss_guess)...,  # north, east, down (m)
+        get_earth_position(dss_guess),  # north, east, down (m)
         ψ_dot,  # ψ_dot (rad/s)
         γ,  # γ (rad)
         aircraft,
         atmosphere,
         gravity,
-    ]
+    )
 
     ds_type = typeof(dss_guess)
 
-    f_opt(sol) = trim_cost_function(ds_type, sol, consts; full_output=false)
+    f_opt(sol) = trim_cost_function(ds_type, sol, trim_conditions; full_output=false)
 
     result = nlsolve(
         f_opt, sol_gues;
@@ -45,44 +67,53 @@ function trim(
     # TODO: return a DSStateDot instead of x
     sol = result.zero
     x, controls, xd, outputs, cost = trim_cost_function(
-        ds_type, sol, consts; full_output=true
+        ds_type, sol, trim_conditions; full_output=true
     )
     return x, controls, xd, outputs, cost
 end
 
 
-function trim_cost_function(::Type{T}, sol, consts; full_output=false) where {T<:SixDOFAeroEuler}
+function trim_cost_function(ds::Type{T}, sol, trim_conditions; full_output=false) where {T<:DSState}
 
-    tas = consts[1]
-    ψ = consts[2]
-    x = consts[3]
-    y = consts[4]
-    alt = consts[5]
-    ψ_dot = consts[6]
-    γ = consts[7]
-    aircraft = consts[8]
-    atmosphere = consts[9]
-    gravity = consts[10]
+    tas = trim_conditions.tas
+    ψ = trim_conditions.ψ
+    x, y, z = trim_conditions.position
+    ψ_dot = trim_conditions.ψ_dot
+    γ = trim_conditions.γ
+    aircraft = trim_conditions.aircraft
+    atmosphere = trim_conditions.atmosphere
+    gravity = trim_conditions.gravity
 
-    α = sol[1]
-    β = sol[2]
-    thtl = sol[3]
-    controls = sol[3:6]
     gd = get_gravity_accel(gravity)
 
-    ϕ, θ, p, q, r = apply_trimmer_constrains(tas, α, β, γ, ψ_dot, gd)
-    # Construct state vector
-    # TODO: implement a method to construct x for each ds?
-    x = [tas, α, β, ϕ, θ, ψ, p, q, r, x, y, alt, tgear(aircraft, thtl)]
+    ϕ, θ, p, q, r = apply_trimmer_constrains(
+        tas,  # m/s
+        sol[1],  # α (rad)
+        sol[2],  # β (rad)
+        γ,  # rad
+        ψ_dot,  # rad/s
+        gd,  # m/s²
+    )
 
-    dss = SixDOFAeroEuler(x)
-    x_dot, outputs = f(time, dss, controls, aircraft, atmosphere, gravity)
+    trim_solution = TrimSolution(
+        sol[1],  # α (rad)
+        sol[2],  # β (rad)
+        sol[3:6],  # controls  -> thtl  (0-1), el (deg), ail (deg), rdr (deg)
+        θ,  # rad
+        ϕ,  # rad
+        p,  # rad/s
+        q,  # rad/s
+        r,  # rad/s
+    )
+    # Construct state vector
+    dss = ds(trim_conditions, trim_solution, aircraft)
+    x_dot, outputs = f(time, dss, trim_solution.controls, aircraft, atmosphere, gravity)
     dssd = DSStateDot(dss, x_dot)
 
     cost = [x_dot[1:3]..., x_dot[7:9]...]
 
     if full_output
-        return x, controls, x_dot, outputs, cost
+        return get_x(dss), trim_solution.controls, x_dot, outputs, cost
     else
         return cost
     end
@@ -98,4 +129,24 @@ function apply_trimmer_constrains(tas, α, β, γ, ψ_dot, gd)
     p, q, r = ψθϕ_dot_2_pqr(ψ_dot, 0, 0, θ, ϕ)
 
     return ϕ, θ, p, q, r
+end
+
+
+# TODO: trimmer will need this constructor. Look for a way to check that it is implemented
+# for different dynamic systems
+function SixDOFAeroEuler{T}(tc::TrimConditions, ts::TrimSolution, ac::Aircraft) where {T}
+    x = [
+        tc.tas,
+        ts.α,
+        ts.β,
+        ts.ϕ,
+        ts.θ,
+        tc.ψ,
+        ts.p,
+        ts.q,
+        ts.r,
+        tc.position...,
+        tgear(ac, ts.controls[1])
+    ]
+    return SixDOFAeroEuler(x)
 end
