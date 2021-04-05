@@ -10,7 +10,7 @@ Flat Earth hypothesis is applied and Earth reference frame is considered inertia
 It is considered that the aircraft xb-zb plane is a plane of symmetry so that Jxy and Jyz
 cross-product of inertia are zero and will not be taken into account.
 
-# Attributes
+# Fields
 - `x::SVector{13, T}`: state vector.
   - [tas (m/s), α (rad), β (rad), ϕ (rad), θ (rad), ψ (rad), p (rad/s), q (rad/s), r (rad/s),
     x (m), y (m), z (m), pow (%)].
@@ -80,7 +80,7 @@ end
 """
     sixdof_aero_earth_euler_fixed_mass!(x_dot, time, x, mass, inertia, forces, moments, h)
 
-Inplace version of [six_dof_aero_euler_fixed_mass](@ref).
+Mutating version of [six_dof_aero_euler_fixed_mass](@ref).
 """
 function sixdof_aero_earth_euler_fixed_mass!(
     x_dot, time, x, mass, inertia, forces, moments, h,
@@ -196,6 +196,11 @@ State equations for `SixDOFAeroEuler` dynamic system.
 
 # Returns
 - `x_dot::Array`: time derivative of the state vector.
+
+# Notes
+
+It is considered that the aircraft xb-zb plane is a plane of symmetry so that Jxy and Jyz
+cross-product of inertia are zero and will not be taken into account.
 
 # See also
 
