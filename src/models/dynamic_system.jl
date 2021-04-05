@@ -53,7 +53,7 @@ Calculate the derivative of the state vector using the state equations.
  spinning rotors (kg·m²/s).
 
  # Returns
- - `x_dot::AbstractVector`: time derivative of the state vector.
+ - `dssd::DSStateDot`: dynamic system state dot.
 """
 function state_eqs(dss::DSState, time, mass, inertia, forces, moments, h) end
 
