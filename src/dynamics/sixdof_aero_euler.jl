@@ -78,12 +78,12 @@ end
 
 
 """
-    sixdof_aero_earth_euler_fixed_mass!(time, x, mass, inertia, forces, moments, h, x_dot)
+    sixdof_aero_earth_euler_fixed_mass!(x_dot, time, x, mass, inertia, forces, moments, h)
 
 Inplace version of [six_dof_aero_euler_fixed_mass](@ref).
 """
 function sixdof_aero_earth_euler_fixed_mass!(
-    time, x, mass, inertia, forces, moments, h, x_dot
+    x_dot, time, x, mass, inertia, forces, moments, h,
     )
     # C     x(1)  -> tas (m/s)
     # C     x(2)  -> α (rad)
@@ -203,6 +203,6 @@ State equations for `SixDOFAeroEuler` dynamic system.
 """
 function sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
     x_dot = Array{Float64}(undef, 12)
-    sixdof_aero_earth_euler_fixed_mass!(time, x, mass, inertia, forces, moments, h, x_dot)
+    sixdof_aero_earth_euler_fixed_mass!(x_dot, time, x, mass, inertia, forces, moments, h)
     return x_dot
 end
