@@ -159,7 +159,7 @@ function get_engine_power(dss::DSState) end
     DSStateDot{S, N, T}
     DSStateDot(dss::DSState, xdot::AbstractArray)
 
-Time derivative, ``\dot{x}``, of the state vector ``x``.
+Time derivative, `x_dot`, of the state vector `x`.
 
 - `S`: type of the associated `DSState`.
 - `N`: number of elements of the `x_dot` vector.

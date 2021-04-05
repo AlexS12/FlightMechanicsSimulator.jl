@@ -1,3 +1,20 @@
+"""
+    SixDOFAeroEuler
+    SixDOFAeroEuler(x::AbstractVector)
+
+Six degrees of freedom dynamic system using TAS, α, β for velocity representation and Euler
+angles for attitude.
+
+Flat Earth hypothesis is applied and Earth reference frame is considered inertial.
+
+It is considered that the aircraft xb-zb plane is a plane of symmetry so that Jxy and Jyz
+cross-product of inertia are zero and will not be taken into account.
+
+# Attributes
+- `x::SVector{13, T}`: state vector.
+  - [tas (m/s), α (rad), β (rad), ϕ (rad), θ (rad), ψ (rad), p (rad/s), q (rad/s), r (rad/s),
+    x (m), y (m), z (m), pow (%)].
+"""
 struct SixDOFAeroEuler{T}<:DSState{T}
     x::SVector{13, T}
 end
@@ -60,7 +77,11 @@ function state_eqs(dss::SixDOFAeroEuler, time, mass, inertia, forces, moments, h
 end
 
 
-# TODO: doc
+"""
+    sixdof_aero_earth_euler_fixed_mass!(time, x, mass, inertia, forces, moments, h, x_dot)
+
+Inplace version of [six_dof_aero_euler_fixed_mass](@ref).
+"""
 function sixdof_aero_earth_euler_fixed_mass!(
     time, x, mass, inertia, forces, moments, h, x_dot
     )
@@ -155,7 +176,31 @@ function sixdof_aero_earth_euler_fixed_mass!(
 end
 
 
-# TODO: doc
+"""
+    sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
+
+State equations for `SixDOFAeroEuler` dynamic system.
+
+# Arguments
+
+- `time::Number`: time (s).
+- `x::AbstractArray`: state vector.
+  - [tas (m/s), α (rad), β (rad), ϕ (rad), θ (rad), ψ (rad), p (rad/s), q (rad/s), r (rad/s),
+    x (m), y (m), z (m), pow (%)].
+- `mass::Number`: mass (kg).
+- `inertia::AbstractMatrix`: 3x3 inertia tensor (kg·m^2).
+- `forces::AbstractVector`: body axis forces [Fx, Fy, Fz] (N).
+- `moments::AbstractVector`: body axis moments (L, M, N) (N·m).
+- `h::AbstractVector`:  Additional angular momentum contributions such as those coming from
+ spinning rotors (kg·m²/s).
+
+# Returns
+- `x_dot::Array`: time derivative of the state vector.
+
+# See also
+
+[six_dof_aero_euler_fixed_mass!](@ref)
+"""
 function sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
     x_dot = Array{Float64}(undef, 12)
     sixdof_aero_earth_euler_fixed_mass!(time, x, mass, inertia, forces, moments, h, x_dot)
