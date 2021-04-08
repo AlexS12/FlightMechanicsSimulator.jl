@@ -34,10 +34,10 @@ get_n_states(dss::DSState) = length(dss.x)
 
 Return an array of symbols with the name for each variable in the state vector.
 """
-function get_x_names(dss::DSState) end
+function get_x_names end
 
 """
-    state_eqs(dss:DSState, time, mass, inertia, forces, moments, h)
+    state_eqs(dss::DSState, time, mass, inertia, forces, moments, h)
 
 Calculate the derivative of the state vector using the state equations.
 
@@ -55,7 +55,7 @@ Calculate the derivative of the state vector using the state equations.
  # Returns
  - `dssd::DSStateDot`: dynamic system state dot.
 """
-function state_eqs(dss::DSState, time, mass, inertia, forces, moments, h) end
+function state_eqs end
 
 """
     get_earth_positon(dss::DSState)
@@ -63,7 +63,7 @@ function state_eqs(dss::DSState, time, mass, inertia, forces, moments, h) end
 
 Return Earth position [x, y, z] (m).
 """
-function get_earth_position(dss::DSState) end
+function get_earth_position end
 
 """
     get_height(dss::DSState)
@@ -71,7 +71,7 @@ function get_earth_position(dss::DSState) end
 
 Return height (m).
 """
-function get_height(dss::DSState) end
+function get_height end
 
 """
     get_euler_angles(dss::DSState)
@@ -79,7 +79,7 @@ function get_height(dss::DSState) end
 
 Return Euler angles (ψ, θ, ϕ) (rad).
 """
-function get_euler_angles(dss::DSState) end
+function get_euler_angles end
 
 """
     get_tas(Dss::DState)
@@ -87,7 +87,7 @@ function get_euler_angles(dss::DSState) end
 
 Return true air speed (m/s).
 """
-function get_tas(dss::DSState) end
+function get_tas end
 
 """
     get_α(dss::DSState)
@@ -95,7 +95,7 @@ function get_tas(dss::DSState) end
 
 Get angle of attack (rad).
 """
-function get_α(dss::DSState) end
+function get_α end
 
 """
     get_β(dss::DSState)
@@ -103,7 +103,7 @@ function get_α(dss::DSState) end
 
 Get angle of side slip (rad).
 """
-function get_β(dss::DSState) end
+function get_β end
 
 """
     get_tasαβ(dss:DSState)
@@ -111,7 +111,7 @@ function get_β(dss::DSState) end
 
 Get [tas (m/s), α (rad), β (rad)].
 """
-function get_tasαβ(dss::DSState) end
+function get_tasαβ end
 
 """
     get_body_velocity(dss::DState)
@@ -119,7 +119,7 @@ function get_tasαβ(dss::DSState) end
 
 Get velocity in body axis [u, v, w] (m/s).
 """
-function get_body_velocity(dss::DSState) end
+function get_body_velocity end
 
 """
     get_horizon_velocity(dss::DSState)
@@ -127,7 +127,7 @@ function get_body_velocity(dss::DSState) end
 
 Get velocity in horizon axis [Vn, Ve, Vd] (m/s).
 """
-function get_horizon_velocity(dss::DSState) end
+function get_horizon_velocity end
 
 """
     get_ang_vel_body(dss::DSState)
@@ -135,7 +135,7 @@ function get_horizon_velocity(dss::DSState) end
 
 Get angular velocity in body axis [p, q, r] (rad/s).
 """
-function get_ang_vel_body(dss::DSState) end
+function get_ang_vel_body end
 
 """
     get_euler_angles_rates(dss::DSState)
@@ -143,7 +143,7 @@ function get_ang_vel_body(dss::DSState) end
 
 Get euler angles rates [ψ_dot, θ_dot, ϕ_dot] (rad/s).
 """
-function get_euler_angles_rates(dss::DSState) end
+function get_euler_angles_rates end
 
 """
     get_engine_power(dss:DSState)
@@ -151,7 +151,7 @@ function get_euler_angles_rates(dss::DSState) end
 
 Get engine power (%).
 """
-function get_engine_power(dss::DSState) end
+function get_engine_power end
 
 
 # ------------------------------- Dynamic System State  Dot ------------------------------
@@ -218,46 +218,46 @@ get_engine_power(dssd::DSStateDot) = get_engine_power(dssd.dss)
 
 Get derivative of true air speed (m/s²).
 """
-function get_tas_dot(dssd::DSStateDot) end
+function get_tas_dot end
 
 """
     get_α_dot(dssd::DSStateDot)
 
 Get angle of attack derivative (rad/s).
 """
-function get_α_dot(dssd::DSStateDot) end
+function get_α_dot end
 
 """
     get_β_dot(dssd::DSStateDot)
 
 Get derivative of angles of sideslip (rad/s).
 """
-function get_β_dot(dssd::DSStateDot) end
+function get_β_dot end
 
 """
     get_tasαβ_dot(dssd::DSStateDot)
 
 Get [tas_dot (m/s²), α_dot (rad/s), β_dot (rad/s)].
 """
-function get_tasαβ_dot(dssd::DSStateDot) end
+function get_tasαβ_dot end
 
 """
     get_accel_body(dssd::DSStateDot)
 
 Get accelerations in body axis [u_dot, v_dot, w_dot] (m/s²).
 """
-function get_accel_body(dssd::DSStateDot) end
+function get_accel_body end
 
 """
     get_ang_accel_body(dssd::DSStateDot)
 
 Get angular acceleration in body axis [p_dot, q_dot, r_dot] (rad/s²).
 """
-function get_ang_accel_body(dssd::DSStateDot) end
+function get_ang_accel_body end
 
 """
     get_engine_power_dot(dssd::DSStateDot)
 
 Get derivative of engine power (s⁻¹).
 """
-function get_engine_power_dot(dssd::DSStateDot) end
+function get_engine_power_dot end
