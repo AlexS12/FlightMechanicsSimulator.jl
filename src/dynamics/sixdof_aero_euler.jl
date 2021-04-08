@@ -40,7 +40,7 @@ get_horizon_velocity(dss::SixDOFAeroEuler) = body2horizon(
 
 get_ang_vel_body(dss::SixDOFAeroEuler) = get_x(dss)[7:9]
 get_euler_angles_rates(dss::SixDOFAeroEuler) = pqr_2_ψθϕ_dot(
-    get_ang_vel_body(dss)..., get_euler_angles(dss)[2:3]
+    get_ang_vel_body(dss)..., get_euler_angles(dss)[2:3]...
 )
 
 get_engine_power(dss::SixDOFAeroEuler) = get_x(dss)[13]
