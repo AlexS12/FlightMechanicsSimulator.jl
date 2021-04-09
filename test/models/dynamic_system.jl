@@ -21,7 +21,21 @@ x_sixdofaeroeuler = SixDOFAeroEuler([
     64.12363,
 ])
 
-@testset "Interface $(typeof(dss))" for dss in [x_sixdofaeroeuler,]
+x_sixdofbodyeuler = SixDOFBodyEuler([
+    wind2body(502.0 * FT2M, 0, 0,  0.2392628, 0.0005061803)...,
+    1.366289,
+    0.05000808,
+    0.2340769,
+    -0.01499617,
+    0.2933811,
+    0.06084932,
+    0.0 * FT2M,
+    0.0 * FT2M,
+    0.0 * FT2M,
+    64.12363,
+])
+
+@testset "Interface $(typeof(dss))" for dss in [x_sixdofaeroeuler, x_sixdofbodyeuler]
 
     methods_scalar_output = [
         get_height,

@@ -48,6 +48,10 @@ export SixDOFAeroEuler
 export sixdof_aero_earth_euler_fixed_mass
 include("dynamics/sixdof_aero_euler.jl")
 
+export SixDOFBodyEuler
+export sixdof_body_earth_euler_fixed_mass
+include("dynamics/sixdof_body_euler.jl")
+
 export trim
 include("trimmer.jl")
 
