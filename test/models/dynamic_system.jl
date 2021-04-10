@@ -45,6 +45,18 @@ DSS_ARR = [x_sixdofaeroeuler, x_sixdofbodyeuler]
         # TODO: check that DSState are equivalent
     end
 
+    # Contructor for trimmer
+    @testset "Constructor for Trimmer" begin
+        @test hasmethod(
+            typeof(dss),
+            (
+                FlightMechanicsSimulator.TrimConditions,
+                FlightMechanicsSimulator.TrimSolution,
+                FlightMechanicsSimulator.Aircraft,
+            ),
+        )
+    end
+
     methods_scalar_output = [
         get_height,
         get_tas,

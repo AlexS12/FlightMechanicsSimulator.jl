@@ -132,8 +132,6 @@ function apply_trimmer_constrains(tas, α, β, γ, ψ_dot, gd)
 end
 
 
-# TODO: trimmer will need this constructor. Look for a way to check that it is implemented
-# for different dynamic systems
 function SixDOFAeroEuler{T}(tc::TrimConditions, ts::TrimSolution, ac::Aircraft) where {T}
     x = [
         tc.tas,
@@ -149,4 +147,20 @@ function SixDOFAeroEuler{T}(tc::TrimConditions, ts::TrimSolution, ac::Aircraft) 
         tgear(ac, ts.controls[1])
     ]
     return SixDOFAeroEuler(x)
+end
+
+
+function SixDOFBodyEuler{T}(tc::TrimConditions, ts::TrimSolution, ac::Aircraft) where {T}
+    x = [
+        wind2body(tc.tas, 0, 0, ts.α, ts.β)...,
+        ts.ϕ,
+        ts.θ,
+        tc.ψ,
+        ts.p,
+        ts.q,
+        ts.r,
+        tc.position...,
+        tgear(ac, ts.controls[1])
+    ]
+    return SixDOFBodyEuler(x)
 end
