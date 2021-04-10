@@ -6,6 +6,17 @@ end
 
 SixDOFBodyEuler(x::AbstractVector) = SixDOFBodyEuler(SVector{13, eltype(x)}(x))
 
+SixDOFBodyEuler(dss::DSState) = SixDOFBodyEuler(
+    [
+        get_body_velocity(dss)...,
+        get_euler_angles(dss)[3:-1:1]...,
+        get_ang_vel_body(dss)...,
+        get_earth_position(dss)...,
+        get_engine_power(dss),
+    ]
+)
+
+
 get_x_names(dss::SixDOFBodyEuler) = [:u, :v, :w, :ϕ, :θ, :ψ, :p, :q, :r, :x, :y, :z, :pow]
 
 # Mandatory getters for DSState

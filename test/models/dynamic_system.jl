@@ -35,7 +35,15 @@ x_sixdofbodyeuler = SixDOFBodyEuler([
     64.12363,
 ])
 
-@testset "Interface $(typeof(dss))" for dss in [x_sixdofaeroeuler, x_sixdofbodyeuler]
+DSS_ARR = [x_sixdofaeroeuler, x_sixdofbodyeuler]
+
+@testset "Interface $(typeof(dss))" for dss in DSS_ARR
+
+    # Check contruction of a DSState type from any other DSState type
+    @testset "Constructor from $(typeof(dss2))" for dss2 in DSS_ARR
+        @test hasmethod(typeof(dss), (typeof(dss2),))
+        # TODO: check that DSState are equivalent
+    end
 
     methods_scalar_output = [
         get_height,

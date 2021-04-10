@@ -1,6 +1,7 @@
 """
     SixDOFAeroEuler
     SixDOFAeroEuler(x::AbstractVector)
+    SixDOFAeroEuler(dss::DSState)
 
 Six degrees of freedom dynamic system using TAS, α, β for velocity representation and Euler
 angles for attitude.
@@ -20,6 +21,16 @@ struct SixDOFAeroEuler{T}<:DSState{T}
 end
 
 SixDOFAeroEuler(x::AbstractVector) = SixDOFAeroEuler(SVector{13, eltype(x)}(x))
+
+SixDOFAeroEuler(dss::DSState) = SixDOFAeroEuler(
+    [
+        get_tasαβ(dss)...,
+        get_euler_angles(dss)[3:-1:1]...,
+        get_ang_vel_body(dss)...,
+        get_earth_position(dss)...,
+        get_engine_power(dss),
+    ]
+)
 
 get_x_names(dss::SixDOFAeroEuler) = [:tas, :α, :β, :ϕ, :θ, :ψ, :p, :q, :r, :x, :y, :z, :pow]
 
