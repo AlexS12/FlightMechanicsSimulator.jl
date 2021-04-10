@@ -5,6 +5,7 @@ using FlightMechanicsUtils
 using FlightMechanicsSimulator
 
 
+# Create different dynamic systems
 x_sixdofaeroeuler = SixDOFAeroEuler([
     502.0 * FT2M,
     0.2392628,
@@ -37,9 +38,10 @@ x_sixdofbodyeuler = SixDOFBodyEuler([
 
 DSS_ARR = [x_sixdofaeroeuler, x_sixdofbodyeuler]
 
+# Test the interface for each system.
 @testset "Interface $(typeof(dss))" for dss in DSS_ARR
 
-    # Check contruction of a DSState type from any other DSState type
+    # Check contruction of a DSState type from any other DSState type (including itself)
     @testset "Constructor from $(typeof(dss2))" for dss2 in DSS_ARR
         @test hasmethod(typeof(dss), (typeof(dss2),))
         # TODO: check that DSState are equivalent
@@ -65,6 +67,7 @@ DSS_ARR = [x_sixdofaeroeuler, x_sixdofbodyeuler]
         get_engine_power,
     ]
 
+    # Check that methods that return a scalar exist and have right return type
     @testset "$im" for im in methods_scalar_output
         @test hasmethod(im, (typeof(dss),))
         @test isa(im(dss), Number)
@@ -80,6 +83,7 @@ DSS_ARR = [x_sixdofaeroeuler, x_sixdofbodyeuler]
         get_euler_angles_rates,
     ]
 
+    # Check that methods that return a len 3 vector exist and have right return type
     @testset "$im" for im in methods_vec3_output
         @test hasmethod(im, (typeof(dss),))
         rv = im(dss)
@@ -88,6 +92,7 @@ DSS_ARR = [x_sixdofaeroeuler, x_sixdofbodyeuler]
         @test eltype(rv) <: Number
     end
 
+    # Check get_n_states implementation
     @testset "$im" for im in [get_n_states]
         @test hasmethod(im, (typeof(dss),))
         rv = im(dss)
@@ -95,6 +100,7 @@ DSS_ARR = [x_sixdofaeroeuler, x_sixdofbodyeuler]
         @test length(dss.x) == rv
     end
 
+    # Check get_x implementation
     @testset "$im" for im in [get_x]
         @test hasmethod(im, (typeof(dss),))
         rv = im(dss)
@@ -103,6 +109,7 @@ DSS_ARR = [x_sixdofaeroeuler, x_sixdofbodyeuler]
         @test eltype(rv) <: Number
     end
 
+    # Check get_x_names implementation
     @testset "$im" for im in [get_x_names]
         @test hasmethod(im, (typeof(dss),))
         rv = im(dss)
@@ -111,6 +118,7 @@ DSS_ARR = [x_sixdofaeroeuler, x_sixdofbodyeuler]
         @test eltype(rv) == Symbol
     end
 
+    # Check state_eqs implementation
     @testset "state_eqs" begin
         @test hasmethod(
             state_eqs,
@@ -139,6 +147,7 @@ DSS_ARR = [x_sixdofaeroeuler, x_sixdofbodyeuler]
         @test isa(dssd, DSStateDot)
     end
 
+    # Check DSStateDot for each subtype: constructor and mandatory methods.
     @testset "DSStateDot{$(typeof(dss)), $(get_n_states(dss)), $(eltype(dss))}" begin
         # Test constructor
         dssd = DSStateDot(dss, get_x(dss))
