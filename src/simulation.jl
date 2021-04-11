@@ -35,7 +35,7 @@ function f(x, p, t)
 
     dss = typeof(dss)(x)
 
-    atmosphere = atmosphere(x[12])
+    atmosphere = atmosphere(get_height(dss))
 
     dssd, outputs = f(time, dss, controls_arr, aircraft, atmosphere, gravity)
 
