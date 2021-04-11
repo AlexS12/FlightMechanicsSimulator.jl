@@ -1,59 +1,57 @@
 """
-    simulate(tini, tfin, dt, x0, mass, xcg, controls)
+    simulate(
+        tini, tfin, dss, controls, aircraft, atmosphere, gravity;
+        solver=TSit5(), solve_args=Dict()
+    )
 
-Propagate a simulation from tini to tfin with dt time step.
-- tini: initial time (s)
-- tfin: final simulation time (s)
-- dt: time step (s)
-- x0: initial state. Array{13, Number} according to `F16Stevens.f`
-- controls: inputs. Array{4, Input} according to `F16Stevens.f`
-- aircraft: aircraft instance.
 """
-function simulate(tini, tfin, dt, x0, controls, aircraft, atmosphere, gravity;
-    solver=TSit5(), solve_args=Dict()
+function simulate(tini, tfin, dss, controls, aircraft, atmosphere, gravity;
+    solver=Tsit5(), solve_args=Dict()
     )
 
     tspan = (tini, tfin)
-    p = [controls, aircraft, atmosphere, gravity]
+    p = [dss, controls, aircraft, atmosphere, gravity]
 
+    x0 = get_x(dss)
     prob = ODEProblem{false}(f, x0, tspan, p)
     sol = solve(prob, solver; solve_args...)
 
-    results = hcat([[sol.t[ii]; sol.u[ii]] for ii in 1:length(sol.t)]...)'
+    df = DataFrame(sol')
+    rename!(df, get_x_names(dss))
+    df[!, :time] = sol.t
 
-    return results
+    return df
 end
 
 
 function f(x, p, t)
-    controls = p[1]
-    aircraft = p[2]
-    atmosphere = p[3]
-    gravity=p[4]
+    dss = p[1]
+    controls = p[2]
+    aircraft = p[3]
+    atmosphere = p[4]
+    gravity = p[5]
 
     controls_arr = get_value.(controls, t)
 
-    x_dot, outputs = f(time, x, controls_arr, aircraft, atmosphere, gravity)
+    dss = typeof(dss)(x)
 
-    return x_dot
+    atmosphere = atmosphere(get_height(dss))
+
+    dssd, outputs = f(time, dss, controls_arr, aircraft, atmosphere, gravity)
+
+    return get_xdot(dssd)
 end
 
 
-function f(time, x, controls, aircraft, atmosphere, gravity)
+function f(
+    time,
+    dss::DSState,
+    controls,
+    aircraft::Aircraft,
+    atmosphere::Atmosphere,
+    gravity::Gravity
+    )
 
-    # C     x(1)  -> vt (m/s)
-    # C     x(2)  -> α (rad)
-    # C     x(3)  -> β (rad)
-    # C     x(4)  -> ϕ (rad)
-    # C     x(5)  -> θ (rad)
-    # C     x(6)  -> ψ (rad)
-    # C     x(7)  -> p (rad/s)
-    # C     x(8)  -> q (rad/s)
-    # C     x(9)  -> r (rad/s)
-    # C     x(10) -> North (m)
-    # C     x(11) -> East (m)
-    # C     x(12) -> Altitude (m)
-    # C     x(13) -> pow
     ac = aircraft
 
     mass = get_mass(ac)
@@ -64,20 +62,14 @@ function f(time, x, controls, aircraft, atmosphere, gravity)
     c = get_chord(ac)
     b = get_wing_span(ac)
 
-    # Assign state
-    vt = x[1]
-    α = x[2] * RAD2DEG
-    β = x[3] * RAD2DEG
-    ϕ = x[4]
-    θ = x[5]
-    ψ = x[6]
-    p = x[7]
-    q = x[8]
-    r = x[9]
-    height = x[12]
-    pow = x[13]
+    vt = get_tas(dss)
+    α = get_α(dss) * RAD2DEG
+    β = get_β(dss) * RAD2DEG
+    ψ, θ, ϕ = get_euler_angles(dss)
+    p, q, r = get_ang_vel_body(dss)
+    height = get_height(dss)
+    pow = get_engine_power(dss)
 
-    atmosphere = atmosphere(height)
     T = get_temperature(atmosphere)
     ρ = get_density(atmosphere)
     a = get_sound_velocity(atmosphere)
@@ -90,7 +82,7 @@ function f(time, x, controls, aircraft, atmosphere, gravity)
 
     # Calculate forces and moments
     # Propulsion
-    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(ac, x, amach, controls)
+    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(ac, dss, amach, controls)
     h = calculate_prop_gyro_effects(ac)
 
     # Engine dynamic model
@@ -98,7 +90,7 @@ function f(time, x, controls, aircraft, atmosphere, gravity)
     pdot = calculate_pdot(ac, thtl, pow)
 
     # Aerodynamics
-    Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(ac, x, controls, xcg, qbar, S, b, c)
+    Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(ac, dss, controls, xcg, qbar, S, b, c)
     # Gravity
     Fgx, Fgy, Fgz = get_gravity_body(gravity, θ, ϕ) .* mass
 
@@ -114,34 +106,26 @@ function f(time, x, controls, aircraft, atmosphere, gravity)
     forces = [Fx, Fy, Fz]
     moments = [L, M, N]
 
-    x_dot = sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
-
-    x_dot = [x_dot..., pdot]
+    dssd = state_eqs(
+        dss, time, mass, inertia, forces, moments, h, pdot
+    )
 
     # Outputs
     gravity_down = get_gravity_accel(gravity)
-    outputs = calculate_outputs(x, amach, qbar, S, mass, gravity_down, [Fax, Fay, Faz], [Tx, Ty, Tz])
+    outputs = calculate_outputs(dss, amach, qbar, S, mass, gravity_down, [Fax, Fay, Faz], [Tx, Ty, Tz])
 
-    return x_dot, outputs
+    return dssd, outputs
 
 end
 
 
-function calculate_outputs(x, amach, qbar, S, mass, g, Fa, Fp)
+function calculate_outputs(dss::DSState, amach, qbar, S, mass, g, Fa, Fp)
 
     outputs = Array{Float64}(undef, 7)
 
-    # vt = x[1]
-    α = x[2] * RAD2DEG
-    # β = x[3] * RAD2DEG
-    # ϕ = x[4]
-    # θ = x[5]
-    # ψ = x[6]
-    # p = x[7]
-    q = x[8]
-    # r = x[9]
-    # height = x[12]
-    # pow = x[13]
+    α = get_α(dss) * RAD2DEG
+    p, q, r = get_ang_vel_body(dss)
+
 
     Fax, Fay, Faz = Fa
     Tx, Ty, Tz = Fp

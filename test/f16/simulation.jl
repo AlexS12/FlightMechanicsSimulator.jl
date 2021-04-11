@@ -1,9 +1,12 @@
 using Test
+
 using CSV
 using DataFrames
-using OrdinaryDiffEq
-using FlightMechanicsSimulator
 using FlightMechanicsUtils
+using OrdinaryDiffEq
+using StaticArrays
+
+using FlightMechanicsSimulator
 
 
 # ---------- PROPAGATE COORDINATED TURN ----------
@@ -44,14 +47,16 @@ x_stev = [
 ]
 controls_stev = [0.8349601, -1.481766, 0.09553108, -0.4118124]
 xcg = 0.35
-x_dot, outputs = f(
+dssd, outputs = f(
     time,
-    x_stev,
+    SixDOFAeroEuler(x_stev),
     controls_stev,
     F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
-    F16StevensAtmosphere,
+    F16StevensAtmosphere(x_stev[12]),
     LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
 )
+
+x_dot = get_xdot(dssd)
 
 # Linear acceleration
 @test isapprox(x_dot[1:3], zeros(3), atol = 5e-4)
@@ -72,16 +77,18 @@ cost =
 @test isapprox(x_dot[12], 0.0, atol = 1e-4)
 
 # RETRIM to refine flying condition
-x_trim, controls_trim, x_dot_trim, outputs_trim, cost = trim(
-    f,
-    x_stev,
+dssd, controls_trim, outputs_trim, cost = trim(
+    SixDOFAeroEuler(x_stev),
     controls_stev,
     F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
-    F16StevensAtmosphere,
+    F16StevensAtmosphere(x_stev[12]),
     LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
     0.0,
     0.3,
 )
+
+x_trim = get_x(dssd)
+x_dot_trim = get_xdot(dssd)
 
 # Linear acceleration
 @test isapprox(x_dot_trim[1:3], zeros(3), atol=1e-12)
@@ -103,8 +110,7 @@ controls = ConstantInput.(controls_trim)
 results = simulate(
     t0,
     t1,
-    dt,
-    x,
+    SixDOFAeroEuler(x),
     controls,
     F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
     F16StevensAtmosphere,
@@ -142,22 +148,22 @@ xy_trajectory_data = [
  ]
 
  for case in eachrow(xy_trajectory_data)
-    idx = findall(x->abs(x-case[1])<1e-10, results[:, 1])[1]
-    @test isapprox(case[2], results[idx, 11] * M2FT, atol=20)
-    @test isapprox(case[3], results[idx, 12] * M2FT, atol=20)
+    r = results[findall(in(case[1]), results.time), :]
+    @test isapprox(case[2], r[1, :x] * M2FT, atol=20)
+    @test isapprox(case[3], r[1, :y] * M2FT, atol=20)
  end
 
 # Select last time step state
- x = results[end, 2:end]
+ x = results[end, :]
 
 # Check that TAS, α, β, θ, ϕ, p, q, r, alt, pow remain constant
-@test isapprox(x[1], x_trim[1])  # TAS
-@test isapprox(x[2], x_trim[2])  # α
-@test isapprox(x[3], x_trim[3])  # β
-@test isapprox(x[4], x_trim[4])  # θ
-@test isapprox(x[5], x_trim[5])  # ϕ
-@test isapprox(x[7], x_trim[7])  # p
-@test isapprox(x[8], x_trim[8])  # q
-@test isapprox(x[9], x_trim[9])  # r
-@test isapprox(x[12], x_trim[12], atol=1e-12)  # alt
-@test isapprox(x[13], x_trim[13])  # pow
+@test isapprox(x[:tas], x_trim[1])  # TAS
+@test isapprox(x[:α], x_trim[2])  # α
+@test isapprox(x[:β], x_trim[3])  # β
+@test isapprox(x[:ϕ], x_trim[4])  # ϕ
+@test isapprox(x[:θ], x_trim[5])  # θ
+@test isapprox(x[:p], x_trim[7])  # p
+@test isapprox(x[:q], x_trim[8])  # q
+@test isapprox(x[:r], x_trim[9])  # r
+@test isapprox(x[:z], x_trim[12], atol=1e-12)  # alt
+@test isapprox(x[:pow], x_trim[13])  # pow
