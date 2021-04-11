@@ -124,11 +124,11 @@ function thrust(pow, alt, rmach)  # Engine thrust model
 end
 
 
-function calculate_prop_forces_moments(ac::F16, x, mach, controls)
+function calculate_prop_forces_moments(ac::F16, dss::DSState, mach, controls)
 
     # Assign state & control variables
-    alt = x[12]
-    pow = x[13]
+    alt = get_height(dss)
+    pow = get_engine_power(dss)
 
     thtl = controls[1]
 

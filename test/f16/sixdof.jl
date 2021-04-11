@@ -16,7 +16,7 @@ for case in eachrow(df)
     x = Array(case[["x$ii" for ii in 1:13]])
 
     x[1] = x[1] * FT2M
-    x[12] = x[12] * FT2M
+    x[12] = -x[12] * FT2M
 
     controls = Array(case[["c$ii" for ii in 1:4]])
 
@@ -26,7 +26,7 @@ for case in eachrow(df)
             SixDOFAeroEuler(x),
             controls,
             F16(F16Stevens.MASS, F16Stevens.INERTIA, case.xcg),
-            F16StevensAtmosphere(x[12]),
+            F16StevensAtmosphere(-x[12]),
             LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
         )
 

@@ -29,7 +29,7 @@ export calculate_aero_forces_moments
 export tgear
 include("models/aircraft.jl")
 
-export DSStateDot
+export DSState, DSStateDot
 export get_x, get_n_states, get_x_names, state_eqs
 export get_xdot, get_ds_state
 export get_earth_position, get_height

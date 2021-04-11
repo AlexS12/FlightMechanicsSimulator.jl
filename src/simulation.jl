@@ -80,12 +80,9 @@ function f(
     amach = vt / a  # mach number
     qbar = 0.5 * ρ * vt^2  # dynamic pressure
 
-    # TODO: modify interfaces using x to use dss
-    x = get_x(dss)
-
     # Calculate forces and moments
     # Propulsion
-    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(ac, x, amach, controls)
+    Tx, Ty, Tz, LT, MT, NT = calculate_prop_forces_moments(ac, dss, amach, controls)
     h = calculate_prop_gyro_effects(ac)
 
     # Engine dynamic model
@@ -93,7 +90,7 @@ function f(
     pdot = calculate_pdot(ac, thtl, pow)
 
     # Aerodynamics
-    Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(ac, x, controls, xcg, qbar, S, b, c)
+    Fax, Fay, Faz, La, Ma, Na = calculate_aero_forces_moments(ac, dss, controls, xcg, qbar, S, b, c)
     # Gravity
     Fgx, Fgy, Fgz = get_gravity_body(gravity, θ, ϕ) .* mass
 
@@ -115,28 +112,20 @@ function f(
 
     # Outputs
     gravity_down = get_gravity_accel(gravity)
-    outputs = calculate_outputs(x, amach, qbar, S, mass, gravity_down, [Fax, Fay, Faz], [Tx, Ty, Tz])
+    outputs = calculate_outputs(dss, amach, qbar, S, mass, gravity_down, [Fax, Fay, Faz], [Tx, Ty, Tz])
 
     return dssd, outputs
 
 end
 
 
-function calculate_outputs(x, amach, qbar, S, mass, g, Fa, Fp)
+function calculate_outputs(dss::DSState, amach, qbar, S, mass, g, Fa, Fp)
 
     outputs = Array{Float64}(undef, 7)
 
-    # vt = x[1]
-    α = x[2] * RAD2DEG
-    # β = x[3] * RAD2DEG
-    # ϕ = x[4]
-    # θ = x[5]
-    # ψ = x[6]
-    # p = x[7]
-    q = x[8]
-    # r = x[9]
-    # height = x[12]
-    # pow = x[13]
+    α = get_α(dss) * RAD2DEG
+    p, q, r = get_ang_vel_body(dss)
+
 
     Fax, Fay, Faz = Fa
     Tx, Ty, Tz = Fp

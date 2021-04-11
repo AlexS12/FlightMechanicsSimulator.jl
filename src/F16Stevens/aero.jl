@@ -255,7 +255,7 @@ DNDA(α, β) = interp2d(α, β, 0.2, 0.1, -1, -2, 8, 2, cnda_data, 3, 4)
 DNDR(α, β) = interp2d(α, β, 0.2, 0.1, -1, -2, 8, 2, cndr_data, 3, 4)
 
 
-function calculate_aero_forces_moments(ac::F16, x, controls, xcg, qbar, S, b, c)
+function calculate_aero_forces_moments(ac::F16, dss::DSState, controls, xcg, qbar, S, b, c)
 
     # Unpack controls
     THTL = controls[1]  # 0-1
@@ -264,16 +264,11 @@ function calculate_aero_forces_moments(ac::F16, x, controls, xcg, qbar, S, b, c)
     RDR = controls[4]  # deg
 
     # Assign state
-    VT = x[1]
-    ALPHA = x[2] * RAD2DEG
-    BETA = x[3] * RAD2DEG
-    PHI = x[4]
-    THETA = x[5]
-    PSI = x[6]
-    P = x[7]
-    Q = x[8]
-    R = x[9]
-    ALT = x[12]
+    VT = get_tas(dss)
+    ALPHA = get_α(dss) * RAD2DEG
+    BETA = get_β(dss) * RAD2DEG
+    PSI, THETA, PHI = get_euler_angles(dss)
+    P, Q, R = get_ang_vel_body(dss)
 
     # Look-up tables and component buildup
     CXT = CX(ALPHA, EL)
@@ -288,10 +283,10 @@ function calculate_aero_forces_moments(ac::F16, x, controls, xcg, qbar, S, b, c)
     CNT = CN(ALPHA, BETA) + DNDA(ALPHA, BETA) * DAIL + DNDR(ALPHA, BETA) * DRDR
 
     # Add damping derivatives
-    CBTA = cos(x[3])
-    U = VT * cos(x[2]) * CBTA
-    V = VT * sin(x[3])
-    W = VT * sin(x[2]) * CBTA
+    CBTA = cos(get_β(dss))
+    U = VT * cos(get_α(dss)) * CBTA
+    V = VT * sin(get_β(dss))
+    W = VT * sin(get_α(dss)) * CBTA
     TVT = 0.5 / VT
     B2V = B * TVT
     CQ = CBAR * Q * TVT
