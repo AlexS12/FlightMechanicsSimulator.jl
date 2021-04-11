@@ -35,7 +35,7 @@ for case in eachrow(df)
     xd1[1] *= M2FT
     xd1[10] *= M2FT
     xd1[11] *= M2FT
-    xd1[12] *= M2FT
+    xd1[12] *= -M2FT
 
     outputs1[4] *= PA2PSF
 

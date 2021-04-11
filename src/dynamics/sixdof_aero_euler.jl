@@ -182,7 +182,7 @@ function sixdof_aero_earth_euler_fixed_mass!(
 
     x_dot[10] = u * s1 + v * s3 + w * s6  # North speed
     x_dot[11] = u * s2 + v * s4 + w * s7  # East speed
-    x_dot[12] = u * sθ - v * s5 - w * s8  # Vertical speed
+    x_dot[12] = -u * sθ + v * s5 + w * s8  # Vertical speed (possitive downwards)
 
 end
 
