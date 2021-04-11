@@ -218,7 +218,7 @@ cross-product of inertia are zero and will not be taken into account.
 [six_dof_aero_euler_fixed_mass!](@ref)
 """
 function sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
-    x_dot = Array{Float64}(undef, 12)
+    x_dot = Array{eltype(x)}(undef, 12)
     sixdof_aero_earth_euler_fixed_mass!(x_dot, time, x, mass, inertia, forces, moments, h)
     return x_dot
 end

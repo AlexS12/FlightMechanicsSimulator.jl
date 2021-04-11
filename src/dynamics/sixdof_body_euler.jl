@@ -1,4 +1,21 @@
-# TODO: DOC
+"""
+    SixDOFBodyEuler
+    SixDOFBodyEuler(x::AbstractVector)
+    SixDOFBodyEuler(dss::DSState)
+
+Six degrees of freedom dynamic system using u, v, w for velocity representation and Euler
+angles for attitude.
+
+Flat Earth hypothesis is applied and Earth reference frame is considered inertial.
+
+It is considered that the aircraft xb-zb plane is a plane of symmetry so that Jxy and Jyz
+cross-product of inertia are zero and will not be taken into account.
+
+# Fields
+- `x::SVector{13, T}`: state vector.
+  - [u (m/s), v (m/s), w (m/s), ϕ (rad), θ (rad), ψ (rad), p (rad/s), q (rad/s), r (rad/s),
+    x (m), y (m), z (m), pow (%)].
+"""
 struct SixDOFBodyEuler{T}<:DSState{T}
     x::SVector{13, T}
 end
@@ -71,7 +88,14 @@ function state_eqs(dss::SixDOFBodyEuler, time, mass, inertia, forces, moments, h
 end
 
 
-function sixdof_body_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
+"""
+    sixdof_body_earth_euler_fixed_mass!(x_dot, time, x, mass, inertia, forces, moments, h)
+
+Mutating version of [sixdof_body_earth_euler_fixed_mass](@ref).
+"""
+function sixdof_body_earth_euler_fixed_mass!(
+    x_dot, time, x, mass, inertia, forces, moments, h
+    )
 
     m = mass
     u, v, w, ϕ, θ, ψ, p, q, r, xe, ye, ze = x
@@ -91,9 +115,9 @@ function sixdof_body_earth_euler_fixed_mass(time, x, mass, inertia, forces, mome
     sϕ, cϕ = sin(ϕ), cos(ϕ)
 
     # Linear momentum equations
-    u_dot = Fx / m + r * v - q * w
-    v_dot = Fy / m - r * u + p * w
-    w_dot = Fz / m + q * u - p * v
+    x_dot[1] = Fx / m + r * v - q * w
+    x_dot[2] = Fy / m - r * u + p * w
+    x_dot[3] = Fz / m + q * u - p * v
 
     # Moments
     pq = p * q
@@ -112,24 +136,56 @@ function sixdof_body_earth_euler_fixed_mass(time, x, mass, inertia, forces, mome
     ypr = Izz - Ixx
 
     # Angular momentum equations
-    p_dot = (xpq * pq - xqr * qr + Izz * (L + rhy_qhz) + Ixz * (N + qhx_phy)) / gam
-    q_dot = (ypr * p * r - Ixz * (p^2 - r^2) + M - r * hx + p * hz) / Iyy
-    r_dot = (zpq * pq - xpq * qr + Ixz * (L + rhy_qhz) + Ixx * (N + qhx_phy)) / gam
+    x_dot[7] = (xpq * pq - xqr * qr + Izz * (L + rhy_qhz) + Ixz * (N + qhx_phy)) / gam
+    x_dot[8] = (ypr * p * r - Ixz * (p^2 - r^2) + M - r * hx + p * hz) / Iyy
+    x_dot[9] = (zpq * pq - xpq * qr + Ixz * (L + rhy_qhz) + Ixx * (N + qhx_phy)) / gam
 
     # Angular Kinematic equations
-    ψ_dot = (q * sϕ + r * cϕ) / cθ
-    θ_dot = q * cϕ - r * sϕ
+    x_dot[6] = (q * sϕ + r * cϕ) / cθ
+    x_dot[5] = q * cϕ - r * sϕ
     # ϕ_dot = p + (q * sϕ + r * cϕ) * tan(θ)
-    ϕ_dot = p + ψ_dot * sθ
+    x_dot[4] = p + x_dot[6] * sθ
 
     # Linear kinematic equations
-    xe_dot =  cθ*cψ * u + (sϕ*sθ*cψ - cϕ*sψ) * v + (cϕ*sθ*cψ + sϕ*sψ) * w
-    ye_dot =  cθ*sψ * u + (sϕ*sθ*sψ + cϕ*cψ) * v + (cϕ*sθ*sψ - sϕ*cψ) * w
-    ze_dot = -sθ    * u +  sϕ*cθ             * v +  cϕ*cθ             * w
+    x_dot[10] =  cθ*cψ * u + (sϕ*sθ*cψ - cϕ*sψ) * v + (cϕ*sθ*cψ + sϕ*sψ) * w
+    x_dot[11] =  cθ*sψ * u + (sϕ*sθ*sψ + cϕ*cψ) * v + (cϕ*sθ*sψ - sϕ*cψ) * w
+    x_dot[12] = -sθ    * u +  sϕ*cθ             * v +  cϕ*cθ             * w
 
-    x_dot = [u_dot, v_dot, w_dot, ϕ_dot, θ_dot, ψ_dot, p_dot, q_dot, r_dot, xe_dot, ye_dot, ze_dot]
-
-    return x_dot
 end
 
-# TODO: mutating version
+
+"""
+    sixdof_body_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
+
+State equations for `SixDOFBodyEuler` dynamic system.
+
+# Arguments
+
+- `time::Number`: time (s).
+- `x::AbstractArray`: state vector.
+  - [u (m/s), v (m/s), w (m/s), ϕ (rad), θ (rad), ψ (rad), p (rad/s), q (rad/s), r (rad/s),
+    x (m), y (m), z (m), pow (%)].
+- `mass::Number`: mass (kg).
+- `inertia::AbstractMatrix`: 3x3 inertia tensor (kg·m^2).
+- `forces::AbstractVector`: body axis forces [Fx, Fy, Fz] (N).
+- `moments::AbstractVector`: body axis moments (L, M, N) (N·m).
+- `h::AbstractVector`:  Additional angular momentum contributions such as those coming from
+ spinning rotors (kg·m²/s).
+
+# Returns
+- `x_dot::Array`: time derivative of the state vector.
+
+# Notes
+
+It is considered that the aircraft xb-zb plane is a plane of symmetry so that Jxy and Jyz
+cross-product of inertia are zero and will not be taken into account.
+
+# See also
+
+[six_dof_body_euler_fixed_mass!](@ref)
+"""
+function sixdof_body_earth_euler_fixed_mass(time, x, mass, inertia, forces, moments, h)
+    x_dot = Array{eltype(x)}(undef, 12)
+    sixdof_body_earth_euler_fixed_mass!(x_dot, time, x, mass, inertia, forces, moments, h)
+    return x_dot
+end
