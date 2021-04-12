@@ -159,7 +159,7 @@ end
     r_base = simulate(
         t0,
         t1,
-        get_ds_state(dssd_base_trim),
+        dssd_base_trim,
         args_sim...;
         kwargs_sim...
     )
@@ -167,7 +167,15 @@ end
     r = simulate(
         t0,
         t1,
-        SixDOFBodyEuler(get_ds_state(dssd_base_trim)),
+        DSStateDot(
+            SixDOFBodyEuler(get_ds_state(dssd_base_trim)),
+            [get_accel_body(dssd_base_trim)...,
+             get_euler_angles_rates(dssd_base_trim)[3:-1:1]...,
+             get_ang_accel_body(dssd_base_trim)...,
+             get_horizon_velocity(dssd_base_trim)...,
+             0.0
+             ]
+        ),
         args_sim...;
         kwargs_sim...
     )

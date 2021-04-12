@@ -77,7 +77,7 @@ cost =
 @test isapprox(x_dot[12], 0.0, atol = 1e-4)
 
 # RETRIM to refine flying condition
-dssd, controls_trim, outputs_trim, cost = trim(
+dssd_trim, controls_trim, outputs_trim, cost = trim(
     SixDOFAeroEuler(x_stev),
     controls_stev,
     F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
@@ -87,8 +87,8 @@ dssd, controls_trim, outputs_trim, cost = trim(
     0.3,
 )
 
-x_trim = get_x(dssd)
-x_dot_trim = get_xdot(dssd)
+x_trim = get_x(dssd_trim)
+x_dot_trim = get_xdot(dssd_trim)
 
 # Linear acceleration
 @test isapprox(x_dot_trim[1:3], zeros(3), atol=1e-12)
@@ -110,7 +110,7 @@ controls = ConstantInput.(controls_trim)
 results = simulate(
     t0,
     t1,
-    SixDOFAeroEuler(x),
+    dssd_trim,
     controls,
     F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
     F16StevensAtmosphere,
