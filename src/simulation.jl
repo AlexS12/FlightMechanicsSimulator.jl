@@ -1,8 +1,14 @@
 mutable struct SimDEData{
-    T, DSSD<:DSStateDot, C<:Input, AC<:Aircraft, ATM<:Atmosphere, G<:Gravity
+        T,
+        N,
+        DSSD<:DSStateDot,
+        C<:Input,
+        AC<:Aircraft,
+        ATM<:Atmosphere,
+        G<:Gravity
     } <: DEDataVector{T}
 
-    x::StaticVector{13, T}
+    x::SVector{N, T}
     dssd::DSSD
     controls::Array{C, 1}
     aircraft::AC
