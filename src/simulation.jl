@@ -1,3 +1,13 @@
+mutable struct SimDEData{T, S} <: DEDataVector{T}
+    x::SVector{13, T}
+    dss::DSState
+    controls::Array{S, 1}
+    aircraft::Aircraft
+    atmosphere::Atmosphere
+    gravity::Gravity
+end
+
+
 """
     simulate(
         tini, tfin, dss, controls, aircraft, atmosphere, gravity;
@@ -10,10 +20,17 @@ function simulate(tini, tfin, dss, controls, aircraft, atmosphere, gravity;
     )
 
     tspan = (tini, tfin)
-    p = [dss, controls, aircraft, atmosphere, gravity]
 
-    x0 = get_x(dss)
-    prob = ODEProblem{false}(f, x0, tspan, p)
+    x0 = SimDEData(
+        get_x(dss),
+        dss,
+        controls,
+        aircraft,
+        atmosphere(get_height(dss)),
+        gravity
+    )
+
+    prob = ODEProblem{false}(f, x0, tspan)
     sol = solve(prob, solver; solve_args...)
 
     df = DataFrame(sol')
@@ -25,21 +42,31 @@ end
 
 
 function f(x, p, t)
-    dss = p[1]
-    controls = p[2]
-    aircraft = p[3]
-    atmosphere = p[4]
-    gravity = p[5]
+    dss = x.dss
+    controls = x.controls
+    aircraft = x.aircraft
+    atmosphere = x.atmosphere
+    gravity = x.gravity
 
-    controls_arr = get_value.(controls, t)
+    controls_arr = get_value.(x.controls, t)
 
     dss = typeof(dss)(x)
 
-    atmosphere = atmosphere(get_height(dss))
+    atmosphere = typeof(x.atmosphere)(get_height(x.dss))
 
-    dssd, outputs = f(time, dss, controls_arr, aircraft, atmosphere, gravity)
+    dssd, outputs = f(time, dss, controls_arr, x.aircraft, x.atmosphere, x.gravity)
 
-    return get_xdot(dssd)
+    # TODO: should carry dssd
+    x_dot = SimDEData(
+        get_xdot(dssd),
+        x.dss,
+        x.controls,
+        x.aircraft,
+        x.atmosphere,
+        x.gravity
+    )
+
+    return x_dot
 end
 
 
