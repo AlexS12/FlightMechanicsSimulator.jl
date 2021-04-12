@@ -10,7 +10,9 @@ using FlightMechanicsUtils
 import Base: eltype
 
 
-export ConstantInput, StepInput, DoubletInput, RampInput, SinusoidalInput, get_value
+export Input
+export get_value
+export ConstantInput, StepInput, DoubletInput, RampInput, SinusoidalInput
 include("models/inputs.jl")
 
 export ISA1976, F16StevensAtmosphere

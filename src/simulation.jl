@@ -1,10 +1,13 @@
-mutable struct SimDEData{T, S} <: DEDataVector{T}
-    x::SVector{13, T}
-    dss::DSState
-    controls::Array{S, 1}
-    aircraft::Aircraft
-    atmosphere::Atmosphere
-    gravity::Gravity
+mutable struct SimDEData{
+    T, DSS<:DSState, C<:Input, AC<:Aircraft, ATM<:Atmosphere, G<:Gravity
+    } <: DEDataVector{T}
+
+    x::StaticVector{13, T}
+    dss::DSS
+    controls::Array{C, 1}
+    aircraft::AC
+    atmosphere::ATM
+    gravity::G
 end
 
 
