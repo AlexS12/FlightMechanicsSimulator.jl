@@ -86,6 +86,11 @@ Calculate atmosphere for given height, `h` (m).
 # Returns
 - `F16StevensAtmosphere`
 """
+function F16StevensAtmosphere{T}(h) where T<:Number
+    T_, ρ, a, p = F16Stevens.atmosphere_f16(h)
+    return F16StevensAtmosphere{T}(T_, p, ρ, a, h)
+end
+
 function F16StevensAtmosphere(h)
     T, ρ, a, p = F16Stevens.atmosphere_f16(h)
     return F16StevensAtmosphere(T, p, ρ, a, h)
@@ -128,4 +133,5 @@ Calculate atmosphere for given height, `h` (m).
 # Returns
 - `ISA1976`
 """
+ISA1976{T}(h) where T<:Number = ISA1976{T}(atmosphere_isa(h)..., h)
 ISA1976(h) = ISA1976(atmosphere_isa(h)..., h)
