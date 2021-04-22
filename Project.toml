@@ -15,7 +15,7 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
 CSV = "0.7, 0.8"
-DataFrames = "0.21, 0.22"
+DataFrames = "0.21, 0.22, 1.0"
 FlightMechanicsUtils = "0.1"
 NLsolve = "4.4"
 OrdinaryDiffEq = "5.50"
