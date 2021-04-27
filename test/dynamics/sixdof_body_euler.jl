@@ -156,7 +156,7 @@ end
 
     kwargs_sim = Dict(:solver=>RK4(), :solve_args=>Dict(:reltol=>1e-10, :saveat=>dt))
 
-    r_base = simulate(
+    r_base, sol_base = simulate(
         t0,
         t1,
         dssd_base_trim,
@@ -164,7 +164,7 @@ end
         kwargs_sim...
     )
 
-    r = simulate(
+    r, sol = simulate(
         t0,
         t1,
         DSStateDot(

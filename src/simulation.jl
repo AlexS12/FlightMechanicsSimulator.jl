@@ -9,6 +9,7 @@ mutable struct SimDEData{
     } <: DEDataVector{T}
 
     x::SVector{N, T}
+    t::T
     dssd::DSSD
     controls::Array{C, 1}
     aircraft::AC
@@ -32,6 +33,7 @@ function simulate(tini, tfin, dssd, controls, aircraft, atmosphere, gravity;
 
     x0 = SimDEData(
         get_x(dssd),
+        tini,
         dssd,
         controls,
         aircraft,
@@ -46,7 +48,7 @@ function simulate(tini, tfin, dssd, controls, aircraft, atmosphere, gravity;
     rename!(df, get_x_names(dssd))
     df[!, :time] = sol.t
 
-    return df
+    return df, sol
 end
 
 
@@ -68,6 +70,7 @@ function f(x, p, t)
 
     x_dot = SimDEData(
         get_xdot(dssd),
+        t,
         dssd,
         x.controls,
         x.aircraft,

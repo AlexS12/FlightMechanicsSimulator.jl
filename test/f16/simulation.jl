@@ -107,7 +107,7 @@ x = x_trim
 # Transform to Input for simulate
 controls = ConstantInput.(controls_trim)
 
-results = simulate(
+results, sol = simulate(
     t0,
     t1,
     dssd_trim,
@@ -116,7 +116,7 @@ results = simulate(
     F16StevensAtmosphere,
     LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M);
     solver=RK4(),
-    solve_args=Dict(:reltol=>1e-10, :saveat=>dt),
+    solve_args=Dict(:reltol=>1e-10, :saveat=>collect(t0:dt:t1)),
     )
 
 # Check X, Y against Stevens
