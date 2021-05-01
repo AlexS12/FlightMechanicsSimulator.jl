@@ -3,10 +3,8 @@
 
 using Test
 
-using DataFrames
 using FlightMechanicsUtils
 using OrdinaryDiffEq
-using StaticArrays
 
 using FlightMechanicsSimulator
 
