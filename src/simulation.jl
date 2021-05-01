@@ -1,7 +1,7 @@
 """
     simulate(
         tini, tfin, dss, controls, aircraft, atmosphere, gravity;
-        solver=TSit5(), solve_args=Dict()
+        solver=Tsit5(), solve_args=Dict()
     )
 
 """
