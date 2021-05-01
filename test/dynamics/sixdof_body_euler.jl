@@ -173,8 +173,9 @@ end
     )
 
     # Check final state
-    final_dss_base = SixDOFAeroEuler(Array(r_base[end, :])[1:13])
-    final_dss = SixDOFBodyEuler(Array(r[end, :])[1:13])
+    names = [Symbol("x$ii") for ii in 1:13]
+    final_dss_base = SixDOFAeroEuler(Array(r_base[end, names]))
+    final_dss = SixDOFBodyEuler(Array(r[end, names]))
 
     @test isapprox(get_tas(final_dss), get_tas(final_dss_base), atol=1e-5)
     @test isapprox(get_α(final_dss), get_α(final_dss_base), atol=1e-5)
