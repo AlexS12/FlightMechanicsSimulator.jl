@@ -4,10 +4,12 @@ using DataFrames
 using NLsolve
 using OrdinaryDiffEq
 using StaticArrays
+using SimulationLogs
 
 using FlightMechanicsUtils
 
 import Base: eltype
+import DataFrames: DataFrame
 
 
 export ConstantInput, StepInput, DoubletInput, RampInput, SinusoidalInput, get_value

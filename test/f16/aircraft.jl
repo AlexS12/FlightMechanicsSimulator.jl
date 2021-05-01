@@ -1,8 +1,9 @@
+using Test
+
 using StaticArrays
 
 using FlightMechanicsSimulator
 
-using Test
 
 
 @testset "F16 Aircraft" begin

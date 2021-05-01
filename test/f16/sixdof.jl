@@ -1,10 +1,11 @@
 using Test
+
 using CSV
 using DataFrames
+using FlightMechanicsUtils
 using StaticArrays
 
 using FlightMechanicsSimulator
-using FlightMechanicsUtils
 
 
 df = DataFrame(CSV.File("data/sixdof.csv"))

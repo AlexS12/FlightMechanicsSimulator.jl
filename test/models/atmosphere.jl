@@ -1,5 +1,6 @@
-using FlightMechanicsSimulator
 using Test
+
+using FlightMechanicsSimulator
 
 
 @testset "ISA1976" begin

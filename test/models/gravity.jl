@@ -1,6 +1,8 @@
-using FlightMechanicsUtils
-using FlightMechanicsSimulator
 using Test
+
+using FlightMechanicsUtils
+
+using FlightMechanicsSimulator
 
 
 @testset "LHDownGravity" begin

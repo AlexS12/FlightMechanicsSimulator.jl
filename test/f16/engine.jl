@@ -1,8 +1,10 @@
 using Test
+
 using CSV
 using DataFrames
-using FlightMechanicsSimulator
 using FlightMechanicsUtils
+
+using FlightMechanicsSimulator
 
 
 @testset "engine.jl" begin

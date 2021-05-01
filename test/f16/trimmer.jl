@@ -1,6 +1,8 @@
 using Test
-using FlightMechanicsSimulator
+
 using FlightMechanicsUtils
+
+using FlightMechanicsSimulator
 
 
 #  Stevens, B. L., Lewis, F. L., & Johnson, E. N. (2015). Aircraft control
