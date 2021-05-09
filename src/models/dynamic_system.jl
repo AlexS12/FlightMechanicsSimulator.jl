@@ -261,3 +261,11 @@ function get_ang_accel_body end
 Get derivative of engine power (s⁻¹).
 """
 function get_engine_power_dot end
+
+
+"""
+    get_trimmer_cost(dssd::DSStateDot)
+
+Get the cost function evaluation for the given `DSStateDot`.
+"""
+function get_trimmer_cost end

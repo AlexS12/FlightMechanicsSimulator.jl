@@ -222,3 +222,9 @@ function sixdof_aero_earth_euler_fixed_mass(time, x, mass, inertia, forces, mome
     sixdof_aero_earth_euler_fixed_mass!(x_dot, time, x, mass, inertia, forces, moments, h)
     return x_dot
 end
+
+
+function get_trimmer_cost(dssd::DSStateDot{S, N, T}) where {S<:SixDOFAeroEuler, N, T}
+    x_dot = get_xdot(dssd)
+    return [x_dot[1:3]..., x_dot[7:9]...]
+end

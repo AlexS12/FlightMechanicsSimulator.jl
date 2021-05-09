@@ -108,8 +108,7 @@ function trim_cost_function(ds::Type{T}, sol, trim_conditions; full_output=false
     dss = ds(trim_conditions, trim_solution, aircraft)
     dssd, outputs = f(time, dss, trim_solution.controls, aircraft, atmosphere, gravity)
 
-    x_dot = get_xdot(dssd)
-    cost = [x_dot[1:3]..., x_dot[7:9]...]
+    cost = get_trimmer_cost(dssd)
 
     if full_output
         return dssd, trim_solution.controls, outputs, cost
