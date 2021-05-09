@@ -115,7 +115,7 @@ end
         dss_base, args...
     )
 
-    @test isapprox(controls_trim, controls_trim_base)
+    @test isapprox(get_value.(controls_trim, 0.0), get_value.(controls_trim_base, 0.0))
     @test isapprox(get_α(dssd), get_α(dssd_base))
     @test isapprox(get_β(dssd), get_β(dssd_base))
 end
@@ -146,7 +146,7 @@ end
     dt = 0.01
 
     args_sim = [
-        ConstantInput.(controls_trim_base),
+        controls_trim_base,
         F16(F16Stevens.MASS, F16Stevens.INERTIA, 0.35),
         F16StevensAtmosphere,
         LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),

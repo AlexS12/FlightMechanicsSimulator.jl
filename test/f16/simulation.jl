@@ -104,14 +104,13 @@ t0 = 0.0  # s
 t1 = 180.0  # s
 
 x = x_trim
-# Transform to Input for simulate
-controls = ConstantInput.(controls_trim)
+
 
 results = simulate(
     t0,
     t1,
     SixDOFAeroEuler(x),
-    controls,
+    controls_trim,
     F16(F16Stevens.MASS, F16Stevens.INERTIA, xcg),
     F16StevensAtmosphere,
     LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M);

@@ -68,6 +68,9 @@ function trim(
     dssd, controls, outputs, cost = trim_cost_function(
         ds_type, sol, trim_conditions; full_output=true
     )
+
+    controls = ConstantInput.(controls)
+
     return dssd, controls, outputs, cost
 end
 

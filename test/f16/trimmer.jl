@@ -71,9 +71,9 @@ for case in eachrow(trim_test_data)
     x_dot_trim = get_xdot(dssd)
 
     @test isapprox(cost, zeros(6), atol=1e-12)
-    @test isapprox(controls_trim[1], case[2], atol=case[5])  # THTL
+    @test isapprox(get_value(controls_trim[1], 0.0), case[2], atol=case[5])  # THTL
     @test isapprox(rad2deg(x_trim[2]), case[3], atol=case[6])  # AOA
-    @test isapprox(controls_trim[2], case[4], atol=case[7])  # DE
+    @test isapprox(get_value(controls_trim[2], 0.0), case[4], atol=case[7])  # DE
 end
 
 #  Stevens, B. L., Lewis, F. L., & Johnson, E. N. (2015). Aircraft control
@@ -127,10 +127,10 @@ x_dot_trim = get_xdot(dssd)
 @test isapprox(x_trim[7], 0)  # P
 @test isapprox(x_trim[8], 0)  # Q
 @test isapprox(x_trim[9], 0)  # R
-@test isapprox(controls_trim[1], 0.1385, atol=0.0001)  # THTL
-@test isapprox(controls_trim[2], -0.7588, atol=0.0002)  # DE
-@test isapprox(controls_trim[3], -1.2e-7, atol=1e-6)  # DA
-@test isapprox(controls_trim[4], 6.2e-7, atol=1e-6)  # DR
+@test isapprox(get_value(controls_trim[1], 0.0), 0.1385, atol=0.0001)  # THTL
+@test isapprox(get_value(controls_trim[2], 0.0), -0.7588, atol=0.0002)  # DE
+@test isapprox(get_value(controls_trim[3], 0.0), -1.2e-7, atol=1e-6)  # DA
+@test isapprox(get_value(controls_trim[4], 0.0), 6.2e-7, atol=1e-6)  # DR
 
 # XCG = 0.3 (second column)
 xcg = 0.3
@@ -179,10 +179,10 @@ x_dot_trim = get_xdot(dssd)
 @test isapprox(x_trim[7], 0)  # P
 @test isapprox(x_trim[8], 0)  # Q
 @test isapprox(x_trim[9], 0)  # R
-@test isapprox(controls_trim[1], 0.1485, atol=0.00005)  # THTL
-@test isapprox(controls_trim[2], -1.931, atol=0.0001)  # DE
-@test isapprox(controls_trim[3], -7e-8, atol=1e-6)  # DA
-@test isapprox(controls_trim[4], 8.3e-7, atol=1e-6)  # DR
+@test isapprox(get_value(controls_trim[1], 0.0), 0.1485, atol=0.00005)  # THTL
+@test isapprox(get_value(controls_trim[2], 0.0), -1.931, atol=0.0001)  # DE
+@test isapprox(get_value(controls_trim[3], 0.0), -7e-8, atol=1e-6)  # DA
+@test isapprox(get_value(controls_trim[4], 0.0), 8.3e-7, atol=1e-6)  # DR
 
 # XCG = 0.38 (third column)
 xcg = 0.38
@@ -231,10 +231,10 @@ x_dot_trim = get_xdot(dssd)
 @test isapprox(x_trim[7], 0)  # P
 @test isapprox(x_trim[8], 0)  # Q
 @test isapprox(x_trim[9], 0)  # R
-@test isapprox(controls_trim[1], 0.1325, atol=0.0001)  # THTL
-@test isapprox(controls_trim[2], -0.05590, atol=0.0005)  # DE
-@test isapprox(controls_trim[3], -5.1e-8, atol=1e-6)  # DA
-@test isapprox(controls_trim[4], 4.3e-6, atol=1e-5)  # DR
+@test isapprox(get_value(controls_trim[1], 0.0), 0.1325, atol=0.0001)  # THTL
+@test isapprox(get_value(controls_trim[2], 0.0), -0.05590, atol=0.0005)  # DE
+@test isapprox(get_value(controls_trim[3], 0.0), -5.1e-8, atol=1e-6)  # DA
+@test isapprox(get_value(controls_trim[4], 0.0), 4.3e-6, atol=1e-5)  # DR
 
 
 # Coordinated turn (fourth column)
@@ -284,7 +284,7 @@ x_dot_trim = get_xdot(dssd)
 @test isapprox(x_trim[7], -0.01555, atol=0.00001)  # P
 @test isapprox(x_trim[8], 0.2934, atol=0.00005)  # Q
 @test isapprox(x_trim[9], 0.06071, atol=0.000005)  # R
-@test isapprox(controls_trim[1], 0.8499, atol=0.0005)  # THTL
-@test isapprox(controls_trim[2], -6.256, atol=0.001)  # DE
-@test isapprox(controls_trim[3], 0.09891, atol=0.00005)  # DA
-@test isapprox(controls_trim[4], -0.4218, atol=0.0005)  # DR
+@test isapprox(get_value(controls_trim[1], 0-0), 0.8499, atol=0.0005)  # THTL
+@test isapprox(get_value(controls_trim[2], 0.0), -6.256, atol=0.001)  # DE
+@test isapprox(get_value(controls_trim[3], 0.0), 0.09891, atol=0.00005)  # DA
+@test isapprox(get_value(controls_trim[4], 0.0), -0.4218, atol=0.0005)  # DR
