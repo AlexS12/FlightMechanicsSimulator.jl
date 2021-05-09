@@ -226,5 +226,11 @@ DSS_ARR = [x_sixdofaeroeuler, x_sixdofbodyeuler]
             @test length(rv) == 3
             @test eltype(rv) <: Number
         end
+
+        @testset "$im" for im in [get_trimmer_cost]
+            @test hasmethod(im, (typeof(dssd),))
+            rv = im(dssd)
+            @test length(rv) == 6
+        end
     end
 end
