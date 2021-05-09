@@ -1,13 +1,12 @@
-struct TrimConditions
-    # TODO: improve typing
-    tas::Number  # m/s
-    ψ::Number  # rad
-    position::AbstractArray  # [x, y, z] earth (m)
-    ψ_dot::Number  # rad/s
-    γ::Number  # rad
-    aircraft::Aircraft
-    atmosphere::Atmosphere
-    gravity::Gravity
+struct TrimConditions{T, AC<:Aircraft, AT<:Atmosphere, G<:Gravity}
+    tas::T  # m/s
+    ψ::T  # rad
+    position::SVector{3, T}  # [x, y, z] earth (m)
+    ψ_dot::T  # rad/s
+    γ::T  # rad
+    aircraft::AC
+    atmosphere::AT
+    gravity::G
 end
 
 
@@ -43,7 +42,7 @@ function trim(
     trim_conditions = TrimConditions(
         get_tas(dss_guess),  # TAS (m/s)
         get_euler_angles(dss_guess)[1],  # psi (rad)
-        get_earth_position(dss_guess),  # north, east, down (m)
+        SVector{3}(get_earth_position(dss_guess)),  # north, east, down (m)
         ψ_dot,  # ψ_dot (rad/s)
         γ,  # γ (rad)
         aircraft,

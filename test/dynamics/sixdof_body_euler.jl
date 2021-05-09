@@ -96,7 +96,7 @@ end
 
 # Check trim results
 @testset "Trim γ=$(cond[1]) ψ_dot=$(cond[2])" for cond in (
-    (0.0, 0.0), (0, 0.3), (0.2, 0), (0.2, 0.3)
+    (0.0, 0.0), (0.0, 0.3), (0.2, 0.0), (0.2, 0.3)
     )
 
     γ = cond[1]
@@ -126,7 +126,7 @@ end
 
 # Check simulation
 @testset "Simulation γ=$(cond[1]) ψ_dot=$(cond[2])" for cond in (
-    (0.0, 0.0), (0, 0.3), (0.2, 0), (0.2, 0.3)
+    (0.0, 0.0), (0.0, 0.3), (0.2, 0.0), (0.2, 0.3)
     )
 
     γ = cond[1]
