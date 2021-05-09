@@ -10,16 +10,15 @@ struct TrimConditions{T, AC<:Aircraft, AT<:Atmosphere, G<:Gravity}
 end
 
 
-struct TrimSolution
-    # TODO: improve typing
-    α::Number
-    β::Number
-    controls::AbstractArray
-    θ::Number
-    ϕ::Number
-    p::Number
-    q::Number
-    r::Number
+struct TrimSolution{T, N}
+    α::T
+    β::T
+    controls::SVector{N, T}
+    θ::T
+    ϕ::T
+    p::T
+    q::T
+    r::T
 end
 
 
@@ -99,7 +98,7 @@ function trim_cost_function(ds::Type{T}, sol, trim_conditions; full_output=false
     trim_solution = TrimSolution(
         sol[1],  # α (rad)
         sol[2],  # β (rad)
-        sol[3:6],  # controls  -> thtl  (0-1), el (deg), ail (deg), rdr (deg)
+        SVector{4}(sol[3:6]),  # controls  -> thtl  (0-1), el (deg), ail (deg), rdr (deg)
         θ,  # rad
         ϕ,  # rad
         p,  # rad/s
