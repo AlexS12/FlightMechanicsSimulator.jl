@@ -64,7 +64,6 @@ function trim(
             println(result)
      end
 
-    # TODO: return a DSStateDot instead of x
     sol = result.zero
     dssd, controls, outputs, cost = trim_cost_function(
         ds_type, sol, trim_conditions; full_output=true
