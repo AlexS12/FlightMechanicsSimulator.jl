@@ -26,6 +26,10 @@ dss_base = SixDOFAeroEuler([
     64.12363,
 ])
 
+ac = F16(F16Stevens.MASS, F16Stevens.INERTIA, 0.35)
+atmosphere = F16StevensAtmosphere(get_height(dss_base))
+gravity = LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M)
+
 dss = SixDOFBodyEuler(dss_base)
 
 # Check getter methods for DSState
@@ -92,7 +96,7 @@ end
 
 # Check trim results
 @testset "Trim γ=$(cond[1]) ψ_dot=$(cond[2])" for cond in (
-    (0.0, 0.0), (0, 0.3), (0.2, 0), (0.2, 0.3)
+    (0.0, 0.0), (0.0, 0.3), (0.2, 0.0), (0.2, 0.3)
     )
 
     γ = cond[1]
@@ -100,9 +104,9 @@ end
 
     args = [
         [0.8349601, -1.481766, 0.09553108, -0.4118124],
-        F16(F16Stevens.MASS, F16Stevens.INERTIA, 0.35),
-        F16StevensAtmosphere(get_height(dss_base)),
-        LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
+        ac,
+        atmosphere,
+        gravity,
         γ,
         ψ_dot,
     ]
@@ -115,14 +119,14 @@ end
         dss_base, args...
     )
 
-    @test isapprox(controls_trim, controls_trim_base)
+    @test isapprox(get_value.(controls_trim, 0.0), get_value.(controls_trim_base, 0.0))
     @test isapprox(get_α(dssd), get_α(dssd_base))
     @test isapprox(get_β(dssd), get_β(dssd_base))
 end
 
 # Check simulation
 @testset "Simulation γ=$(cond[1]) ψ_dot=$(cond[2])" for cond in (
-    (0.0, 0.0), (0, 0.3), (0.2, 0), (0.2, 0.3)
+    (0.0, 0.0), (0.0, 0.3), (0.2, 0.0), (0.2, 0.3)
     )
 
     γ = cond[1]
@@ -130,9 +134,9 @@ end
 
     args_trim = [
         [0.8349601, -1.481766, 0.09553108, -0.4118124],
-        F16(F16Stevens.MASS, F16Stevens.INERTIA, 0.35),
-        F16StevensAtmosphere(get_height(dss_base)),
-        LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
+        ac,
+        atmosphere,
+        gravity,
         γ,
         ψ_dot,
     ]
@@ -146,10 +150,10 @@ end
     dt = 0.01
 
     args_sim = [
-        ConstantInput.(controls_trim_base),
-        F16(F16Stevens.MASS, F16Stevens.INERTIA, 0.35),
+        controls_trim_base,
+        ac,
         F16StevensAtmosphere,
-        LHDownGravity(FlightMechanicsSimulator.F16Stevens.GD*FT2M),
+        gravity,
     ]
 
     kwargs_sim = Dict(:solver=>RK4(), :solve_args=>Dict(:reltol=>1e-10, :saveat=>dt))

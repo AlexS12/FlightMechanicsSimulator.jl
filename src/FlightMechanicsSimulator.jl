@@ -44,6 +44,7 @@ export get_tas_dot, get_α_dot, get_β_dot, get_tasαβ_dot
 export get_accel_body
 export get_ang_accel_body
 export get_engine_power_dot
+export get_trimmer_cost
 include("models/dynamic_system.jl")
 
 export SixDOFAeroEuler

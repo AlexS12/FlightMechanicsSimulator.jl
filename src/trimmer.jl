@@ -1,26 +1,24 @@
-struct TrimConditions
-    # TODO: improve typing
-    tas::Number  # m/s
-    ψ::Number  # rad
-    position::AbstractArray  # [x, y, z] earth (m)
-    ψ_dot::Number  # rad/s
-    γ::Number  # rad
-    aircraft::Aircraft
-    atmosphere::Atmosphere
-    gravity::Gravity
+struct TrimConditions{T, AC<:Aircraft, AT<:Atmosphere, G<:Gravity}
+    tas::T  # m/s
+    ψ::T  # rad
+    position::SVector{3, T}  # [x, y, z] earth (m)
+    ψ_dot::T  # rad/s
+    γ::T  # rad
+    aircraft::AC
+    atmosphere::AT
+    gravity::G
 end
 
 
-struct TrimSolution
-    # TODO: improve typing
-    α::Number
-    β::Number
-    controls::AbstractArray
-    θ::Number
-    ϕ::Number
-    p::Number
-    q::Number
-    r::Number
+struct TrimSolution{T, N}
+    α::T
+    β::T
+    controls::SVector{N, T}
+    θ::T
+    ϕ::T
+    p::T
+    q::T
+    r::T
 end
 
 
@@ -43,7 +41,7 @@ function trim(
     trim_conditions = TrimConditions(
         get_tas(dss_guess),  # TAS (m/s)
         get_euler_angles(dss_guess)[1],  # psi (rad)
-        get_earth_position(dss_guess),  # north, east, down (m)
+        SVector{3}(get_earth_position(dss_guess)),  # north, east, down (m)
         ψ_dot,  # ψ_dot (rad/s)
         γ,  # γ (rad)
         aircraft,
@@ -64,11 +62,13 @@ function trim(
             println(result)
      end
 
-    # TODO: return a DSStateDot instead of x
     sol = result.zero
     dssd, controls, outputs, cost = trim_cost_function(
         ds_type, sol, trim_conditions; full_output=true
     )
+
+    controls = ConstantInput.(controls)
+
     return dssd, controls, outputs, cost
 end
 
@@ -98,7 +98,7 @@ function trim_cost_function(ds::Type{T}, sol, trim_conditions; full_output=false
     trim_solution = TrimSolution(
         sol[1],  # α (rad)
         sol[2],  # β (rad)
-        sol[3:6],  # controls  -> thtl  (0-1), el (deg), ail (deg), rdr (deg)
+        SVector{4}(sol[3:6]),  # controls  -> thtl  (0-1), el (deg), ail (deg), rdr (deg)
         θ,  # rad
         ϕ,  # rad
         p,  # rad/s
@@ -109,8 +109,7 @@ function trim_cost_function(ds::Type{T}, sol, trim_conditions; full_output=false
     dss = ds(trim_conditions, trim_solution, aircraft)
     dssd, outputs = f(time, dss, trim_solution.controls, aircraft, atmosphere, gravity)
 
-    x_dot = get_xdot(dssd)
-    cost = [x_dot[1:3]..., x_dot[7:9]...]
+    cost = get_trimmer_cost(dssd)
 
     if full_output
         return dssd, trim_solution.controls, outputs, cost
